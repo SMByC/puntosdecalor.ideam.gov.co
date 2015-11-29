@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+{% load staticfiles %}
+{% load leaflet_tags %}
+{% load admin_static %}
+
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Monitoreo de incendios (piloto) IDEAM | {% block title %}{% endblock %}</title>
+
+	{# jQuery #}
+	<script src="{% static "scripts/jquery.min.js" %}" type="text/javascript"></script>
+
+	{#	ADMIN STATIC #}
+	<script type="text/javascript">window.__admin_media_prefix__ = "{% filter escapejs %}{% static 'admin/' %}{% endfilter %}";</script>
+	<script type="text/javascript" src="/jsi18n/"></script>
+	<script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/admin/RelatedObjectLookups.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/jquery.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/jquery.init.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/actions.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/SelectBox.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/SelectFilter2.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/calendar.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/admin/DateTimeShortcuts.js' %}"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'admin/css/forms.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'admin/css/base.css' %}"/>
+	<link rel="stylesheet" type="text/css" href="{% static 'admin/css/widgets.css' %}"/>
+
+	<!-- CSS -->
+	<link rel="stylesheet" type="text/css" href="{% static "css/base.css" %}" />
+
+
+	<!-- jQuery/JavaScripts -->
+	{#First try loading jQuery from Google's CDN#}
+	{#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
+
+
+	{% leaflet_js %}
+    {% leaflet_css %}
+	{#<script src="{% static "scripts/scripts.js" %}" type="text/javascript"></script>#}
+	{% block leaflet_scripts %}
+	{% endblock %}
+
+	<link rel="shortcut icon" href="{% static "favicon.ico" %}" />
+</head>
+
+<body>
+
+	<div id="wrapper">
+		<div id="header-page">
+			<div id="header-left">
+				<a href="http://www.ideam.gov.co" title="Página del IDEAM"><p>Pagina principal del ideam</p></a>
+			</div>
+			<div id="header-right">
+				<div id="user">
+                	<span id="logo-user"></span>
+                    {% if user.is_authenticated %}
+                        <a id="exit" href="">salir</a>
+                        <a id="username">{{ user.get_full_name|default:user.username }}</a>
+                    {% else %}
+					    <a id="login" href="">Ingresar</a>
+                    {% endif %}
+				</div>
+
+
+
+				{% comment %}<div id="search">
+					<!-- 					<form action="#" id="search-box"> -->
+					<!-- 						<input name="gsearch-nd" type="text"/> -->
+					<!-- 						<a href="#" class="gsearch-but" onclick="#">>></a>						 -->
+					<!-- 					</form> -->
+
+				</div>{% endcomment %}
+			</div>
+			<div id="header-title">
+				<p id="title"> <a href="http://{{ request.get_host }}" title="Página de inicio de monitoreo de incendios">Monitoreo de Incendios</a></p>
+                <p id="subtitle">Sistema piloto para el monitoreo de puntos activos de incendios detectados satelitalmente*</p>
+			</div>			
+			
+		</div>
+
+		<div id="main">
+			<div id="wrap-content">
+
+				{% comment %}
+				<div id="title-content">
+					{% block title-content %}    {% endblock %}
+					<div id="more-info" title="más información">(+)</div>
+					{% block title-updated-date %}{% endblock %}
+					<p id="more-info-text" style="display: none; ">
+						{% block more-info-text %}
+						{% endblock %}
+					</p>
+				</div>
+				{% endcomment %}
+
+				<!-- content -->
+				<div id="content-map">
+					{% block content-map %}
+
+					{% endblock %}
+				</div>
+            	<div id="content-items">
+					{% block content-items %}
+
+					{% endblock %}
+				</div>
+				<!-- content -->
+
+
+                <!-- content-footer -->
+                {% block content-footer %}
+
+                {% endblock %}
+                <!-- content-footer -->
+				
+			</div>
+		</div>
+
+		{% comment %}
+		<div id="footer">
+			<div id="footer-content">
+                <div id="footer-left-wrap">
+                    <div id="footer-colombia">
+
+                    </div>
+                    <div id="footer-left-ideam">
+                        <span class="text-bold">Instituto de Hidrología,
+                            Meteorología<br />y Estudios Ambientales
+                        </span>
+                        <br />Subdirección de Meteorología
+                    </div>
+                </div>
+                <div id="footer-right-wrap">
+                    <div id="footer-right-ideam">
+                        <span class="text-bold">@ {% now "Y" %} IDEAM</span><br />Carrera 10 No.
+                        20-30 Bogotá D.C.<br />PBX (571)3527160
+                    </div>
+                    <div id="footer-right-contact">
+                        <a href="/acerca-de">Acerca de</a>
+                        <a href="/formularios/contacto">Contacto-Reportes</a>
+                    </div>
+                </div>
+			</div>
+		</div>
+		{% endcomment %}
+	</div>
+</body>
+
+</html>

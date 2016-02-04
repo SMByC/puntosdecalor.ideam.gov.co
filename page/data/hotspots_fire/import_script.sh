@@ -1,4 +1,5 @@
- 
+#!/usr/bin/env bash
+
 # ls -lh South_America*
 
 modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'files', 'South_America_MCD14DL_2014282.txt'))

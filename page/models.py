@@ -1,5 +1,6 @@
 from django.contrib.gis.db import models
 
+
 # Create your models here.
 
 class WorldBorder(models.Model):
@@ -23,38 +24,39 @@ class WorldBorder(models.Model):
     objects = models.GeoManager()
 
     # Returns the string representation of the model.
-    def __str__(self):              # __unicode__ on Python 2
+    def __str__(self):  # __unicode__ on Python 2
         return self.name
+
 
 # Auto-generated `LayerMapping` dictionary for WorldBorder model
 worldborder_mapping = {
-    'fips' : 'FIPS',
-    'iso2' : 'ISO2',
-    'iso3' : 'ISO3',
-    'un' : 'UN',
-    'name' : 'NAME',
-    'area' : 'AREA',
-    'pop2005' : 'POP2005',
-    'region' : 'REGION',
-    'subregion' : 'SUBREGION',
-    'lon' : 'LON',
-    'lat' : 'LAT',
-    'geom' : 'MULTIPOLYGON',
+    'fips': 'FIPS',
+    'iso2': 'ISO2',
+    'iso3': 'ISO3',
+    'un': 'UN',
+    'name': 'NAME',
+    'area': 'AREA',
+    'pop2005': 'POP2005',
+    'region': 'REGION',
+    'subregion': 'SUBREGION',
+    'lon': 'LON',
+    'lat': 'LAT',
+    'geom': 'MULTIPOLYGON',
 }
 
 ################
 
 SOURCE_TYPE = (('MODIS-Aqua', 'MODIS-Aqua'),
                ('MODIS-Terra', 'MODIS-Terra'),
-               ('VIIRS','VIIRS'))
+               ('VIIRS', 'VIIRS'))
+
 
 class HotspotFire(models.Model):
-
     geom = models.PointField()
     date = models.DateTimeField()
-    source = models.CharField(choices = SOURCE_TYPE, max_length=20)
+    source = models.CharField(choices=SOURCE_TYPE, max_length=20)
     brightness = models.FloatField()
-    popup_text = models.TextField(null = True, blank = True)
+    popup_text = models.TextField(null=True, blank=True)
 
     objects = models.GeoManager()
 
@@ -66,11 +68,11 @@ class HotspotFire(models.Model):
 
     def get_popup_text(self):
         return '<p>Fecha: {datetime}<br />Brillo: {brightness}<br />Satelite: {source}</p>'.format(
-            datetime=self.date.strftime("%Y-%m-%d %H:%M"), brightness=self.brightness,source=self.source
+            datetime=self.date.strftime("%Y-%m-%d %H:%M"), brightness=self.brightness, source=self.source
         )
 
     def save(self, *args, **kwargs):
         # set the popup_text of hotspot
         if not self.popup_text:
-           self.popup_text = self.get_popup_text()
+            self.popup_text = self.get_popup_text()
         super(HotspotFire, self).save(*args, **kwargs)

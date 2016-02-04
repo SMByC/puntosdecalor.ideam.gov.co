@@ -20,7 +20,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
-    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('es-CO',),}),
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('es-CO',)}),
 )
 
 # for static ftp csv files of hostpot

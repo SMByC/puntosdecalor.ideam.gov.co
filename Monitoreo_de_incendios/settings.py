@@ -10,8 +10,8 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -25,7 +25,6 @@ DEBUG = True
 TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -56,7 +55,6 @@ ROOT_URLCONF = 'Monitoreo_de_incendios.urls'
 
 WSGI_APPLICATION = 'Monitoreo_de_incendios.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
 
@@ -82,7 +80,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
@@ -92,14 +89,14 @@ STATICFILES_DIRS = (
 )
 
 TEMPLATE_DIRS = (
-    os.path.join(BASE_DIR,  'templates'),
+    os.path.join(BASE_DIR, 'templates'),
 )
 
 # Leaflet configuration
 LEAFLET_CONFIG = {
     # map boundaries limits
-    #'SPATIAL_EXTENT': (-79.2, -4,4, -66.7, 13.0),
-    #'SPATIAL_EXTENT': (-78, -3, -65, 12),
+    # 'SPATIAL_EXTENT': (-79.2, -4,4, -66.7, 13.0),
+    # 'SPATIAL_EXTENT': (-78, -3, -65, 12),
 
     'DEFAULT_CENTER': (5, -72.0),
     'DEFAULT_ZOOM': 5,
@@ -111,7 +108,7 @@ LEAFLET_CONFIG = {
         ('Landscape', 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png', '&copy; OpenStreetMap Contributors'),
         ('Esri DeLorme', 'http://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),
         ('Esri World Image', 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),
-        #('Here', 'http://{s}.aerial.maps.cit.api.here.com/maptile/2.1/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?app_id=1&app_code=1', '&copy; HERE'),
+        # ('Here', 'http://{s}.aerial.maps.cit.api.here.com/maptile/2.1/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?app_id=1&app_code=1', '&copy; HERE'),
         ('Roads', 'http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', '&copy; OpenStreetMap Contributors'),
         ('OSM DE', 'http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', '&copy; OpenStreetMap Contributors'),
         ('OSM Cycle', 'http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png', '&copy; OpenStreetMap Contributors'),

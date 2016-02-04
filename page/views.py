@@ -1,39 +1,41 @@
 import datetime
+
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render_to_response
 from django.template import RequestContext
-from djgeojson.views import GeoJSONLayerView, TiledGeoJSONLayerView
+from djgeojson.views import GeoJSONLayerView
 
-#from page.models import HotspotFire
+# from page.models import HotspotFire
 from page.forms import Period
 from page.models import HotspotFire
 
 
 class HotspotMapLayer(GeoJSONLayerView):
-
     def get_queryset(self):
         """
         Inspired by Glen Roberton's django-geojson-tiles view
         """
 
-        from_datetime = datetime.datetime(int(self.kwargs['from_year']), int(self.kwargs['from_month']), int(self.kwargs['from_day']))
-        to_datetime = datetime.datetime(int(self.kwargs['to_year']), int(self.kwargs['to_month']), int(self.kwargs['to_day']), hour=23, minute=59, second=59)
+        from_datetime = datetime.datetime(int(self.kwargs['from_year']), int(self.kwargs['from_month']),
+                                          int(self.kwargs['from_day']))
+        to_datetime = datetime.datetime(int(self.kwargs['to_year']), int(self.kwargs['to_month']),
+                                        int(self.kwargs['to_day']), hour=23, minute=59, second=59)
 
-        #to_year = self.kwargs['to']
+        # to_year = self.kwargs['to']
 
         qs = self.model.objects.filter(date__gte=from_datetime, date__lte=to_datetime)
 
-        #print(self.di)
+        # print(self.di)
 
         return qs
 
-def init(request):
 
-    return  home(request)
+def init(request):
+    return home(request)
+
 
 def home(request, from_year=None, from_month=None, from_day=None, to_year=None, to_month=None, to_day=None):
-
     # initialize the from_date (-3 days) and to_date (now)
     if from_year is None and from_month is None and from_day is None:
         date_now_3days = datetime.datetime.now() + relativedelta(days=-3)
@@ -55,12 +57,12 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
             from_date = form.cleaned_data['from_date']
             to_date = form.cleaned_data['to_date']
 
-            #from_year=from_date.year
-            #from_month=from_date.month from_day=None, to_year=None, to_month=None, to_day=None
-            #print(from_year)
+            # from_year=from_date.year
+            # from_month=from_date.month from_day=None, to_year=None, to_month=None, to_day=None
+            # print(from_year)
             # redirect to a new URL:
-            return HttpResponseRedirect('/'+from_date.strftime("%Y-%m-%d")+'/'+to_date.strftime("%Y-%m-%d"))
-            #return  render_to_response('/', locals(), context_instance = RequestContext(request))
+            return HttpResponseRedirect('/' + from_date.strftime("%Y-%m-%d") + '/' + to_date.strftime("%Y-%m-%d"))
+            # return  render_to_response('/', locals(), context_instance = RequestContext(request))
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -73,4 +75,4 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
     to_datetime = datetime.datetime(int(to_year), int(to_month), int(to_day), hour=23, minute=59, second=59)
     qs_hotspot_in_period = HotspotFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
 
-    return  render_to_response('home.html', locals(), context_instance = RequestContext(request))
+    return render_to_response('home.html', locals(), context_instance=RequestContext(request))

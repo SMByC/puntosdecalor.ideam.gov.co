@@ -695,7 +695,7 @@
          inkscape:connector-curvature="0" /></g><g
        inkscape:export-ydpi="57.458206"
        inkscape:export-xdpi="57.458206"
-       inkscape:export-filename="/home/xavier/Projects/SMBYC/Monitoreo_de_incendios/static/img/fire/active_fire.png"
+       inkscape:export-filename="/home/xavier/Projects/SMBYC/Active_Fires/static/img/fire/active_fire.png"
        style="fill:#cccccc;filter:url(#filter4479)"
        transform="translate(-376.84891,427.52276)"
        id="g3459"><path
@@ -706,7 +706,7 @@
        id="g4507"
        transform="matrix(0.50785632,-0.45037652,1.0343869,0.8584388,-487.72138,330.97601)"
        style="fill:#cccccc;opacity:0.60897436;filter:url(#filter4119)"
-       inkscape:export-filename="/home/xavier/Projects/SMBYC/Monitoreo_de_incendios/static/img/fire/active_fire_shadow.png"
+       inkscape:export-filename="/home/xavier/Projects/SMBYC/Active_Fires/static/img/fire/active_fire_shadow.png"
        inkscape:export-xdpi="27.726255"
        inkscape:export-ydpi="27.726255"><path
          d="m 52.92225,4.1104666 c -4.039,-3.068 -10.646,-5.751 -15.671,-5.751 l -0.526,0 c -15.837,1.82699998 -27.0160004,16.0970004 -23.211,32.9790004 0.459,-4.306 4.604,-10.45 9.83,-11.055 -9.392,9.045 -5.232,19.692 -1.996,24.521 3.11,4.639 7.961,10.049 11.177,14.472 3.016,4.220999 5.479,8.785999 6.685,13.609999 1.005,4.221 1.217,9.1 -0.994,13.121001 7.561,-6.030001 8.369,-13.343001 5.604,-22.913001 -2.266,-7.838999 -6.493,-14.139999 -2.536,-22.107999 1.548,-3.115 3.891,-5.023 6.8,-6.231 -3.802,6.968 -6.57,16.079 5.877,22.713 -2.359,-3.526 -2.479,-9.15 -0.561,-13.267 2.754,-5.914 6.48,-11.02 8.492,-17.284 2.976,-9.26 -0.904,-16.683 -8.97,-22.8070004"
@@ -716,7 +716,7 @@
        id="g372"
        transform="translate(-561.94564,311.05325)"
        style="fill:#c83737"
-       inkscape:export-filename="/home/xavier/Projects/SMBYC/Monitoreo_de_incendios/static/img/fire/active_fire.png"
+       inkscape:export-filename="/home/xavier/Projects/SMBYC/Active_Fires/static/img/fire/active_fire.png"
        inkscape:export-xdpi="32.858707"
        inkscape:export-ydpi="32.858707"><path
          d="m 0,0 c -4.039,-3.068 -10.646,-5.751 -15.671,-5.751 l -0.526,0 c -15.837,1.827 -27.016,16.097 -23.211,32.979 0.459,-4.306 4.604,-10.45 9.83,-11.055 -9.392,9.045 -5.232,19.692 -1.996,24.521 3.11,4.639 7.961,10.049 11.177,14.472 3.016,4.221 5.479,8.786 6.685,13.61 1.005,4.221 1.217,9.1 -0.994,13.121 7.561,-6.03 8.369,-13.343 5.604,-22.913 -2.266,-7.839 -6.493,-14.14 -2.536,-22.108 1.548,-3.115 3.891,-5.023 6.8,-6.231 -3.802,6.968 -6.57,16.079 5.877,22.713 C -1.32,49.832 -1.44,44.208 0.478,40.091 3.232,34.177 6.958,29.071 8.97,22.807 11.946,13.547 8.066,6.124 0,0"
@@ -750,7 +750,7 @@
        id="g372-5"
        transform="translate(-644.70039,312.60112)"
        style="fill:#c83737;fill-opacity:1"
-       inkscape:export-filename="/home/xavier/Projects/SMBYC/Monitoreo_de_incendios/static/img/fire/active_fire.png"
+       inkscape:export-filename="/home/xavier/Projects/SMBYC/Active_Fires/static/img/fire/active_fire.png"
        inkscape:export-xdpi="28.213446"
        inkscape:export-ydpi="28.213446"><path
          d="m 0,0 c -4.039,-3.068 -10.646,-5.751 -15.671,-5.751 l -0.526,0 c -15.837,1.827 -27.016,16.097 -23.211,32.979 0.459,-4.306 4.604,-10.45 9.83,-11.055 -9.392,9.045 -5.232,19.692 -1.996,24.521 3.11,4.639 7.961,10.049 11.177,14.472 3.016,4.221 5.479,8.786 6.685,13.61 1.005,4.221 1.217,9.1 -0.994,13.121 7.561,-6.03 8.369,-13.343 5.604,-22.913 -2.266,-7.839 -6.493,-14.14 -2.536,-22.108 1.548,-3.115 3.891,-5.023 6.8,-6.231 -3.802,6.968 -6.57,16.079 5.877,22.713 C -1.32,49.832 -1.44,44.208 0.478,40.091 3.232,34.177 6.958,29.071 8.97,22.807 11.946,13.547 8.066,6.124 0,0"
@@ -760,7 +760,7 @@
        id="g372-5-4"
        transform="translate(-700.64126,309.77518)"
        style="fill:#ffcb46;fill-opacity:1;opacity:1;filter:url(#filter4052)"
-       inkscape:export-filename="/home/xavier/Projects/SMBYC/Monitoreo_de_incendios/static/img/fire/active_fire.png"
+       inkscape:export-filename="/home/xavier/Projects/SMBYC/Active_Fires/static/img/fire/active_fire.png"
        inkscape:export-xdpi="28.213446"
        inkscape:export-ydpi="28.213446"><path
          style="fill:#ffcb46;fill-opacity:1;fill-rule:nonzero;stroke:none"

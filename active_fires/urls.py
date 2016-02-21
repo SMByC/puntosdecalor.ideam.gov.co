@@ -8,7 +8,7 @@ from page.models import HotspotFire
 
 urlpatterns = [
     # Examples:
-    # url(r'^$', 'Monitoreo_de_incendios.views.home', name='home'),
+    # url(r'^$', 'active_fires.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
     url(r'^admin/', admin.site.urls),
 
@@ -22,5 +22,5 @@ urlpatterns = [
     #url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('es-CO',)}),
 
     ### for static ftp csv files of hostpot
-    url(r'^ftp_files/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/xavier/Projects/SMBYC/Monitoreo_de_incendios/static/ftp_files/', 'show_indexes': True}),
+    url(r'^ftp_files/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/xavier/Projects/SMBYC/active_fires/static/ftp_files/', 'show_indexes': True}),
 ]

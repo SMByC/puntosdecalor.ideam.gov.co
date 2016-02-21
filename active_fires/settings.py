@@ -1,5 +1,5 @@
 """
-Django settings for Monitoreo_de_incendios project.
+Django settings for Active_Fires project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -50,9 +50,9 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'Monitoreo_de_incendios.urls'
+ROOT_URLCONF = 'active_fires.urls'
 
-WSGI_APPLICATION = 'Monitoreo_de_incendios.wsgi.application'
+WSGI_APPLICATION = 'active_fires.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases

@@ -1,5 +1,5 @@
 """
-WSGI config for Monitoreo_de_incendios project.
+WSGI config for Active_Fires project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/
 """
 
 import os
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "Monitoreo_de_incendios.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "active_fires.settings")
 
 from django.core.wsgi import get_wsgi_application
 

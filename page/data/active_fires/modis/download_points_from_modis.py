@@ -187,10 +187,10 @@ dir_file = os.path.abspath(os.curdir)
 f = open('tmp_import.py', 'w')
 
 f.write('import os\n')
-f.write('from page.data.hotspots_fire.import_hotspots import modis\n')
+f.write('from page.data.active_fires.import_hotspots import modis\n')
 f.write('from django.conf import settings\n')
 
-f.write("modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'files', '{0}'))\n".format(
+f.write("modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'files', '{0}'))\n".format(
     remoteFilename))
 
 os.chdir("..")
@@ -198,7 +198,7 @@ os.chdir("..")
 os.chdir("..")
 f.close()
 
-# os.system("./manage.py shell < page/data/hotspots_fire/tmp_import.py")
-# return_code = subprocess.call("/usr/bin/python3 manage.py shell < page/data/hotspots_fire/tmp_import.py", shell=True)
-c = os.popen("/usr/bin/python3 manage.py shell < page/data/hotspots_fire/tmp_import.py")
+# os.system("./manage.py shell < page/data/active_fires/tmp_import.py")
+# return_code = subprocess.call("/usr/bin/python3 manage.py shell < page/data/active_fires/tmp_import.py", shell=True)
+c = os.popen("/usr/bin/python3 manage.py shell < page/data/active_fires/tmp_import.py")
 [print(i) for i in c]

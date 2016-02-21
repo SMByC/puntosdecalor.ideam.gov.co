@@ -11,12 +11,12 @@ from page.models import WorldBorder
 
 
 # run
-# ./manage.py shell < page/data/hotspots_fire/import_hotspots.py
+# ./manage.py shell < page/data/active_fires/import_hotspots.py
 
 # run 2
 # python manage.py shell
-# from page.data.hotspots_fire import import_hotspots
-# import_hotspots.modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'files', 'Global_MCD14DL_2014337.txt'))
+# from page.data.active_fires import import_hotspots
+# import_hotspots.modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'files', 'Global_MCD14DL_2014337.txt'))
 
 def save_csv(hotspot_fire):
     ftp_path = os.path.join(settings.BASE_DIR, 'page', 'data', 'ftp_files')
@@ -65,6 +65,6 @@ def modis(hotspots_file):
             pass
             # print('Active fire not inside Colombia',end='..')
 
-# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'files', 'South_America_MCD14DL_2014342.txt'))
-# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'firms1736314181687011_NRT.csv'))
-# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'firms1736314181687011_MCD14ML.csv'))
+# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'files', 'South_America_MCD14DL_2014342.txt'))
+# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'firms1736314181687011_NRT.csv'))
+# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'firms1736314181687011_MCD14ML.csv'))

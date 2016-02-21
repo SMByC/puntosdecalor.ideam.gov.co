@@ -4,7 +4,7 @@ from django.contrib.gis import admin
 from page import views, static_hotspot_files
 from page.forms import Period
 from djgeojson.views import GeoJSONLayerView
-from page.models import HotspotFire
+from page.models import ActiveFire
 
 urlpatterns = [
     # Examples:
@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^load-period/$', views.home, name='load_period'),
     url(r'^(?P<from_year>[0-9]{4})-(?P<from_month>[0-9]{1,2})-(?P<from_day>[0-9]{1,2})/(?P<to_year>[0-9]{4})-(?P<to_month>[0-9]{1,2})-(?P<to_day>[0-9]{1,2})/$', views.home, name='home'),
 
-    url(r'^data.geojson/(?P<from_year>[0-9]{4})-(?P<from_month>[0-9]{1,2})-(?P<from_day>[0-9]{1,2})/(?P<to_year>[0-9]{4})-(?P<to_month>[0-9]{1,2})-(?P<to_day>[0-9]{1,2})/$', views.HotspotMapLayer.as_view(model=HotspotFire, properties=('popup_text',)), name='data'),
+    url(r'^data.geojson/(?P<from_year>[0-9]{4})-(?P<from_month>[0-9]{1,2})-(?P<from_day>[0-9]{1,2})/(?P<to_year>[0-9]{4})-(?P<to_month>[0-9]{1,2})-(?P<to_day>[0-9]{1,2})/$', views.ActiveFireMapLayer.as_view(model=ActiveFire, properties=('popup_text',)), name='data'),
 
     ###
     #url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('es-CO',)}),

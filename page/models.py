@@ -1,7 +1,8 @@
 from django.contrib.gis.db import models
 
 
-# Create your models here.
+##################################################
+# WORLD BORDERS
 
 class WorldBorder(models.Model):
     # Regular Django fields corresponding to the attributes in the
@@ -44,14 +45,15 @@ worldborder_mapping = {
     'geom': 'MULTIPOLYGON',
 }
 
-################
+##################################################
+# ACTIVE FIRES
 
 SOURCE_TYPE = (('MODIS-Aqua', 'MODIS-Aqua'),
                ('MODIS-Terra', 'MODIS-Terra'),
                ('VIIRS', 'VIIRS'))
 
 
-class HotspotFire(models.Model):
+class ActiveFire(models.Model):
     geom = models.PointField()
     date = models.DateTimeField()
     source = models.CharField(choices=SOURCE_TYPE, max_length=20)
@@ -75,4 +77,4 @@ class HotspotFire(models.Model):
         # set the popup_text of hotspot
         if not self.popup_text:
             self.popup_text = self.get_popup_text()
-        super(HotspotFire, self).save(*args, **kwargs)
+        super(ActiveFire, self).save(*args, **kwargs)

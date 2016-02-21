@@ -6,12 +6,11 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from djgeojson.views import GeoJSONLayerView
 
-# from page.models import HotspotFire
 from page.forms import Period
-from page.models import HotspotFire
+from page.models import ActiveFire
 
 
-class HotspotMapLayer(GeoJSONLayerView):
+class ActiveFireMapLayer(GeoJSONLayerView):
     def get_queryset(self):
         """
         Inspired by Glen Roberton's django-geojson-tiles view
@@ -73,6 +72,6 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
     # get list of hotspots fire inside period
     from_datetime = datetime.datetime(int(from_year), int(from_month), int(from_day))
     to_datetime = datetime.datetime(int(to_year), int(to_month), int(to_day), hour=23, minute=59, second=59)
-    qs_hotspot_in_period = HotspotFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
+    qs_hotspot_in_period = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
 
     return render_to_response('home.html', locals(), context_instance=RequestContext(request))

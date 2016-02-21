@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from django.conf import settings
 from django.contrib.gis.geos import Point
 
-from page.models import HotspotFire
+from page.models import ActiveFire
 from page.models import WorldBorder
 
 
@@ -50,20 +50,20 @@ def modis(hotspots_file):
         # print(lng)
         pnt_hotspot = Point(lng, lat)
         if colombia.mpoly.contains(pnt_hotspot):
-            print('Hotspot inside Colombia: yes')
+            print('Active fire inside Colombia?: yes')
             point = Point(lng, lat)
-            hotspot_count = HotspotFire.objects.filter(date=hotspot_datetime, source=source, geom=point).count()
+            hotspot_count = ActiveFire.objects.filter(date=hotspot_datetime, source=source, geom=point).count()
             if hotspot_count == 0:
                 print('  Saving the point')
-                hotspot_fire = HotspotFire(date=hotspot_datetime, source=source, brightness=brightness,
-                                           geom=Point(lng, lat))
+                hotspot_fire = ActiveFire(date=hotspot_datetime, source=source, brightness=brightness,
+                                          geom=Point(lng, lat))
                 save_csv(hotspot_fire)
                 hotspot_fire.save()
             else:
                 print('  Point exists!')
         else:
             pass
-            # print('Hotspot not inside Colombia',end='..')
+            # print('Active fire not inside Colombia',end='..')
 
 # modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'files', 'South_America_MCD14DL_2014342.txt'))
 # modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'hotspots_fire', 'modis', 'firms1736314181687011_NRT.csv'))

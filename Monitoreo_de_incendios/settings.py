@@ -60,7 +60,7 @@ WSGI_APPLICATION = 'Monitoreo_de_incendios.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': 'SMBYC_fire',
+        'NAME': 'SMBYC_active_fires',
         'USER': 'postgres',
 
     }

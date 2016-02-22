@@ -61,8 +61,15 @@ import os
 
 # open FTP connection
 try:
-    f = ftplib.FTP(cfg.get(serverInstance, 'ftp_host'), cfg.get(serverInstance, 'ftp_username'),
-                   cfg.get(serverInstance, 'ftp_password'))
+    ftp_host = cfg.get(serverInstance, 'ftp_host')
+    ftp_username = cfg.get(serverInstance, 'ftp_username')
+    ftp_password = cfg.get(serverInstance, 'ftp_password')
+    # if is empty get from environment variables of OS
+    if ftp_username == "":
+        ftp_username = os.environ.get("ftp_username", '')
+    if ftp_password == "":
+        ftp_password = os.environ.get("ftp_password", '')
+    f = ftplib.FTP(ftp_host, ftp_username, ftp_password)
 except Exception as e:
     log.error('cannot login to ftp: %s' % cfg.get(serverInstance, 'ftp_host'))
     log.error(e)

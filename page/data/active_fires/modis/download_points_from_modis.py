@@ -92,7 +92,7 @@ except Exception as e:
 
 log.debug('Julian day since begin of the year: %s' % julianDay)
 
-remoteFilename = 'South_America_MCD14DL_' + downloadDateArr[0] + julianDay + '.txt'
+remoteFilename = 'MODIS_C6_South_America_MCD14DL_NRT_' + downloadDateArr[0] + julianDay + '.txt'
 log.info('remote filename: %s' % remoteFilename)
 
 localFilename = cfg.get(serverInstance, 'ftp_local_path') + remoteFilename

@@ -1,7 +1,7 @@
 #
 # #### How to run as script:
 # ./manage.py shell < page/data/active_fires/import_active_fires.py
-
+#
 # #### How to run inline:
 # python manage.py shell
 # from page.data.active_fires import import_active_fires
@@ -41,23 +41,25 @@ def modis(active_fires_file):
         # time = [int(''.join(time[0:2])), int(''.join(time[2:4]))]
         lng = float(line['longitude'])
         lat = float(line['latitude'])
+        active_fire_point = Point(lng, lat)
         active_fire_datetime = datetime.datetime(date[0], date[1], date[2], time[0], time[1]) + relativedelta(hours=-5)  # fix to Colombian zone
         source = 'MODIS-Aqua' if line['satellite'].strip() == 'A' else 'MODIS-Terra'
-        brightness = line['brightness']
-        # print(active_fire_datetime)
-        # print(source)
-        # print(brightness)
-        # print(lat)
-        # print(lng)
-        active_fire_point = Point(lng, lat)
+        brightness = float(line['brightness'])
+        confidence = int(line['confidence'])
+        frp = float(line['confidence'])
+
         if colombia.mpoly.contains(active_fire_point):
             print('Active fire inside Colombia?: yes')
-            point = Point(lng, lat)
-            active_fire_count = ActiveFire.objects.filter(date=active_fire_datetime, source=source, geom=point).count()
+            active_fire_count = ActiveFire.objects.filter(date=active_fire_datetime, source=source, geom=active_fire_point).count()
             if active_fire_count == 0:
                 print('  Saving the point')
-                active_fire = ActiveFire(date=active_fire_datetime, source=source, brightness=brightness,
-                                          geom=Point(lng, lat))
+                active_fire = ActiveFire(geom=active_fire_point,
+                                         date=active_fire_datetime,
+                                         source=source,
+                                         brightness=brightness,
+                                         confidence=confidence,
+                                         frp=frp,
+                                         )
                 save_csv(active_fire)
                 active_fire.save()
             else:

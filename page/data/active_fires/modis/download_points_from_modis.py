@@ -175,8 +175,8 @@ for fire in lstFires:
         zeroError = False
 
     if zeroError:
-        aFires.append([latitude, longitude, brightness, scan, track, acq_date, acq_time, satellite, confidence, version,
-                       bright_t31, frp])
+        aFires.append([latitude, longitude, brightness, scan, track, acq_date, acq_time,
+                       satellite, confidence, version, bright_t31, frp])
 
 f.close()
 
@@ -194,7 +194,7 @@ dir_file = os.path.abspath(os.curdir)
 f = open('tmp_import.py', 'w')
 
 f.write('import os\n')
-f.write('from page.data.active_fires.import_hotspots import modis\n')
+f.write('from page.data.active_fires.import_active_fires import modis\n')
 f.write('from django.conf import settings\n')
 
 f.write("modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'files', '{0}'))\n".format(

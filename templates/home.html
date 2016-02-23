@@ -7,20 +7,25 @@
 {% block leaflet_scripts %}
 
     {#  Area de estudio  #}
-    <script src="{% static "geojson/area_estudio.json" %}" type="text/javascript"></script>
+    {#    <script src="{% static "geojson/area_estudio.json" %}" type="text/javascript"></script>#}
+
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        {% comment %}
+        {#  Area de estudio  #}
         var area_estudio_style = {
             'color': '#004B96',
             'weight': 2,
             'opacity': 0.7
         };
+        function add_area_estudio(map, options) {
+            L.geoJson(area_estudio, {onEachFeature: popup, style: area_estudio_style}).addTo(map);
+        }
+        {% endcomment %}
+
         function popup(feature, layer) {
             if (feature.properties && feature.properties.name) {
                 layer.bindPopup(feature.properties.name);
             }
-        }
-        function add_area_estudio(map, options) {
-            L.geoJson(area_estudio, {onEachFeature: popup, style: area_estudio_style}).addTo(map);
         }
     </script>
 
@@ -58,7 +63,7 @@
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         function load_map(map, options) {
             add_hotspots_fire(map, options);
-            add_area_estudio(map, options);
+            {# add_area_estudio(map, options);#}
         }
     </script>
 

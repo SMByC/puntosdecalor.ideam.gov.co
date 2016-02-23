@@ -54,10 +54,13 @@ SOURCE_TYPE = (('MODIS-Aqua', 'MODIS-Aqua'),
 
 
 class ActiveFire(models.Model):
-    geom = models.PointField()
-    date = models.DateTimeField()
-    source = models.CharField(choices=SOURCE_TYPE, max_length=20)
-    brightness = models.FloatField()
+    geom = models.PointField()  # Geodjango Point (longitude, latitude)
+    date = models.DateTimeField()  # datetime: acq_date + acq_time (adjusted in Colombia zone -5h)
+    source = models.CharField(choices=SOURCE_TYPE, max_length=20)  # from satellite
+    brightness = models.FloatField()  # Brightness Temperature (Kelvin)
+    confidence = models.PositiveIntegerField()  # Confidence (0–100%) or None (for VIIRS)
+    frp = models.FloatField()  # Fire Radiative Power (MW) or None (for VIIRS)
+
     popup_text = models.TextField(null=True, blank=True)
 
     objects = models.GeoManager()
@@ -74,7 +77,7 @@ class ActiveFire(models.Model):
         )
 
     def save(self, *args, **kwargs):
-        # set the popup_text of hotspot
+        # set the popup_text of active fire
         if not self.popup_text:
             self.popup_text = self.get_popup_text()
         super(ActiveFire, self).save(*args, **kwargs)

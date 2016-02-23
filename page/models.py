@@ -92,9 +92,9 @@ class ActiveFire(models.Model):
             .format(
                 datetime=self.date.strftime("%Y-%m-%d %H:%M"),
                 brightness=round(self.brightness - 273.15, 2),
+                confidence='--' if self.confidence is None else self.confidence,
+                frp='--' if self.frp is None else self.frp,
                 source=self.source,
-                confidence=self.confidence,
-                frp=round(self.frp, 1)
             )
 
     def save(self, *args, **kwargs):

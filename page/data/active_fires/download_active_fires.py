@@ -137,17 +137,12 @@ dir_file = os.path.abspath(os.curdir)
 tmp_file = open('tmp_import.py', 'w')
 
 tmp_file.write('import os\n')
-tmp_file.write('from page.data.active_fires.import_active_fires import modis\n')
+tmp_file.write('from page.data.active_fires.import_active_fires import from_source\n')
 tmp_file.write('from django.conf import settings\n')
 
-if args.source == 'modis':
-    tmp_file.write("modis(os.path.join(settings.BASE_DIR, 'page', 'data', "
-            "'active_fires', 'modis', 'files', '{0}'))\n".format(remoteFilename))
-
-if args.source == 'viirs':
-    tmp_file.write("modis(os.path.join(settings.BASE_DIR, 'page', 'data', "
-            "'active_fires', 'modis', 'files', '{0}'))\n".format(remoteFilename))
-
+tmp_file.write("from_source('{source}', os.path.join(settings.BASE_DIR, 'page', 'data', "
+               "'active_fires', '{source}', 'files', '{filename}'))\n"
+               .format(source=args.source, filename=remoteFilename))
 
 os.chdir("..")
 os.chdir("..")
@@ -157,5 +152,5 @@ tmp_file.close()
 return_code = os.popen("/usr/bin/python3 manage.py shell < page/data/active_fires/tmp_import.py")
 [print(i) for i in return_code]
 
-os.remove('page/data/active_fires/tmp_import.py')
+#os.remove('page/data/active_fires/tmp_import.py')
 print("\nDONE")

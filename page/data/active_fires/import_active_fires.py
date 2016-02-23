@@ -31,7 +31,7 @@ def save_csv(active_fire):
         [active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.geom.y, active_fire.geom.x, active_fire.source])
 
 
-def modis(active_fires_file):
+def from_source(source, active_fires_file):
     reader = csv.DictReader(open(active_fires_file, 'rt', encoding='utf8'), delimiter=",")
     colombia = WorldBorder.objects.get(name='Colombia')
     for line in reader:
@@ -43,19 +43,30 @@ def modis(active_fires_file):
         lat = float(line['latitude'])
         active_fire_point = Point(lng, lat)
         active_fire_datetime = datetime.datetime(date[0], date[1], date[2], time[0], time[1]) + relativedelta(hours=-5)  # fix to Colombian zone
-        source = 'MODIS-Aqua' if line['satellite'].strip() == 'A' else 'MODIS-Terra'
+        if source == 'modis':
+            satellite = 'MODIS-Aqua' if line['satellite'].strip() == 'A' else 'MODIS-Terra'
+        if source == 'viirs':
+            satellite = 'VIIRS'
+        # Brightness Temperature
         brightness = float(line['brightness'])
-        confidence = int(line['confidence'])
-        frp = float(line['confidence'])
+        # Confidence
+        try:
+            confidence = int(line['confidence'])
+        except:
+            confidence = None  # viirs
+        # Fire Radiative Power
+        frp = round(float(line['frp']), 1)
+        if int(frp) == 0:
+            frp = None  # viirs
 
         if colombia.mpoly.contains(active_fire_point):
             print('Active fire inside Colombia?: yes')
-            active_fire_count = ActiveFire.objects.filter(date=active_fire_datetime, source=source, geom=active_fire_point).count()
+            active_fire_count = ActiveFire.objects.filter(date=active_fire_datetime, source=satellite, geom=active_fire_point).count()
             if active_fire_count == 0:
                 print('  Saving the point')
                 active_fire = ActiveFire(geom=active_fire_point,
                                          date=active_fire_datetime,
-                                         source=source,
+                                         source=satellite,
                                          brightness=brightness,
                                          confidence=confidence,
                                          frp=frp,

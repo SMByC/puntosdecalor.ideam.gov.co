@@ -71,13 +71,34 @@ class ActiveFire(models.Model):
     class Meta:
         ordering = ['date', 'source']
 
-    def get_popup_text(self):
-        return '<p>Fecha: {datetime}<br />Brillo: {brightness}<br />Satelite: {source}</p>'.format(
-            datetime=self.date.strftime("%Y-%m-%d %H:%M"), brightness=self.brightness, source=self.source
-        )
+    def set_popup_text(self):
+        """
+        The popup text when the user do click over active
+        fire icon in the map.
+
+        Resetting the popup_text for all active fires in DB:
+            from page.models import ActiveFire
+            active_fires = ActiveFire.objects.all()
+            for active_fire in active_fires:
+                active_fire.set_popup_text()
+                active_fire.save()
+        """
+        self.popup_text = \
+            '<p>Fecha: {datetime}HLC<br/>' \
+            'Temp. brillo: {brightness} ºC<br/>' \
+            'Confianza: {confidence} %<br/>' \
+            'Radiación térmica: {frp} MW<br/>'\
+            'Satelite: {source}<br/></p>' \
+            .format(
+                datetime=self.date.strftime("%Y-%m-%d %H:%M"),
+                brightness=round(self.brightness - 273.15, 2),
+                source=self.source,
+                confidence=self.confidence,
+                frp=round(self.frp, 1)
+            )
 
     def save(self, *args, **kwargs):
         # set the popup_text of active fire
         if not self.popup_text:
-            self.popup_text = self.get_popup_text()
+            self.set_popup_text()
         super(ActiveFire, self).save(*args, **kwargs)

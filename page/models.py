@@ -58,8 +58,8 @@ class ActiveFire(models.Model):
     date = models.DateTimeField()  # datetime: acq_date + acq_time (adjusted in Colombia zone -5h)
     source = models.CharField(choices=SOURCE_TYPE, max_length=20)  # from satellite
     brightness = models.FloatField()  # Brightness Temperature (Kelvin)
-    confidence = models.PositiveIntegerField()  # Confidence (0–100%) or None (for VIIRS)
-    frp = models.FloatField()  # Fire Radiative Power (MW) or None (for VIIRS)
+    confidence = models.PositiveIntegerField(null=True)  # Confidence (0–100%) or None (for VIIRS)
+    frp = models.FloatField(null=True)  # Fire Radiative Power (MW) or None (for VIIRS)
 
     popup_text = models.TextField(null=True, blank=True)
 

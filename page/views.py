@@ -69,9 +69,9 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
             initial={'from_date': datetime.date(int(from_year), int(from_month), int(from_day)),
                      'to_date': datetime.date(int(to_year), int(to_month), int(to_day))})
 
-    # get list of hotspots fire inside period
+    # get list of active fires inside period
     from_datetime = datetime.datetime(int(from_year), int(from_month), int(from_day))
     to_datetime = datetime.datetime(int(to_year), int(to_month), int(to_day), hour=23, minute=59, second=59)
-    qs_hotspot_in_period = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
+    qs_active_fires_in_period = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
 
     return render_to_response('home.html', locals(), context_instance=RequestContext(request))

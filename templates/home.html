@@ -42,7 +42,7 @@
             popupAnchor: [0.5, -35] // point from which the popup should open relative to the iconAnchor
         });
 
-        function add_hotspots_fire(map, options) {
+        function add_active_fires(map, options) {
 {#            L.marker([4, -80], {icon: fireIcon}).addTo(map).bindPopup("I am a green leaf.");#}
 {#            L.marker([4, -80]).addTo(map).bindPopup("I am a green leaf.");#}
 
@@ -62,7 +62,7 @@
     {#  Cargar mapa  #}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         function load_map(map, options) {
-            add_hotspots_fire(map, options);
+            add_active_fires(map, options);
             {# add_area_estudio(map, options);#}
         }
     </script>
@@ -76,8 +76,7 @@
 {% endblock %}
 
 {% block content-map %}
-
-    {% leaflet_map "hotspots_fire_map" callback="window.load_map" %}
+    {% leaflet_map "active_fires_map" callback="window.load_map" %}
 {% endblock %}
 
 {% block content-items %}
@@ -90,16 +89,16 @@
     </form>
     <div class="block-subtitle" >Lista de puntos en el periodo</div>
 
-    <div id="hotspot-items" >
-        {% for hotspot in qs_hotspot_in_period %}
+    <div id="active-fire-items" >
+        {% for active_fire in qs_active_fires_in_period %}
             <div class="box-item">
-                <p><b>Fecha:</b> {{ hotspot.date|date:"Y-m-d H:i" }}</p>
-                <p><b>Brillo:</b> {{ hotspot.brightness }}</p>
-                <p><b>Satelite:</b> {{ hotspot.source }}</p>
+                <p><b>Fecha:</b> {{ active_fire.date|date:"Y-m-d H:i" }}</p>
+                <p><b>Brillo:</b> {{ active_fire.brightness }}</p>
+                <p><b>Satelite:</b> {{ active_fire.source }}</p>
             </div>
         {% endfor %}
     </div>
-    <div id="link-hotspot-files">
+    <div id="link-active-fires-files">
         <a href="/ftp_files/">Archivos de puntos de incendios</a>
     </div>
     <div id="content-footer">

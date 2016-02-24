@@ -87,7 +87,7 @@
         {{ form.as_p }}
         <input type="submit" value="Recalcular" />
     </form>
-    <div class="block-subtitle" >Lista de puntos en el periodo</div>
+    <div class="block-subtitle" >Encontrados {{ qs_active_fires_in_period|length }} puntos activos:</div>
 
     <div id="active-fire-items" >
         {% for active_fire in qs_active_fires_in_period %}

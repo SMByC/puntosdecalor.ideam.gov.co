@@ -93,7 +93,6 @@
         {% for active_fire in qs_active_fires_in_period %}
             <div class="box-item">
                 <p><b>Fecha:</b> {{ active_fire.date|date:"Y-m-d H:i" }}</p>
-                <p><b>Brillo:</b> {{ active_fire.brightness }}</p>
                 <p><b>Satelite:</b> {{ active_fire.source }}</p>
             </div>
         {% endfor %}

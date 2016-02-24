@@ -212,7 +212,7 @@ var FirstLoadActivationMenus = function() {
 //==============================================================================
 //run when DOM is ready
 
-$(document).ready(function() {
+jQuery(document).ready(function($){
 
     var mantenimiento = false;
     if (mantenimiento) {

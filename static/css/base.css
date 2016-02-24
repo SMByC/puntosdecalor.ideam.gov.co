@@ -594,6 +594,7 @@ body {
     height: calc(100vh - 350px);
     width: 100%;
     overflow-y: auto;
+    position: relative;
 }
 
 .subtitle {

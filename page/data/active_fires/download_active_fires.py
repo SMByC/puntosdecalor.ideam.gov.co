@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # use:
-#  python download_points_from_modis.py -i test -d "2014-12-04"
+#  python download_active_fires.py -s modis -d "2014-12-04"
 
 import sys, os
 
@@ -13,11 +13,11 @@ cfg.read(os.path.join('donwload_config.ini'))
 ######
 import argparse
 
-parser = argparse.ArgumentParser(description='Import fire points from FIRMS FTP and load into ArcGIS')
+parser = argparse.ArgumentParser(description='Import fire points from FIRMS FTP and load into Active_Fires database')
 parser.add_argument('-d', dest='date', action='store', required=True,
                     help='Day to run the process format: YYYY/MM/DD or "yesterday"')
 parser.add_argument('-s', dest='source', action='store', choices=('modis', 'viirs'), required=True,
-                    help='Day to run the process format: YYYY/MM/DD or "yesterday"')
+                    help='Choose source')
 
 args = parser.parse_args()
 downloadDate = args.date

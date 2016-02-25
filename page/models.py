@@ -88,12 +88,15 @@ class ActiveFire(models.Model):
             'Temp. brillo: {brightness} ºC<br/>' \
             'Confianza: {confidence} %<br/>' \
             'Radiación térmica: {frp} MW<br/>'\
+            'Lon: {lon}  Lat: {lat}<br/>'\
             'Satelite: {source}<br/></p>' \
             .format(
                 datetime=self.date.strftime("%Y-%m-%d %H:%M"),
                 brightness=round(self.brightness - 273.15, 2),
                 confidence='--' if self.confidence is None else self.confidence,
                 frp='--' if self.frp is None else self.frp,
+                lat=round(self.geom.y, 3),
+                lon=round(self.geom.x, 3),
                 source=self.source,
             )
 

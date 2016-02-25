@@ -10,23 +10,20 @@ jQuery(document).ready(function($){
     if (mantenimiento) {
         $("#warning-message").show();
     }
-
     //MENU-HEADER
     //activacion del submenu del menu principal de navegacion
-    $('ul#levelOne').mouseover(function() {
-        $(this).find("li.menuOn").addClass("menuOff").removeClass("menuOn");
-    }).mouseout(function() {
-        $(this).find("li.menuOff").addClass("menuOn").removeClass("menuOff");
+    var sublink_activated = false;
+    $("div#header-menu").find("li").each(function() {
+        if ($(this).find("a").attr('href').replace('/','') == window.location.href.split("/").reverse()[1]) {
+            $(this).addClass("menuOn");
+            sublink_activated = true;
+        } else {
+            $(this).removeClass("menuOn")
+        }
     });
-
-    //desaparecer el submenu cuando se pasa por el titulo
-    $('#header-title  #title').mouseover(function() {
-        $('ul#levelOne').find("li.menuOn").addClass("menuOff").removeClass("menuOn");
-    }).mouseout(function() {
-        $('ul#levelOne').find("li.menuOff").addClass("menuOn").removeClass("menuOff");
-    }).click(function() {
-        $('ul#levelOne').find("li.menuOff").removeClass("menuOff");
-    });
+    if (sublink_activated == false) {
+        $("div#header-menu").find("li").first().addClass("menuOn")
+    }
 
     //CONTENT
     //activar/desactivar mas informacion en el titulo del contenido
@@ -59,7 +56,6 @@ jQuery(document).ready(function($){
     //run when everything on the page as loaded.
     $(window).load(function(){
     //loader gif and content activation
-        FirstLoadActivationMenus();
 
     });
 

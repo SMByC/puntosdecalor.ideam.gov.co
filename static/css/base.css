@@ -98,7 +98,7 @@ body {
     width: 100%;
     margin: 0 auto;
     /*height: 75px;*/
-    height: 55px;
+    height: 60px;
     position: relative;
     z-index: 2;
     box-shadow: 0 -3px 5px 3px #333;
@@ -137,7 +137,7 @@ body {
     position: relative;
     width: 800px;
     text-align: center;
-    padding-top: 5px;
+    padding-top: 1px;
 }
 
 #user #logo-user {
@@ -226,17 +226,14 @@ body {
 --------------------------------------------------------------------- */
 #header-menu {
     margin: 0 auto;
+    margin-top: 2px;
     width: auto;
     height: 50px;
     overflow-x: hidden;
     overflow-y: hidden;
     text-align: center;
-    /*      width: 700px;  */
-    /*  padding: 5px; */
-    padding-right: 80px;
     color: #666;
     font-weight: bold;
-    /*  padding-top: 4px; */
 }
 
 #header-menu ul {
@@ -249,7 +246,34 @@ body {
 
 #header-menu li {
     display: inline-block;
+    padding: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    text-decoration: none;
 }
+
+#header-menu ul>li>a {
+    display: inline-block;
+    /*color: #777;*/
+    /*line-height: 22px;*/
+    text-decoration: none;
+    color: #0E799C;
+    text-align: center;
+    float: left;
+    padding: 1px 4px 1px 4px;
+}
+
+/* activated menu */
+#header-menu ul>li:hover>a,#header-menu ul>li>a:hover,#header-menu ul>li.menuOn>a
+    {
+    white-space: nowrap;
+    color: #ffffff;
+    text-decoration: none;
+    background-color: #0E799C;
+    /* border-radius */
+    border-radius: 4px;
+}
+
 
 #header-menu ul#levelOne div {
     position: absolute;
@@ -274,16 +298,6 @@ body {
     margin: 0;
 }
 
-#header-menu ul#levelOne>li>a {
-    display: inline-block;
-    color: #777;
-    line-height: 22px;
-    text-decoration: none;
-    font-size: 1.2em;
-    text-align: center;
-    float: left;
-    padding: 0 6px 0 6px;
-}
 
 /* activated menu */
 #header-menu ul#levelOne>li:hover>a,#header-menu ul#levelOne>li>a:hover,#header-menu ul#levelOne>li.menuOn>a
@@ -366,7 +380,7 @@ body {
 #wrap-content {
     margin: 0 auto;
     /*min-height: 400px;*/
-    /*height: calc(100vh - 55px);*/
+    /*height: calc(100vh - 60px);*/
     min-width: 800px;
     width: 100%;
     background-color: #f8f8f8;
@@ -573,8 +587,8 @@ body {
     font-size: 1.2em;
     font-weight: bold;
     color: #666;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 5px;
+    margin-bottom: 5px;
     text-align: center;
 }
 
@@ -1079,12 +1093,12 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 /* Text
 --------------------------------------------------------------------- */
 #title {
-    padding: 2px;
+    padding: 1px;
 }
 
 #title a {
     text-decoration: none;
-    font-size: 1.6em;
+    font-size: 1.4em;
     font-weight: bold;
     color: #0E799C;
 }
@@ -1092,7 +1106,7 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 #subtitle {
 
     text-decoration: none;
-    font-size: 1.1em;
+    font-size: 0.9em;
     font-weight: bold;
     color: #666;
     margin: 0;
@@ -1109,7 +1123,7 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 .leaflet-container {
     /* all maps */
     width: calc(100% - 300px);
-    height: calc(100vh - 55px);
+    height: calc(100vh - 60px);
 }
 
 .leaflet-container-default {

@@ -1036,14 +1036,12 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 /* Leaflet maps
 --------------------------------------------------------------------- */
 
-.leaflet-container {
+#active_fires_map {
     /* all maps */
     width: calc(100% - 300px);
-    height: calc(100vh - 60px);
-}
-
-.leaflet-container-default {
     min-width: 550px;
+    height: calc(100vh - 60px);
+    border-right: 1px solid #d0d0d0;
 }
 
 #specialbigmap {

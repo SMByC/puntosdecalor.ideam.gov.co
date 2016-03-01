@@ -61,8 +61,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'SMBYC_active_fires',
-        'USER': os.environ.get("db_username", ''),
-        'PASSWORD': os.environ.get("db_password", ''),
+        'USER': os.environ.get('db_username', 'postgres'),
+        'PASSWORD': os.environ.get('db_password', ''),
     }
 }
 

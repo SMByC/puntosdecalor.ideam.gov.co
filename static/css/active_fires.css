@@ -485,7 +485,7 @@ body {
     float: left;
     /*margin-top: -2px;*/
     overflow: hidden;
-    width: 100%;
+    width: calc(100% - 300px);
     min-width: 550px;
 }
 
@@ -1038,8 +1038,7 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 
 #active_fires_map {
     /* all maps */
-    width: calc(100% - 300px);
-    min-width: 550px;
+    /*width: calc(100% - 300px);*/
     height: calc(100vh - 60px);
     border-right: 1px solid #d0d0d0;
 }

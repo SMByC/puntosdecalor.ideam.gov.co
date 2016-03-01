@@ -26,7 +26,7 @@ def save_csv(active_fire):
         csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'a'), delimiter=',')
     else:
         csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'w'), delimiter=',')
-        csv_f.writerow(['DATE', 'LNG', 'LAT', 'SOURCE', 'TEMP(C)', 'CONF(%)', 'FRP(MW)'])
+        csv_f.writerow(['DATE(UTC-5)', 'LNG', 'LAT', 'SOURCE', 'TEMP(C)', 'CONF(%)', 'FRP(MW)'])
     csv_f.writerow([
         active_fire.date.strftime("%Y-%m-%d %H:%M"), round(active_fire.geom.x, 3),
         round(active_fire.geom.y, 3), active_fire.source, round(active_fire.brightness - 273.15, 2),

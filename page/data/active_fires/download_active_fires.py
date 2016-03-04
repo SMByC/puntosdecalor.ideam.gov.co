@@ -15,7 +15,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='Import fire points from FIRMS FTP and load into Active_Fires database')
 parser.add_argument('-d', dest='date', action='store', required=True,
-                    help='Day to run the process format: YYYY/MM/DD or "yesterday"')
+                    help='Day to run the process format: "YYYY-MM-DD" or "yesterday"')
 parser.add_argument('-s', dest='source', action='store', choices=('modis', 'viirs'), required=True,
                     help='Choose source')
 

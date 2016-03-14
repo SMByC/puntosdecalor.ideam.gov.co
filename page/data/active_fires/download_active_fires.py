@@ -5,6 +5,9 @@
 
 import sys, os
 
+# change working directory to directory file
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 ######
 from configparser import ConfigParser
 cfg = ConfigParser()

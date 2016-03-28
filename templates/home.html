@@ -7,7 +7,7 @@
 {% block leaflet_scripts %}
 
     {#  Area de estudio  #}
-    {#    <script src="{% static "geojson/area_estudio.json" %}" type="text/javascript"></script>#}
+    {#  <script src="{% static "geojson/area_estudio.json" %}" type="text/javascript"></script>#}
 
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         {% comment %}
@@ -35,16 +35,17 @@
             iconUrl: "{% static "img/fire/active_fire.png" %}",
             shadowUrl: "{% static "img/fire/active_fire_shadow.png" %}",
 
-            iconSize: [21, 35], // size of the icon
-            shadowSize: [39, 36], // size of the shadow
-            iconAnchor: [10.5, 35], // point of the icon which will correspond to marker's location
-            shadowAnchor: [6, 34],  // the same for the shadow
-            popupAnchor: [0.5, -35] // point from which the popup should open relative to the iconAnchor
+            iconSize: [18, 30], // size of the icon
+            shadowSize: [37, 30], // size of the shadow
+
+            iconAnchor: [9, 30], // point of the icon which will correspond to marker's location
+            shadowAnchor: [4, 29],  // the same for the shadow
+            popupAnchor: [0.5, -30] // point from which the popup should open relative to the iconAnchor
         });
 
         function add_active_fires(map, options) {
-{#            L.marker([4, -80], {icon: fireIcon}).addTo(map).bindPopup("I am a green leaf.");#}
-{#            L.marker([4, -80]).addTo(map).bindPopup("I am a green leaf.");#}
+            {# L.marker([4, -80], {icon: fireIcon}).addTo(map).bindPopup("I am a green leaf.");#}
+            {# L.marker([4, -80]).addTo(map).bindPopup("I am a green leaf.");#}
 
             var dataurl = '{% url "data" from_year from_month from_day to_year to_month to_day %}';
             // Download GeoJSON via Ajax
@@ -52,7 +53,7 @@
                 // Add GeoJSON layer
                 L.geoJson(data, {
                     pointToLayer: function (feature, latlng) {
-    {#                        alert(JSON.stringify(feature, null, 4));#}
+                    {# alert(JSON.stringify(feature, null, 4));#}
                         return L.marker(latlng, {icon: fireIcon}).addTo(map).bindPopup(feature.properties.popup_text);
                 }});
             });

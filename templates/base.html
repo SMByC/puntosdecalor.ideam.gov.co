@@ -36,6 +36,12 @@
 	{% leaflet_js %}
     {% leaflet_css %}
 
+    {# Date range picker #}
+    <link rel="stylesheet" type="text/css" href="{% static "css/daterangepicker.css" %}" />
+    <script type="text/javascript" src="{% static 'scripts/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/jquery.daterangepicker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/date.range.js' %}"></script>
+
 	{% block leaflet_scripts %}
 	{% endblock %}
 

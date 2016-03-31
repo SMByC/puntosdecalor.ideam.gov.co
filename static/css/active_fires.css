@@ -1032,6 +1032,20 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
     font-weight: bold;
 }
 
+/* date range picker
+--------------------------------------------------------------------- */
+
+#id_from_date {
+    width: 80px;
+}
+
+#id_to_date {
+    width: 80px;
+}
+
+#date-range p {
+    display: inline;
+}
 
 /* Leaflet maps
 --------------------------------------------------------------------- */

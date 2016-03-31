@@ -1037,10 +1037,12 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 
 #id_from_date {
     width: 80px;
+    padding: 2px 4px;
 }
 
 #id_to_date {
     width: 80px;
+    padding: 2px 4px;
 }
 
 #date-range p {

@@ -33,7 +33,7 @@ $(function()
             },
             // 1 dias
             {
-                name: '1Días',
+                name: '1Día',
                 dates : function()
                 {
                     var start = moment().subtract(1, 'day').toDate();

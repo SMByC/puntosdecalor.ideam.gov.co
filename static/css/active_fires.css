@@ -1047,6 +1047,18 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
     display: inline;
 }
 
+input[type=submit] {
+    color: #fff;
+    margin-top: 15px;
+    padding:4px 8px;
+    background: #0E799C;
+    border:0 none;
+    cursor:pointer;
+    font-weight: bold;
+    -webkit-border-radius: 4px;
+    border-radius: 4px;
+}
+
 /* Leaflet maps
 --------------------------------------------------------------------- */
 

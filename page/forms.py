@@ -1,5 +1,4 @@
 from django import forms
-from django.contrib.admin.widgets import AdminDateWidget
 
 # data range picker
 # https://github.com/longbill/jquery-date-range-picker

@@ -35,13 +35,12 @@ def init(request):
 
 
 def home(request, from_year=None, from_month=None, from_day=None, to_year=None, to_month=None, to_day=None):
-    # initialize the from_date (-3 days) and to_date (now)
+    # initialize the from_date (-2 days) and to_date (now)
     if from_year is None and from_month is None and from_day is None:
-        date_now_3days = datetime.datetime.now() + relativedelta(days=-3)
-        date_now = datetime.datetime.now()
-        from_year = date_now.year
-        from_month = date_now.month
-        from_day = date_now.day
+        date_now_2days = datetime.datetime.now() + relativedelta(days=-2)
+        from_year = date_now_2days.year
+        from_month = date_now_2days.month
+        from_day = date_now_2days.day
     if to_year is None and to_month is None and to_day is None:
         date_now = datetime.datetime.now()
         to_year = date_now.year

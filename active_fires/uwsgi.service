@@ -1,0 +1,17 @@
+#
+# Service file for Systemd for run uWsgi instance
+#
+# Location: /etc/systemd/system/uwsgi.service
+# Enable: systemctl enable uwsgi
+# Run: systemctl start uwsgi
+#
+
+
+[Unit]
+Description=uWSGI instance to serve Active Fires page
+
+[Service]
+ExecStart=/usr/bin/bash -c 'cd /home/activefires/apps/Active_Fires/active_fires; source /home/activefires/.bashrc; uwsgi --ini uwsgi.ini'
+
+[Install]
+WantedBy=multi-user.target

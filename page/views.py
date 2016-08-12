@@ -2,8 +2,7 @@ import datetime
 
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
 from djgeojson.views import GeoJSONLayerView
 
 from page.forms import Period
@@ -61,7 +60,6 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
             # print(from_year)
             # redirect to a new URL:
             return HttpResponseRedirect('/' + from_date.strftime("%Y-%m-%d") + '/' + to_date.strftime("%Y-%m-%d"))
-            # return  render_to_response('/', locals(), context_instance = RequestContext(request))
 
     # if a GET (or any other method) we'll create a blank form
     else:
@@ -74,4 +72,4 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
     to_datetime = datetime.datetime(int(to_year), int(to_month), int(to_day), hour=23, minute=59, second=59)
     qs_active_fires_in_period = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
 
-    return render_to_response('home.html', locals(), context_instance=RequestContext(request))
+    return render(request, 'home.html', locals())

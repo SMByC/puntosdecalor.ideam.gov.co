@@ -72,4 +72,14 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
     to_datetime = datetime.datetime(int(to_year), int(to_month), int(to_day), hour=23, minute=59, second=59)
     qs_active_fires_in_period = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
 
-    return render(request, 'home.html', locals())
+    context = {
+        "from_year": from_year,
+        "from_month": from_month,
+        "from_day": from_day,
+        "to_year": to_year,
+        "to_month": to_month,
+        "to_day": to_day,
+        "qs_active_fires_in_period": qs_active_fires_in_period,
+    }
+
+    return render(request, 'home.html', context)

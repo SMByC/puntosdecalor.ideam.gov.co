@@ -1049,7 +1049,7 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 input[name="date_range"] {
     background: #fff;
     border: 0px;
-    width: 225px;
+    width: 224px;
     -webkit-border-radius: 2px;
     border-radius: 2px;
 }

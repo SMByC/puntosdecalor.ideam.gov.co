@@ -85,9 +85,10 @@
     <div class="block-subtitle" >Periodo</div>
     <form action="/load-period/" method="post">
         {% csrf_token %}
-        <div id="daterange" class="pull-right" style="background: #fff; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
-            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+        <div id="daterange" class="pull-right">
+            <span class="glyphicon glyphicon-calendar fa fa-calendar"></span>
             {{ form }}
+            <b class="caret" style="margin-left: -15px"></b>
         </div>
         <input type="submit" value="Recalcular" />
     </form>

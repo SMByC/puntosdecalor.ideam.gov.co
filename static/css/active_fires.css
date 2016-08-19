@@ -1045,8 +1045,8 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
     padding: 2px 4px;
 }
 
-#date-range p {
-    display: inline;
+#daterange p {
+    display: block;
 }
 
 input[type=submit] {

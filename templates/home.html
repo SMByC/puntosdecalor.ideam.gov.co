@@ -85,9 +85,10 @@
     <div class="block-subtitle" >Periodo</div>
     <form action="/load-period/" method="post">
         {% csrf_token %}
-        <span id="date-range">
-            {{ form.as_p }}
-        </span>
+        <div id="daterange" class="pull-right" style="background: #fff; padding: 5px 10px; border: 1px solid #ccc; width: 100%">
+            <i class="glyphicon glyphicon-calendar fa fa-calendar"></i>&nbsp;
+            {{ form }}
+        </div>
         <input type="submit" value="Recalcular" />
     </form>
     <div class="block-subtitle" >Encontrados {{ qs_active_fires_in_period|length }} puntos activos:</div>

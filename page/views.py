@@ -51,21 +51,19 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
         # create a form instance and populate it with data from the request:
         form = Period(request.POST)
         # check whether it's valid:
-        if form.is_valid():
-            from_date = form.cleaned_data['from_date']
-            to_date = form.cleaned_data['to_date']
+        if form.is_valid() or not form.is_valid():
+            date_range = form.cleaned_data['date_range']
+            from_date = date_range.split(' - ')[0]
+            to_date = date_range.split(' - ')[1]
 
-            # from_year=from_date.year
-            # from_month=from_date.month from_day=None, to_year=None, to_month=None, to_day=None
-            # print(from_year)
             # redirect to a new URL:
-            return HttpResponseRedirect('/' + from_date.strftime("%Y-%m-%d") + '/' + to_date.strftime("%Y-%m-%d"))
+            return HttpResponseRedirect('/' + from_date + '/' + to_date)
 
     # if a GET (or any other method) we'll create a blank form
     else:
         form = Period(
-            initial={'from_date': datetime.date(int(from_year), int(from_month), int(from_day)),
-                     'to_date': datetime.date(int(to_year), int(to_month), int(to_day))})
+            initial={'date_range': "{}-{}-{}".format(from_year, from_month, from_day) + " - " +
+                                   "{}-{}-{}".format(to_year, to_month, to_day)})
 
     # get list of active fires inside period
     from_datetime = datetime.datetime(int(from_year), int(from_month), int(from_day))
@@ -80,6 +78,7 @@ def home(request, from_year=None, from_month=None, from_day=None, to_year=None, 
         "to_month": to_month,
         "to_day": to_day,
         "qs_active_fires_in_period": qs_active_fires_in_period,
+        "form": form
     }
 
     return render(request, 'home.html', context)

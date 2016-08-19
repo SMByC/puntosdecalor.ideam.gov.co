@@ -11,12 +11,12 @@
 	<title>Monitoreo de incendios activos IDEAM | {% block title %}{% endblock %}</title>
 
 	{# jQuery #}
-    <script type="text/javascript" src="{% static 'scripts/jquery.min.js' %}"></script>
-    <script type="text/javascript" src="{% static 'scripts/jquery.min.js' %}"></script>
+    {#<script type="text/javascript" src="{% static 'scripts/jquery.min.js' %}"></script>#}
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
+			integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+			crossorigin="anonymous"></script>
 
 	<!-- jQuery/JavaScripts -->
-	{#First try loading jQuery from Google's CDN#}
-	{#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>#}
 
 	{% leaflet_js %}
     {% leaflet_css %}
@@ -24,6 +24,7 @@
     {# Date range picker #}
     <link rel="stylesheet" type="text/css" href="{% static "css/daterangepicker.css" %}" />
     <script type="text/javascript" src="{% static 'scripts/moment.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css" />
     <script type="text/javascript" src="{% static 'scripts/jquery.daterangepicker.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/date.range.js' %}"></script>
 

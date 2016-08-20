@@ -12,7 +12,7 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     url(r'^admin/', admin.site.urls),
 
-    url(r'^$', views.init, name='init'),
+    url(r'^$', views.home, name='home'),
     url(r'^load-period/$', views.home, name='load_period'),
     url(r'^(?P<from_year>[0-9]{4})-(?P<from_month>[0-9]{1,2})-(?P<from_day>[0-9]{1,2})/(?P<to_year>[0-9]{4})-(?P<to_month>[0-9]{1,2})-(?P<to_day>[0-9]{1,2})/$', views.home, name='home'),
 

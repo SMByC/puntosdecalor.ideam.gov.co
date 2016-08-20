@@ -83,8 +83,8 @@
 {% block content-items %}
     <div class="block-title" >Puntos activos de incendios</div>
     <div class="block-subtitle" >Periodo</div>
-    <form action="/load-period/" method="post">
-        {% csrf_token %}
+    <form action="/load-period/" method="get">
+{#        {% csrf_token %}#}
         <div id="daterange" class="pull-right">
             <span class="glyphicon glyphicon-calendar fa fa-calendar"></span>
             {{ form }}

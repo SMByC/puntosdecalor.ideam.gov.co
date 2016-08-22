@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.contrib.gis import admin
 
 from page import views, static_hotspot_files
-from page.forms import Period
+from page.forms import Parameters
 from djgeojson.views import GeoJSONLayerView
 from page.models import ActiveFire
 
@@ -14,6 +14,8 @@ urlpatterns = [
 
     # master view and process
     url(r'^$', views.home, name='home'),
+    # set new parameters from form by user
+    url(r'^new-parameters/$', views.new_parameters, name='new_parameters'),
     # send data through ajax with geojson
     url(r'^data.geojson/$', views.ActiveFireMapLayer.as_view(model=ActiveFire, properties=('popup_text',)), name='data'),
 

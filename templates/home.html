@@ -27,6 +27,31 @@
                 layer.bindPopup(feature.properties.name);
             }
         }
+
+        {# apply extent #}
+        function set_extent(map, options) {
+            {# extent = [[lat-lng top-left], [lat-lng bottom-right]] #}
+            map.fitBounds({{ extent_points }});
+        }
+
+        {# change the extent in url and form when the user move map #}
+        function synchronize_extent(map, options) {
+            map.on('moveend', function() {
+                var u = new Url;  {# from scripts/url.min.js #}
+                var bounds = map.getBounds();
+                {# change locations maps #}
+                {# nw_lat nw_lgn se_lat se_lng #}
+                u.query.extent = "("+bounds.getNorthWest().lat+"_"+bounds.getNorthWest().lng
+                                +"_"+bounds.getSouthEast().lat+"_"+bounds.getSouthEast().lng+")";
+
+                {# update extent in hidden extent form #}
+                $('input[name=extent]').val(u.query.extent);
+
+                {# update extent in url get parameter #}
+                var getParameters = '?' + u.query.toString();
+                history.pushState('', '', getParameters);
+            });
+        }
     </script>
 
     {#  Puntos activos de incendios  #}
@@ -65,7 +90,15 @@
         function load_map(map, options) {
             add_active_fires(map, options);
             {# add_area_estudio(map, options);#}
+            set_extent(map, options);
+            synchronize_extent(map, options)
         }
+    </script>
+
+    {#  Cargar mapa  #}
+    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
+
     </script>
 
 {% endblock %}
@@ -82,13 +115,17 @@
 
 {% block content-items %}
     <div class="block-title" >Puntos activos de incendios</div>
-    <div class="block-subtitle" >Periodo</div>
-    <form action="/" method="get">
-{#        {% csrf_token %}#}
+    <form action="/new-parameters/" method="get">
+        {# date range input #}
+        <div class="block-subtitle" >Periodo</div>
         <div id="daterange" class="pull-right">
             <span class="glyphicon glyphicon-calendar fa fa-calendar"></span>
-            {{ form }}
+            {{ form.date_range }}
             <b class="caret" style="margin-left: -15px"></b>
+        </div>
+        {# extent input (hidden) #}
+        <div>
+            {{ form.extent.as_hidden }}
         </div>
         <input type="submit" value="Recalcular" />
     </form>

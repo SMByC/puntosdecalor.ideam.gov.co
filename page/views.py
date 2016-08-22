@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
 from djgeojson.views import GeoJSONLayerView
 
-from page.forms import Period
+from page.forms import Parameters
 from page.models import ActiveFire
 
 
@@ -37,29 +37,42 @@ def init(request):
     from_date = date.today() + relativedelta(days=-1)
     to_date = date.today()
 
+    # set extent for Colombia
+    extent = "(42.712_-74.227_42.774_-74.125)"
+
     return response_with_get_parameters('/', {'from_date': from_date.isoformat(),
-                                              'to_date': to_date.isoformat()})
+                                              'to_date': to_date.isoformat(),
+                                              'extent': extent})
+
+
+def new_parameters(request):
+    # set the new period
+    date_range = request.GET.get('date_range')
+    from_date = date_range.split(' - ')[0]
+    to_date = date_range.split(' - ')[1]
+    # set the extent
+    extent = request.GET.get('extent')
+    # redirect to a new URL:
+    return response_with_get_parameters('/', {'from_date': from_date, 'to_date': to_date,
+                                              'extent': extent})
 
 
 def home(request):
-    # request from recalculate new period
-    if 'date_range' in request.GET:
-        date_range = request.GET.get('date_range')
-        from_date = date_range.split(' - ')[0]
-        to_date = date_range.split(' - ')[1]
-        # redirect to a new URL:
-        return response_with_get_parameters('/', {'from_date': from_date, 'to_date': to_date})
-
     # capturing the date range of period
-    if 'from_date' in request.GET and 'to_date' in request.GET:
+    if 'from_date' in request.GET and 'to_date' in request.GET and 'extent'in request.GET:
         from_date = request.GET.get('from_date')
         to_date = request.GET.get('to_date')
+        # saved map location
+        # extent_points -> [[lat-lng top-left], [lat-lng bottom-right]]
+        extent = request.GET.get('extent')
+        extent_points = [float(x) for x in extent.replace('(', '').replace(')', '').split('_')]
+        extent_points = [[extent_points[0], extent_points[1]], [extent_points[2], extent_points[3]]]
 
     # request without get parameters (url clean or first view)
     else:
         return init(request)
 
-    form = Period(initial={'date_range': from_date + " - " + to_date})
+    form = Parameters(initial={'date_range': from_date + " - " + to_date, 'extent': extent})
 
     # get list of active fires inside period
     from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
@@ -72,7 +85,8 @@ def home(request):
     context = {
         "form": form,
         "qs_active_fires_in_period": qs_active_fires_in_period,
-        "get_parameters": get_parameters
+        "get_parameters": get_parameters,
+        "extent_points": extent_points
     }
 
     return render(request, 'home.html', context)

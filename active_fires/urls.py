@@ -14,9 +14,8 @@ urlpatterns = [
 
     url(r'^$', views.home, name='home'),
     url(r'^load-period/$', views.home, name='load_period'),
-    url(r'^(?P<from_year>[0-9]{4})-(?P<from_month>[0-9]{1,2})-(?P<from_day>[0-9]{1,2})/(?P<to_year>[0-9]{4})-(?P<to_month>[0-9]{1,2})-(?P<to_day>[0-9]{1,2})/$', views.home, name='home'),
 
-    url(r'^data.geojson/(?P<from_year>[0-9]{4})-(?P<from_month>[0-9]{1,2})-(?P<from_day>[0-9]{1,2})/(?P<to_year>[0-9]{4})-(?P<to_month>[0-9]{1,2})-(?P<to_day>[0-9]{1,2})/$', views.ActiveFireMapLayer.as_view(model=ActiveFire, properties=('popup_text',)), name='data'),
+    url(r'^data.geojson/$', views.ActiveFireMapLayer.as_view(model=ActiveFire, properties=('popup_text',)), name='data'),
 
     ###
     url(r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {'packages': ('es-CO',)}),

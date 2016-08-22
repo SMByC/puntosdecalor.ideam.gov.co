@@ -1,5 +1,5 @@
-import datetime
-import urllib
+from datetime import datetime, date
+from urllib.parse import urlencode
 
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
@@ -13,10 +13,11 @@ class ActiveFireMapLayer(GeoJSONLayerView):
     def get_queryset(self):
         """Inspired by Glen Roberton's django-geojson-tiles view
         """
-        from_datetime = datetime.datetime(int(self.kwargs['from_year']), int(self.kwargs['from_month']),
-                                          int(self.kwargs['from_day']))
-        to_datetime = datetime.datetime(int(self.kwargs['to_year']), int(self.kwargs['to_month']),
-                                        int(self.kwargs['to_day']), hour=23, minute=59, second=59)
+        from_date = self.request.GET.get('from_date')
+        to_date = self.request.GET.get('to_date')
+
+        from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+        to_datetime = datetime.strptime(to_date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
 
         qs = self.model.objects.filter(date__gte=from_datetime, date__lte=to_datetime)
         return qs
@@ -26,61 +27,52 @@ def response_with_get_parameters(base_path, parameters):
     """Redirect to the url with get parameters"""
     # redirect to a new URL:
     response = redirect(base_path)
-    response['Location'] += '?' + urllib.parse.urlencode(parameters)
+    response['Location'] += '?' + urlencode(parameters)
     return response
 
 
 def init(request):
+    """Set the default parameters from url clean or first view"""
     # initialize the from_date (-1 days) and to_date (now)
-    from_date = datetime.date.today() + relativedelta(days=-1)
-    to_date = datetime.date.today()
+    from_date = date.today() + relativedelta(days=-1)
+    to_date = date.today()
 
     return response_with_get_parameters('/', {'from_date': from_date.isoformat(),
                                               'to_date': to_date.isoformat()})
 
 
-def home(request, from_year=None, from_month=None, from_day=None, to_year=None, to_month=None, to_day=None):
-
+def home(request):
+    # request from recalculate new period
     if 'date_range' in request.GET:
-        # create a form instance and populate it with data from the request:
-        form = Period(request.GET)
-
         date_range = request.GET.get('date_range')
         from_date = date_range.split(' - ')[0]
         to_date = date_range.split(' - ')[1]
-
         # redirect to a new URL:
         return response_with_get_parameters('/', {'from_date': from_date, 'to_date': to_date})
 
+    # capturing the date range of period
     if 'from_date' in request.GET and 'to_date' in request.GET:
-        from_date = request.GET.get('from_date').split('-')
-        from_year = from_date[0]
-        from_month = from_date[1]
-        from_day = from_date[2]
-        to_date = request.GET.get('to_date').split('-')
-        to_year = to_date[0]
-        to_month = to_date[1]
-        to_day = to_date[2]
+        from_date = request.GET.get('from_date')
+        to_date = request.GET.get('to_date')
+
+    # request without get parameters (url clean or first view)
     else:
         return init(request)
 
-    form = Period(
-        initial={'date_range': "{}-{}-{}".format(from_year, from_month, from_day) + " - " +
-                               "{}-{}-{}".format(to_year, to_month, to_day)})
+    form = Period(initial={'date_range': from_date + " - " + to_date})
+
     # get list of active fires inside period
-    from_datetime = datetime.datetime(int(from_year), int(from_month), int(from_day))
-    to_datetime = datetime.datetime(int(to_year), int(to_month), int(to_day), hour=23, minute=59, second=59)
+    from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+    to_datetime = datetime.strptime(to_date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
     qs_active_fires_in_period = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
 
+    # send the variables to process (variables that define the period, location, and more)
+    get_parameters = urlencode({'from_date': from_date, 'to_date': to_date})
+
     context = {
-        "from_year": from_year,
-        "from_month": from_month,
-        "from_day": from_day,
-        "to_year": to_year,
-        "to_month": to_month,
-        "to_day": to_day,
-        "qs_active_fires_in_period": qs_active_fires_in_period,
         "form": form,
+        "qs_active_fires_in_period": qs_active_fires_in_period,
+        "get_parameters": get_parameters
     }
 
     return render(request, 'home.html', context)

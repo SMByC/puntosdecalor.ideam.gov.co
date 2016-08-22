@@ -116,11 +116,8 @@ TEMPLATES = [
 # Leaflet configuration
 LEAFLET_CONFIG = {
     # map boundaries limits
-    # 'SPATIAL_EXTENT': (-79.2, -4,4, -66.7, 13.0),
-    # 'SPATIAL_EXTENT': (-78, -3, -65, 12),
-
-    'DEFAULT_CENTER': (5, -72.0),
-    'DEFAULT_ZOOM': 5,
+    # 'DEFAULT_CENTER': (5, -72.0),
+    # 'DEFAULT_ZOOM': 5,
     'MIN_ZOOM': 3,
     'MAX_ZOOM': 15,
 

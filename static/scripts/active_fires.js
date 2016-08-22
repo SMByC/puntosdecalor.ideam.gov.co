@@ -25,34 +25,6 @@ jQuery(document).ready(function($){
         $("div#header-menu").find("li").first().addClass("menuOn")
     }
 
-    //CONTENT
-    //activar/desactivar mas informacion en el titulo del contenido
-    var moreInfoBlock = $("#title-content #more-info");
-    var toggleInfo = function(){
-        if (moreInfoBlock.html() == "(-)"){
-            moreInfoBlock
-                .html("(+)")
-                .attr("title","más información")
-        } else {
-            moreInfoBlock
-                .html("(-)")
-                .attr("title","esconder información")
-        }
-        $("#title-content #more-info-text").slideToggle();
-    };
-
-    moreInfoBlock.click(function () {
-        toggleInfo();
-    });
-
-
-    //ACTIVACIONES
-    //activar o expandir la informacion de la pagina (more-info) por defecto
-    //solo si hay texto
-    if ( $.trim($("#more-info-text").text()).length != 0 ) {
-        toggleInfo();
-    }
-
     //run when everything on the page as loaded.
     $(window).load(function(){
     //loader gif and content activation

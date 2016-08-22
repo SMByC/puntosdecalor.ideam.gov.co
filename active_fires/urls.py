@@ -12,9 +12,9 @@ urlpatterns = [
     # url(r'^blog/', include('blog.urls')),
     url(r'^admin/', admin.site.urls),
 
+    # master view and process
     url(r'^$', views.home, name='home'),
-    url(r'^load-period/$', views.home, name='load_period'),
-
+    # send data through ajax with geojson
     url(r'^data.geojson/$', views.ActiveFireMapLayer.as_view(model=ActiveFire, properties=('popup_text',)), name='data'),
 
     ###

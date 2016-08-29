@@ -38,7 +38,7 @@ def init(request):
     to_date = date.today()
 
     # set extent for Colombia
-    extent = "(16.63_-95.44_-8.92_-49.61)"
+    extent = "(16.130262012034756_-94.39453125_-6.970049417296218_-51.37207031249999)"
 
     return response_with_get_parameters('/', {'from_date': from_date.isoformat(),
                                               'to_date': to_date.isoformat(),

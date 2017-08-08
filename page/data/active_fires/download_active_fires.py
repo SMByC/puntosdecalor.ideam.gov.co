@@ -152,7 +152,7 @@ os.chdir("..")
 os.chdir("..")
 tmp_file.close()
 
-return_code = os.popen("/usr/local/bin/python3.5 manage.py shell < page/data/active_fires/tmp_import.py")
+return_code = os.popen("/usr/local/bin/python3.6 manage.py shell < page/data/active_fires/tmp_import.py")
 [print(i) for i in return_code]
 
 os.remove('page/data/active_fires/tmp_import.py')

@@ -47,17 +47,20 @@ def from_source(source, active_fires_file):
         lat = float(line['latitude'])
         active_fire_point = Point(lng, lat)
         active_fire_datetime = datetime.datetime(date[0], date[1], date[2], time[0], time[1]) + relativedelta(hours=-5)  # fix to Colombian zone
+
         if source == 'modis':
             satellite = 'MODIS-Aqua' if line['satellite'].strip() == 'A' else 'MODIS-Terra'
+            # Brightness Temperature
+            brightness = float(line['brightness'])
+            # Confidence
+            confidence = int(line['confidence'])
         if source == 'viirs':
             satellite = 'VIIRS'
-        # Brightness Temperature
-        brightness = float(line['brightness'])
-        # Confidence
-        try:
-            confidence = int(line['confidence'])
-        except:
-            confidence = None  # viirs
+            # Brightness Temperature
+            brightness = float(line['bright_ti4'])
+            # Confidence
+            confidence = None
+
         # Fire Radiative Power
         frp = round(float(line['frp']), 1)
         if int(frp) == 0:

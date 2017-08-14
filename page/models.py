@@ -22,7 +22,6 @@ class WorldBorder(models.Model):
     # GeoDjango-specific: a geometry field (MultiPolygonField), and
     # overriding the default manager with a GeoManager instance.
     mpoly = models.MultiPolygonField()
-    objects = models.GeoManager()
 
     # Returns the string representation of the model.
     def __str__(self):  # __unicode__ on Python 2
@@ -62,8 +61,6 @@ class ActiveFire(models.Model):
     frp = models.FloatField(null=True)  # Fire Radiative Power (MW) or None (for VIIRS)
 
     popup_text = models.TextField(null=True, blank=True)
-
-    objects = models.GeoManager()
 
     def __unicode__(self):
         return self.name

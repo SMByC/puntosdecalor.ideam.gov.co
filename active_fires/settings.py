@@ -122,18 +122,17 @@ LEAFLET_CONFIG = {
     'MAX_ZOOM': 15,
 
     # http://leaflet-extras.github.io/leaflet-providers/preview/
+    # apikey osm: http://www.thunderforest.com/docs/apikeys/
+    # apikey mapbox: https://www.mapbox.com/studio/account/
     'TILES': [
-        ('Landscape', 'http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png', '&copy; OpenStreetMap Contributors'),
-        ('Esri DeLorme', 'http://server.arcgisonline.com/ArcGIS/rest/services/Specialty/DeLorme_World_Base_Map/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),
+        ('Mapbox Outdoors', 'http://api.tiles.mapbox.com/v4/mapbox.outdoors/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoieGF2aWVyY2xsIiwiYSI6ImNqNmN6MGoxbDF3NmoyeHJ5OXoybWlidDkifQ.HbIa-_DLFoUCBVbHSCXWLQ', '&copy; OpenStreetMap Contributors')
+        ('Landscape', 'https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=306c10ff32de428f99846994708aeaaa', '&copy; OpenStreetMap Contributors'),
         ('Esri World Image', 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),
-        # ('Here', 'http://{s}.aerial.maps.cit.api.here.com/maptile/2.1/maptile/newest/hybrid.day/{z}/{x}/{y}/256/png8?app_id=1&app_code=1', '&copy; HERE'),
-        ('Roads', 'http://openmapsurfer.uni-hd.de/tiles/roads/x={x}&y={y}&z={z}', '&copy; OpenStreetMap Contributors'),
-        ('OSM DE', 'http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png', '&copy; OpenStreetMap Contributors'),
-        ('OSM Cycle', 'http://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png', '&copy; OpenStreetMap Contributors'),
+        ('OpenCycleMap', 'https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=306c10ff32de428f99846994708aeaaa', '&copy; OpenStreetMap Contributors'),
         ('NatGeo', 'http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', '&copy; NatGeo'),
     ],
 
-    'OVERLAYS': [('Limites', 'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}', '&copy; IGN')],
+    #'OVERLAYS': [('Limites', 'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}', '&copy; IGN')],
 
     'MINIMAP': True,
     'SCALE': 'metric',

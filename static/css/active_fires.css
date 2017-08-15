@@ -482,6 +482,7 @@ body {
     overflow: hidden;
     width: calc(100% - 300px);
     min-width: 550px;
+    z-index: 0;
 }
 
 #content-items {

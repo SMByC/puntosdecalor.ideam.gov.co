@@ -114,7 +114,6 @@ TEMPLATES = [
 
 
 # Leaflet configuration
-
 LEAFLET_CONFIG = {
     # map boundaries limits
     # 'DEFAULT_CENTER': (5, -72.0),
@@ -126,8 +125,8 @@ LEAFLET_CONFIG = {
     # apikey osm: http://www.thunderforest.com/docs/apikeys/
     # apikey mapbox: https://www.mapbox.com/studio/account/
     'TILES': [
-        ('Landscape', 'https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=306c10ff32de428f99846994708aeaaa', '&copy; OpenStreetMap Contributors'),
         ('Mapbox Outdoors', 'http://api.tiles.mapbox.com/v4/mapbox.outdoors/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoieGF2aWVyY2xsIiwiYSI6ImNqNmN6MGoxbDF3NmoyeHJ5OXoybWlidDkifQ.HbIa-_DLFoUCBVbHSCXWLQ', '&copy; OpenStreetMap Contributors'),
+        ('Landscape', 'https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=306c10ff32de428f99846994708aeaaa', '&copy; OpenStreetMap Contributors'),
         ('Esri World Image', 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),
         ('OpenCycleMap', 'https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey=306c10ff32de428f99846994708aeaaa', '&copy; OpenStreetMap Contributors'),
         ('NatGeo', 'http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', '&copy; NatGeo'),

@@ -106,20 +106,15 @@ body {
 
 #header-left {
     float: left;
-    position: relative;
-    background: url("/static/img/ideam.png") no-repeat 15px 2px;
-    width: 80px;
-    height: 52px;
-    top: 0.5px;
+    height: 100%;
+    padding: 2px;
+    padding-left: 8px;
 }
 
-#header-left a
+#header-left img
 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 80px;
-    height: 72px;
+    max-height: 100%;
+    width: auto;
 }
 
 #header-left a p

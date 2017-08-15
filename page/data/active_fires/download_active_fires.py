@@ -1,7 +1,10 @@
 #!/usr/bin/python
 #
 # use:
-#  python download_active_fires.py -s modis -d "2014-12-04"
+#
+# cd /home/activefires/apps/Active_Fires/page/data/active_fires
+#  python3.6 download_active_fires.py -s modis -d "2014-12-04"
+#  python3.6 download_active_fires.py -s viirs -d "2014-12-04"
 
 import sys, os
 

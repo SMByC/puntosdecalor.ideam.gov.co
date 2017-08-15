@@ -12,9 +12,7 @@
 
 	{# jQuery #}
     {#<script type="text/javascript" src="{% static 'scripts/jquery.min.js' %}"></script>#}
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js"
-			integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
-			crossorigin="anonymous"></script>
+    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/1/jquery.min.js"></script>
 
 	<!-- jQuery/JavaScripts -->
 
@@ -22,10 +20,10 @@
     {% leaflet_css %}
 
     {# Date range picker #}
-    <link rel="stylesheet" type="text/css" href="{% static "css/daterangepicker.css" %}" />
     <script type="text/javascript" src="{% static 'scripts/moment.min.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
     <script type="text/javascript" src="{% static 'scripts/jquery.daterangepicker.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static "css/daterangepicker.css" %}" />
     <script type="text/javascript" src="{% static 'scripts/date.range.js' %}"></script>
 
     {# Lightweight URL manipulation with JavaScript https://github.com/Mikhus/domurl #}

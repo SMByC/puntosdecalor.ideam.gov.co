@@ -510,6 +510,7 @@ body {
     color: #666;
     margin-top: 10px;
     margin-bottom: 6px;
+    display: inline-block;
 }
 
 #active-fire-items {
@@ -1045,14 +1046,14 @@ this need used with box-item together: class="box-item box-file" #TODO: need to 
 input[name="date_range"] {
     background: #fff;
     border: 0px;
-    width: 224px;
+    width: 90%;
     -webkit-border-radius: 2px;
     border-radius: 2px;
 }
 
 input[type=submit] {
     color: #fff;
-    margin-top: 15px;
+    margin-top: 10px;
     padding:4px 8px;
     background: #0E799C;
     border:0 none;
@@ -1060,6 +1061,8 @@ input[type=submit] {
     font-weight: bold;
     -webkit-border-radius: 4px;
     border-radius: 4px;
+    float: right;
+    display: inline-block;
 }
 
 /* Leaflet maps

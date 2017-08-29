@@ -24,5 +24,5 @@ urlpatterns = [
     url(r'^jsi18n/$', javascript_catalog, {'packages': ('es-CO',)}),
 
     ### for static ftp csv files of hostpot
-    url(r'^ftp_files/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/xavier/Projects/SMBYC/active_fires/static/ftp_files/', 'show_indexes': True}),
+    url(r'^ftp_files/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/activefires/apps/Active_Fires/page/data/ftp_files', 'show_indexes': True}),
 ]

@@ -72,7 +72,7 @@
             {# L.marker([4, -80], {icon: fireIcon}).addTo(map).bindPopup("I am a green leaf.");#}
             {# L.marker([4, -80]).addTo(map).bindPopup("I am a green leaf.");#}
 
-            var dataurl = "{% url 'data' %}" + "?" + "{{ get_parameters }}"
+            var dataurl = "{% url 'data' %}" + "?" + "{{ get_parameters }}";
             // Download GeoJSON via Ajax
             $.getJSON(dataurl, function (data) {
                 // Add GeoJSON layer

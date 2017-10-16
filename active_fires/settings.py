@@ -118,8 +118,11 @@ LEAFLET_CONFIG = {
     # map boundaries limits
     # 'DEFAULT_CENTER': (5, -72.0),
     # 'DEFAULT_ZOOM': 5,
-    'MIN_ZOOM': 3,
+    'SPATIAL_EXTENT': (-94.39453125, 16.130262012034756, -51.37207031249999, -6.970049417296218),
+    'MIN_ZOOM': 5,
     'MAX_ZOOM': 15,
+    'SCALE': 'metric',
+    'MINIMAP': True,
 
     # http://leaflet-extras.github.io/leaflet-providers/preview/
     # apikey osm: http://www.thunderforest.com/docs/apikeys/
@@ -133,9 +136,5 @@ LEAFLET_CONFIG = {
     ],
 
     #'OVERLAYS': [('Limites', 'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}', '&copy; IGN')],
-
-    'MINIMAP': True,
-    'SCALE': 'metric',
-    'RESET_VIEW': False,
 
 }

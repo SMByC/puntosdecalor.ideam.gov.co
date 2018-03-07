@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
+
 from django.conf.urls import url
 from django.contrib.gis import admin
 from django.views.i18n import javascript_catalog

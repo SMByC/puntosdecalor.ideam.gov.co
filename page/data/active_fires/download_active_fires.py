@@ -1,5 +1,9 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #
+#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
+
 # use:
 #
 # cd /home/activefires/apps/Active_Fires/page/data/active_fires

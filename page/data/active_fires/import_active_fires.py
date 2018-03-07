@@ -1,4 +1,9 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 #
+#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
+
 # #### How to run as script:
 # ./manage.py shell < page/data/active_fires/import_active_fires.py
 #

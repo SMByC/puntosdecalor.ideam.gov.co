@@ -49,19 +49,6 @@
                 <img src="{% static "img/ideam.png" %}"/>
             </div>
 			<div id="header-right">
-				<div id="user">
-                	<span id="logo-user"></span>
-                    {% if user.is_authenticated %}
-                        <a id="exit" href="">salir</a>
-                        <a id="username">{{ user.get_full_name|default:user.username }}</a>
-                    {% else %}
-{#					    <a id="login" href="">Ingresar</a>#}
-					    <a id="login">Ingresar</a>
-                    {% endif %}
-				</div>
-
-
-
 				{% comment %}<div id="search">
 					<!-- 					<form action="#" id="search-box"> -->
 					<!-- 						<input name="gsearch-nd" type="text"/> -->

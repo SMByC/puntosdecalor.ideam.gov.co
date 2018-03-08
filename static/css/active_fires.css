@@ -3,7 +3,7 @@
 /* Xavier Corredor Llano xcorredorl@ideam.gov.co */
 
 /* colors: */
-/*  blue-green: #428DC5ff   old: #06414a */
+/*  blue-green: #CC3D36ff   old: #06414a */
 /*  grey light: #fafafa (background) */
 /*  grey light2: #f4f5f7 (2do background) */
 /*  grey medium: #d3d3d3 (borders)  */
@@ -163,7 +163,7 @@ body {
 
 #user #login:hover {
     color: #ffffff;
-    background-color: #428DC5;
+    background-color: #CC3D36;
 
     /*border-radius: 0 0 6px 6px;*/
     /*-webkit-border-bottom-left-radius: 6px;*/
@@ -174,13 +174,13 @@ body {
 }
 
 #user #username {
-    color: #428DC5;
+    color: #CC3D36;
     font-weight: bold;
 }
 
 #user #username:hover {
     color: #ffffff;
-    background-color: #428DC5;
+    background-color: #CC3D36;
 }
 
 #user #exit {
@@ -248,7 +248,7 @@ body {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    color: #428DC5;
+    color: #CC3D36;
     text-align: left;
     float: left;
     padding: 1px 4px 1px 4px;
@@ -261,7 +261,7 @@ body {
     color: #ffffff;
     text-decoration: none;
     text-align: left;
-    background-color: #428DC5;
+    background-color: #CC3D36;
     /* border-radius */
     border-radius: 4px;
 }
@@ -277,7 +277,7 @@ body {
     /*line-height: 22px;*/
     border:0px;
     outline:0px;
-    color: #428DC5;
+    color: #CC3D36;
     background-color: transparent;
     text-align: left;
     padding: 1px 4px 1px 4px;
@@ -293,7 +293,7 @@ body {
 }
 
 #header-menu select option:not(:disabled) {
-    color: #428DC5;
+    color: #CC3D36;
     background-color: #f4f5f7;
     font: inherit;
 }
@@ -436,7 +436,7 @@ body {
 .table th {
     font-size: 10pt;
     font-weight: bold;
-    color: #0E799C;
+    color: #CC3D36;
     border: 1px solid #d3d3d3;
     text-align: center;
     padding: 4px;
@@ -548,15 +548,15 @@ body {
 
 #title a {
     text-decoration: none;
-    font-size: 1.4em;
+    font-size: 1.32em;
     font-weight: bold;
-    color: #428DC5;
+    color: #CC3D36;
 }
 
 #subtitle {
 
     text-decoration: none;
-    font-size: 0.9em;
+    font-size: 1em;
     font-weight: bold;
     color: #666;
     margin: 0;
@@ -603,7 +603,7 @@ input[type=submit] {
     color: #fff;
     margin-top: 10px;
     padding:4px 8px;
-    background: #0E799C;
+    background: #CC3D36;
     border:0 none;
     cursor:pointer;
     font-weight: bold;

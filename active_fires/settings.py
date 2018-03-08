@@ -134,6 +134,8 @@ LEAFLET_CONFIG = {
     # apikey osm: http://www.thunderforest.com/docs/apikeys/
     # apikey mapbox: https://www.mapbox.com/studio/account/
     'TILES': [
+        ('CartoDB', 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'),
+        ('OpenStreetMap', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
         ('Mapbox Outdoors', 'http://api.tiles.mapbox.com/v4/mapbox.outdoors/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoieGF2aWVyY2xsIiwiYSI6ImNqNmN6MGoxbDF3NmoyeHJ5OXoybWlidDkifQ.HbIa-_DLFoUCBVbHSCXWLQ', '&copy; OpenStreetMap Contributors'),
         ('Landscape', 'https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey=306c10ff32de428f99846994708aeaaa', '&copy; OpenStreetMap Contributors'),
         ('Esri World Image', 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),

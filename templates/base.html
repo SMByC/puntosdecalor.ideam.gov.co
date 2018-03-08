@@ -44,7 +44,7 @@
 <body>
 
 	<div id="wrapper">
-		<div id="header-page">
+		<div id="header">
             <div id="header-left">
                 <img src="{% static "img/ideam.png" %}"/>
             </div>
@@ -70,7 +70,7 @@
 
 				</div>{% endcomment %}
 			</div>
-			<div id="header-title">
+			<div id="header-main">
 				<p id="title"> <a href="http://{{ request.get_host }}"
                                   title="Página de inicio de monitoreo de puntos activos de incendios">Monitoreo de puntos activos de incendios</a></p>
                 <p id="subtitle">Sistema piloto para el monitoreo de puntos activos de incendios detectados satelitalmente* (plataforma en desarrollo)</p>
@@ -114,20 +114,26 @@
 
 					{% endblock %}
 				</div>
-            	<div id="content-items">
-					{% block content-items %}
+            	<div id="lateral-content">
+					{% block lateral-content %}
 
 					{% endblock %}
+
+                    <!-- footer -->
+                    <div id="footer">
+                        <div id="footer-left-ideam">
+                                <span class="text-bold">Instituto de Hidrología,
+                                    Meteorología<br />y Estudios Ambientales
+                                </span>
+                                <br />Sistema de Monitoreo de Bosque y Carbono
+                            </div>
+                        </div>
+                    </div>
+                    <!-- footer -->
 				</div>
 				<!-- content -->
 
 
-                <!-- content-footer -->
-                {% block content-footer %}
-
-                {% endblock %}
-                <!-- content-footer -->
-				
 			</div>
 		</div>
 

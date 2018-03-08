@@ -113,11 +113,11 @@
     {% leaflet_map "active_fires_map" callback="window.load_map" %}
 {% endblock %}
 
-{% block content-items %}
-    <div class="block-title" >Puntos activos de incendios</div>
+{% block lateral-content %}
+    <div class="lateral-item-title" >Puntos activos de incendios</div>
     <form action="/new-parameters/" method="get">
         {# date range input #}
-        <div class="block-subtitle" >Periodo</div>
+        <div class="lateral-item-subtitle" >Periodo</div>
         <div id="daterange" class="pull-right">
             <span class="glyphicon glyphicon-calendar fa fa-calendar"></span>
             {{ form.date_range }}
@@ -129,16 +129,8 @@
         </div>
         <input type="submit" value="Recalcular" />
     </form>
-    <div class="block-subtitle" >Encontrados {{ qs_active_fires_in_period|length }} puntos activos:</div>
+    <div class="lateral-item-subtitle" >Encontrados {{ qs_active_fires_in_period|length }} puntos activos</div>
 
-    <div id="active-fire-items" >
-        {% for active_fire in qs_active_fires_in_period %}
-            <div class="box-item">
-                <p><b>Fecha:</b> {{ active_fire.date|date:"Y-m-d H:i" }}</p>
-                <p><b>Satelite:</b> {{ active_fire.source }}</p>
-            </div>
-        {% endfor %}
-    </div>
     <div id="link-active-fires-files">
         <a href="/ftp_files/">Archivos planos de puntos activos de incendios</a>
     </div>

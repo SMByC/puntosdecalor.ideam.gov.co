@@ -96,7 +96,7 @@ body {
     width: 100%;
     margin: 0 auto;
     /*height: 75px;*/
-    height: 60px;
+    height: 40px;
     position: relative;
     z-index: 2;
     box-shadow: 0 -3px 5px 3px #333;
@@ -154,7 +154,7 @@ body {
 #wrap-content {
     margin: 0 auto;
     /*min-height: 400px;*/
-    /*height: calc(100vh - 60px);*/
+    /*height: calc(100vh - 40px);*/
     min-width: 800px;
     width: 100%;
     background-color: #f8f8f8;
@@ -199,7 +199,7 @@ body {
     padding-bottom: 2px;
     /*margin-top: -2px;*/
     overflow: hidden;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 40px);
     width: calc(300px - 18px);
 }
 
@@ -449,7 +449,7 @@ input[type=submit] {
 #active_fires_map {
     /* all maps */
     /*width: calc(100% - 300px);*/
-    height: calc(100vh - 60px);
+    height: calc(100vh - 40px);
     border-right: 1px solid #d0d0d0;
 }
 

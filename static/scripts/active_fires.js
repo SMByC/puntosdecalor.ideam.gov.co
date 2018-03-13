@@ -21,10 +21,4 @@ jQuery(document).ready(function($){
         $("div#header-menu").find("li").first().addClass("menuOn")
     }
 
-    //run when everything on the page as loaded.
-    $(window).load(function(){
-    //loader gif and content activation
-
-    });
-
 });

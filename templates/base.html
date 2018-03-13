@@ -10,20 +10,18 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<title>Monitoreo de puntos activos de incendios en Colombia - IDEAM {% block title %}{% endblock %}</title>
 
-	{# jQuery #}
-    {#<script type="text/javascript" src="{% static 'scripts/jquery.min.js' %}"></script>#}
-    <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/2/jquery.min.js"></script>
-
 	<!-- jQuery/JavaScripts -->
+
+	{# jQuery #}
+    <script type="text/javascript" src="{% static 'scripts/jquery-3.3.1.min.js' %}"></script>
 
 	{% leaflet_js %}
     {% leaflet_css %}
 
     {# Date range picker #}
-    <script type="text/javascript" src="{% static 'scripts/moment.min.js' %}"></script>
-    <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/3/css/bootstrap.css" />
-    <script type="text/javascript" src="{% static 'scripts/jquery.daterangepicker.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% static "css/daterangepicker.css" %}" />
+    <script type="text/javascript" src="{% static 'scripts/moment.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'scripts/jquery.daterangepicker.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/date.range.js' %}"></script>
 
     {# Lightweight URL manipulation with JavaScript https://github.com/Mikhus/domurl #}

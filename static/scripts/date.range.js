@@ -1,56 +1,69 @@
 $(function () {
 
-    $('input[name="date_range"]').daterangepicker({
-        "autoApply": true,
-        "maxDate": moment(),
-        "opens": "left",
-        "autoUpdateInput": true,
-        "linkedCalendars": false,
-        "alwaysShowCalendars": true,
-        "locale": {
-            "format": 'YYYY-MM-DD',
-            "separator": " - ",
-            "applyLabel": "Aplicar",
-            "cancelLabel": "Cancelar",
-            "fromLabel": "De",
-            "toLabel": "A",
-            "customRangeLabel": "Personalizado",
-            "weekLabel": "S",
-            "daysOfWeek": [
-                "Do",
-                "Lu",
-                "Ma",
-                "Mi",
-                "Ju",
-                "Vi",
-                "Sa"
-            ],
-            "monthNames": [
-                "Enero",
-                "Febrero",
-                "Marzo",
-                "Abril",
-                "Mayo",
-                "Junio",
-                "Julio",
-                "Agosto",
-                "Septiembre",
-                "Octubre",
-                "Noviembre",
-                "Diciembre"
-            ],
-            "firstDay": 1
+    $('#date-range').dateRangePicker(
+	{
+        autoClose: false,
+	    format: 'YYYY-MM-DD',
+        language: 'es',
+		separator : ' a ',
+        startOfWeek: 'monday',
+        getValue: function()
+        {
+            if ($('#date-range-from').val() && $('#date-range-to').val() )
+                return $('#date-range-from').val() + ' a ' + $('#date-range-to').val();
+            else
+                return '';
         },
-        "ranges": {
-            'Hoy': [moment(), moment()],
-            'Desde 1 día atrás': [moment().subtract(1, 'days'), moment()],
-            'Desde 3 días atrás': [moment().subtract(3, 'days'), moment()],
-            'Desde 8 días atrás': [moment().subtract(8, 'days'), moment()],
-            'Desde 15 días atrás': [moment().subtract(15, 'days'), moment()],
-            'Mes actual': [moment().startOf('month'), moment().endOf('month')],
-            'Desde 1 mes atrás': [moment().subtract(1, 'month').startOf('month'), moment()],
-            'Desde 2 mes atrás': [moment().subtract(2, 'month').startOf('month'), moment()]
-        }
-    });
+        setValue: function(s,s1,s2)
+        {
+            $('#date-range-from').val(s1);
+            $('#date-range-to').val(s2);
+        },
+        startDate: "2016-01-01",
+        endDate: moment().endOf("day"),
+        showShortcuts: true,
+        customShortcuts :
+        [
+            {
+                name: 'Hoy',
+                dates: function () {
+                    return [moment().toDate(), moment().toDate()];
+                }
+            },
+            {
+                name: '-1 Día',
+                dates: function () {
+                    return [moment().subtract(1, 'days').toDate(), moment().toDate()];
+                }
+            },
+            {
+                name: '-3 Días',
+                dates: function () {
+                    return [moment().subtract(3, 'days').toDate(), moment().toDate()];
+                }
+            },
+            {
+                name: '-8 Días',
+                dates: function () {
+                    return [moment().subtract(8, 'days').toDate(), moment().toDate()];
+                }
+            },
+            {
+                name: 'Mes actual',
+                dates: function () {
+                    return [moment().startOf('month').toDate(), moment().toDate()];
+                }
+            },
+            {
+                name: 'Año actual',
+                dates: function () {
+                    return [moment().startOf('year').toDate(), moment().toDate()];
+                }
+            },
+        ],
+        monthSelect: false,  // https://github.com/longbill/jquery-date-range-picker/issues/412
+        yearSelect: true,
+        selectForward: false,
+	});
 
 });

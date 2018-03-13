@@ -118,10 +118,8 @@
     <form action="/new-parameters/" method="get">
         {# date range input #}
         <div class="lateral-item-subtitle" >Periodo</div>
-        <div id="daterange" class="pull-right">
-            <span class="glyphicon glyphicon-calendar fa fa-calendar"></span>
-            {{ form.date_range }}
-            <b class="caret" style="margin-left: -15px"></b>
+        <div id="date-range">
+            De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
         </div>
         {# extent input (hidden) #}
         <div>

@@ -3,7 +3,8 @@
 /* Xavier Corredor Llano xcorredorl@ideam.gov.co */
 
 /* colors: */
-/*  blue-green: #CC3D36ff   old: #06414a */
+/*  main red color: #CC3D36  #CC3D36ff */
+/*  complementary colors: http://paletton.com/#uid=3020u0knupDe1-yjesYqVlfvkgn*/
 /*  grey light: #fafafa (background) */
 /*  grey light2: #f4f5f7 (2do background) */
 /*  grey medium: #d3d3d3 (borders)  */
@@ -104,7 +105,7 @@ body {
 
 #header-left {
     float: left;
-    height: 100%;
+    height: calc(100% - 4px);
     padding: 2px;
     padding-left: 8px;
 }
@@ -199,8 +200,8 @@ body {
     padding-bottom: 2px;
     /*margin-top: -2px;*/
     overflow: hidden;
-    height: calc(100vh - 40px);
-    width: 300px;
+    height: calc(100vh - 40px - 11px);
+    width: calc(300px - 18px);
 }
 
 .lateral-item-title {
@@ -411,15 +412,9 @@ hr {
 /* date range picker
 --------------------------------------------------------------------- */
 
-#daterange {
-    display: block;
-    background: #fff;
-    border: 1px solid #ccc;
-    /*width: 80px;*/
-    width: 100%;
+#date-range {
+    width: calc(100% - 16px);
     padding: 4px 8px;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
 }
 
 input[name="date_range"] {

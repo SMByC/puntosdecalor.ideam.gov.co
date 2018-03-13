@@ -24,7 +24,6 @@ html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abb
     padding: 0;
     border: 0;
     font-size: 100%;
-    font: inherit;
     vertical-align: baseline;
 }
 /* HTML5 display-role reset for older browsers */
@@ -417,6 +416,42 @@ hr {
     padding: 4px 8px;
 }
 
+/* overwrite daterangepicker.css*/
+.date-picker-wrapper {
+    background-color: #f8f8f8;
+    /*color: #f8f8f8;*/
+}
+.date-picker-wrapper .first-date-selected, .date-picker-wrapper .last-date-selected {
+    background-color: #CC3D36 !important;
+    color: white !important;
+}
+.date-picker-wrapper .month-wrapper table .day.checked {
+    background-color: #ffe1e4;
+}
+.date-picker-wrapper .week-number.week-number-selected {
+    color: #CC3D36;
+    font-weight: bold;
+}
+.date-picker-wrapper .drp_top-bar .apply-btn {
+    border: none;
+    background: #CC3D36;
+}
+.date-picker-wrapper a {
+    color: #CC3D36;
+    text-decoration: none;
+    padding: 1px 3px;
+}
+.date-picker-wrapper a:hover {
+    color: white;
+    background-color: #CC3D36;
+    text-decoration: none;
+    padding: 1px 3px;
+    border-radius: 2px;
+}
+
+/* Buttons
+--------------------------------------------------------------------- */
+
 input[name="date_range"] {
     background: #fff;
     border: 0px;
@@ -428,17 +463,16 @@ input[name="date_range"] {
 input[type=submit] {
     color: #fff;
     margin-top: 10px;
-    padding:4px 8px;
+    padding: 4px 8px;
     background: #CC3D36;
-    border:0 none;
-    cursor:pointer;
+    border: 0 none;
+    cursor: pointer;
     font-weight: bold;
     -webkit-border-radius: 4px;
     border-radius: 4px;
     float: right;
     display: inline-block;
 }
-
 /* Leaflet maps
 --------------------------------------------------------------------- */
 
@@ -450,8 +484,8 @@ input[type=submit] {
 }
 
 .leaflet-tile-pane {
-    -webkit-filter: grayscale(100%);
-    filter: grayscale(100%);
+    /*-webkit-filter: grayscale(100%);*/
+    /*filter: grayscale(100%);*/
 }
 
 .leaflet-div-icon {

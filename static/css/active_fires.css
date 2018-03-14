@@ -282,14 +282,30 @@ body {
 
 /* attached-files
 --------------------------------------------------------------------- */
-#link-active-fires-files {
-
+#footer-links {
     text-align: center;
-    color: #666;
     padding: 2px;
     margin-top: 10px;
     font-size: 12px;
-
+    clear: both;
+    position: absolute;
+    bottom: 60px;
+    width: calc(300px - 18px);
+    font-size: 0.85em;
+    font-weight: bold;
+}
+.link a {
+    color: #CC3D36;
+    text-decoration: none;
+    margin: 2px;
+    padding: 1px 3px;
+}
+.link a:hover {
+    color: white;
+    background-color: #CC3D36;
+    text-decoration: none;
+    padding: 1px 3px;
+    border-radius: 3px;
 }
 
 /* text code
@@ -313,7 +329,7 @@ body {
     padding: 1px;
     padding-top: 3px;
     font-size: 12px;
-    border-top: 1px dashed #d3d3d3;
+    border-top: 1.2px dashed #d3d3d3;
     font-style: italic;
     /*font-weight: lighter;*/
     vertical-align: bottom;

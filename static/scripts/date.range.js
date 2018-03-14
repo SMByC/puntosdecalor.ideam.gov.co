@@ -63,7 +63,6 @@ $(function () {
         ],
         monthSelect: false,  // https://github.com/longbill/jquery-date-range-picker/issues/412
         yearSelect: true,
-        selectForward: false,
 	});
 
 });

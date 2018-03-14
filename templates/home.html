@@ -121,16 +121,16 @@
         <div id="date-range">
             De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
         </div>
-        {# extent input (hidden) #}
-        <div>
-            {{ form.extent.as_hidden }}
-        </div>
-        <input type="submit" value="Recalcular" />
     </form>
     <div class="lateral-item-subtitle" >Encontrados {{ qs_active_fires_in_period|length }} puntos activos</div>
 
-    <div id="link-active-fires-files">
-        <a href="/ftp_files/">Archivos planos de puntos activos de incendios</a>
+    <div id="footer-links">
+        <span class="link">
+            <a href="/acerca-de/">Acerca de</a>
+        </span>
+        <span class="link">
+            <a href="/archivos-ftp/">Archivos ftp</a>
+        </span>
     </div>
     {% comment %}<div id="content-footer">
         <p>Puntos de incendios proveniente del sistema LANCE de los satelites de MODIS Terra & Aqua de la NASA</p>

@@ -185,6 +185,7 @@ body {
     overflow: hidden;
     width: calc(100% - 300px);
     min-width: 550px;
+    min-height: 300px;
     z-index: 0;
 }
 
@@ -201,6 +202,7 @@ body {
     overflow: hidden;
     height: calc(100vh - 40px - 11px);
     width: calc(300px - 18px);
+    min-height: 300px;
 }
 
 .lateral-item-title {

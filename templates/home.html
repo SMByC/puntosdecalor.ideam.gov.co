@@ -114,15 +114,44 @@
 {% endblock %}
 
 {% block lateral-content %}
-    <div class="lateral-item-title" >Puntos activos de incendios</div>
-    <form action="/new-parameters/" method="get">
-        {# date range input #}
-        <div class="lateral-item-subtitle" >Periodo</div>
+    <div id="lateral-content-title" >Selección</div>
+    <div id="lateral-content-update" >Última actualización:</div>
+    {# date range input #}
+    <div class="lateral-item">
+        <div class="lateral-item-title" >Periodo</div>
+        <div class="lateral-item-content" >Seleccione el periodo para mostrar los puntos de calor en el rango de fechas seleccionadas:
+            <div id="date-range">
+                De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
+            </div>
+        </div>
+    </div>
+
+    {# Region #}
+    <div class="lateral-item">
+        <div class="lateral-item-title" >Region</div>
+        <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de él:</div>
         <div id="date-range">
             De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
         </div>
-    </form>
-    <div class="lateral-item-subtitle" >Encontrados {{ qs_active_fires_in_period|length }} puntos activos</div>
+    </div>
+
+    {# Satellite #}
+    <div class="lateral-item">
+        <div class="lateral-item-title" >Satelite</div>
+        <div class="lateral-item-content" >Seleccione el satelite origen para mostrar unicamente los detectados por éste:</div>
+        <div id="date-range">
+            De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
+        </div>
+    </div>
+
+    {# Result #}
+    <div class="lateral-item">
+        <div class="lateral-item-title" >Resultado</div>
+        <div class="lateral-item-content" >
+            Encontrados <span id="number-result">{{ qs_active_fires_in_period|length }}</span> puntos de calor.<br>
+            Archivo csv de los resultados:<span class="link"><a href="/descargar-resultado/">descargar</a></span>
+        </div>
+    </div>
 
     <div id="footer-links">
         <span class="link">

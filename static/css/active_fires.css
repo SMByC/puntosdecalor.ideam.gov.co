@@ -189,7 +189,7 @@ body {
     z-index: 0;
 }
 
-/* Lateral bar items
+/* Lateral content
 --------------------------------------------------------------------- */
 
 #lateral-content {
@@ -205,16 +205,41 @@ body {
     min-height: 300px;
 }
 
+#lateral-content-title {
+    display: inline-block;
+    width: calc(300px - 18px);
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #6e6e6e;
+    text-align: center;
+    margin-top: 5px;
+}
+
+#lateral-content-update {
+    display: inline-block;
+    width: calc(300px - 18px);
+    font-size: 0.9em;
+    font-weight: normal;
+    color: #6e6e6e;
+    text-align: center;
+    font-style: italic;
+}
+
+.lateral-item {
+    display: inline-block;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    padding: 5px;
+}
+
 .lateral-item-title {
     display: inline-block;
     font-size: 1.2em;
     font-weight: bold;
     color: #6e6e6e;
-    margin-top: 12px;
-    margin-bottom: 0px;
-    text-align: center;
+    text-align: left;
     padding: 5px;
-    padding-bottom: 2px;
+    padding-bottom: 1px;
     padding-left: 10px;
 }
 
@@ -235,27 +260,24 @@ body {
     display: none;
 }
 
-.color-legend {
-    color: #666;
-    margin-top: 7px;
-    padding: 3px 1px;
-    font-size: 90%;
-}
+/* period range dates */
 
-.color-legend tr {
-    line-height: 0px;
-}
-
-.color-legend td {
+#date-range {
+    width: calc(100% - 16px);
+    padding: 4px 8px;
     text-align: center;
-    height: 7px;
-    vertical-align: bottom;
 }
 
-.color-legend tr:first-child td {
-    height: 5px;
+div#date-range input#date-range-from, div#date-range input#date-range-to {
+    font-size: 1em;
+    color: #666;
+    font-weight: bold;
 }
 
+#number-result {
+    color: #CC3D36;
+    font-weight: bold;
+}
 
 /* table
 --------------------------------------------------------------------- */
@@ -428,11 +450,6 @@ hr {
 
 /* date range picker
 --------------------------------------------------------------------- */
-
-#date-range {
-    width: calc(100% - 16px);
-    padding: 4px 8px;
-}
 
 /* overwrite daterangepicker.css*/
 .date-picker-wrapper {

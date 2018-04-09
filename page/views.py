@@ -11,7 +11,6 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
 from djgeojson.views import GeoJSONLayerView
 
-from page.forms import Parameters
 from page.models import ActiveFire
 
 
@@ -78,8 +77,6 @@ def home(request):
     else:
         return init(request)
 
-    form = Parameters(initial={'date_range': from_date + " - " + to_date, 'extent': extent})
-
     # get list of active fires inside period
     from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
     to_datetime = datetime.strptime(to_date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
@@ -89,7 +86,6 @@ def home(request):
     get_parameters = urlencode({'from_date': from_date, 'to_date': to_date})
 
     context = {
-        "form": form,
         "qs_active_fires_in_period": qs_active_fires_in_period,
         "get_parameters": get_parameters,
         "extent_points": extent_points

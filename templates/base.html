@@ -15,10 +15,8 @@
 	{# jQuery #}
     <script type="text/javascript" src="{% static 'scripts/jquery-3.3.1.min.js' %}"></script>
 
-	{% leaflet_js %}
-    {% leaflet_css %}
-
     {# Date range picker #}
+    {#  https://github.com/longbill/jquery-date-range-picker #}
     <link rel="stylesheet" type="text/css" href="{% static "css/daterangepicker.min.css" %}" />
     <script type="text/javascript" src="{% static 'scripts/moment.min.js' %}"></script>
     <script type="text/javascript" src="{% static 'scripts/jquery.daterangepicker.min.js' %}"></script>
@@ -27,6 +25,9 @@
     {# Lightweight URL manipulation with JavaScript https://github.com/Mikhus/domurl #}
     <script src="{% static 'scripts/url.min.js' %}"></script>
 
+    {# leaflet map #}
+	{% leaflet_js %}
+    {% leaflet_css %}
 	{% block leaflet_scripts %}
 	{% endblock %}
 

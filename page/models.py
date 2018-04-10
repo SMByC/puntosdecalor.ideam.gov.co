@@ -65,45 +65,8 @@ class ActiveFire(models.Model):
     confidence = models.PositiveIntegerField(null=True)  # Confidence (0–100%) or None (for VIIRS)
     frp = models.FloatField(null=True)  # Fire Radiative Power (MW) or None (for VIIRS)
 
-    popup_text = models.TextField(null=True, blank=True)
-
     def __unicode__(self):
         return self.name
 
     class Meta:
         ordering = ['date', 'source']
-
-    def set_popup_text(self):
-        """
-        The popup text when the user do click over active
-        fire icon in the map.
-
-        Resetting the popup_text for all active fires in DB:
-            from page.models import ActiveFire
-            active_fires = ActiveFire.objects.all()
-            for active_fire in active_fires:
-                active_fire.set_popup_text()
-                active_fire.save()
-        """
-        self.popup_text = \
-            '<p>Fecha: {datetime}HLC<br/>' \
-            'Temp. brillo: {brightness} ºC<br/>' \
-            'Confianza: {confidence} %<br/>' \
-            'Radiación térmica: {frp} MW<br/>'\
-            'Lon: {lon}  Lat: {lat}<br/>'\
-            'Satelite: {source}<br/></p>' \
-            .format(
-                datetime=self.date.strftime("%Y-%m-%d %H:%M"),
-                brightness=round(self.brightness - 273.15, 2),
-                confidence='--' if self.confidence is None else self.confidence,
-                frp='--' if self.frp is None else self.frp,
-                lat=round(self.geom.y, 3),
-                lon=round(self.geom.x, 3),
-                source=self.source,
-            )
-
-    def save(self, *args, **kwargs):
-        # set the popup_text of active fire
-        if not self.popup_text:
-            self.set_popup_text()
-        super(ActiveFire, self).save(*args, **kwargs)

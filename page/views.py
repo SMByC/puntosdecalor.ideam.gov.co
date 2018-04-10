@@ -4,9 +4,10 @@
 #  (c) Copyright SMByC-IDEAM, 2016-2018
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
+import json
 from datetime import datetime, date
 from urllib.parse import urlencode
-
+from django.http import HttpResponse
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
 from djgeojson.views import GeoJSONLayerView
@@ -14,7 +15,7 @@ from djgeojson.views import GeoJSONLayerView
 from page.models import ActiveFire
 
 
-class ActiveFireMapLayer(GeoJSONLayerView):
+class ActiveFiresMapLayer(GeoJSONLayerView):
     def get_queryset(self):
         """Inspired by Glen Roberton's django-geojson-tiles view
         """
@@ -27,6 +28,35 @@ class ActiveFireMapLayer(GeoJSONLayerView):
         qs = self.model.objects.filter(date__gte=from_datetime, date__lte=to_datetime)
         return qs
 
+
+#### Ajax and json queries
+
+def get_popup(request):
+    id = int(request.GET["id"])
+    active_fire = ActiveFire.objects.get(id=id)
+    popup_text = \
+        '<span style="font-style: italic;display: block;text-align: center;">Foco de calor</span>' \
+        '<hr>' \
+        'Fecha: {datetime} HLC<br/>' \
+        'Lon: {lon}&ensp;Lat: {lat}<br/>' \
+        'Satélite: {source}<br/>' \
+        '<hr>' \
+        'Temp. brillo: {brightness} C<br/>' \
+        'Confianza: {confidence} %<br/>' \
+        'Radiación térmica: {frp} MW<br/>' \
+        .format(
+            datetime=active_fire.date.strftime("%Y-%m-%d %H:%M"),
+            lon=round(active_fire.geom.x, 3),
+            lat=round(active_fire.geom.y, 3),
+            source=active_fire.source,
+            brightness=round(active_fire.brightness - 273.15, 2),
+            confidence='--' if active_fire.confidence is None else active_fire.confidence,
+            frp='--' if active_fire.frp is None else active_fire.frp,
+        )
+    return HttpResponse(json.dumps(popup_text))
+
+
+#### Django response
 
 def response_with_get_parameters(base_path, parameters):
     """Redirect to the url with get parameters"""

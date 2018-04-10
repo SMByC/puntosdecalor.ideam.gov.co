@@ -20,8 +20,10 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     # set new parameters from form by user
     url(r'^new-parameters/$', views.new_parameters, name='new_parameters'),
-    # send data through ajax with geojson
-    url(r'^data.geojson/$', views.ActiveFireMapLayer.as_view(model=ActiveFire, properties=('popup_text',)), name='data'),
+    # active fires points - send data through ajax with geojson
+    url(r'^active_fires.geojson/$', views.ActiveFiresMapLayer.as_view(model=ActiveFire, properties=('id',)), name='active-fires'),
+    # get popup information
+    url(r'^get_popup.geojson/$', views.get_popup, name='get-popup'),
 
     ### for static ftp csv files of hostpot
     url(r'^archivos-ftp/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/activefires/apps/Active_Fires/page/data/ftp_files', 'show_indexes': True}),

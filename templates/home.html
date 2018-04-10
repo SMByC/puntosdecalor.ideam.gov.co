@@ -20,7 +20,7 @@
             map.fitBounds({{ extent_points }});
         }
 
-        {# change the extent in url and form when the user move map #}
+        {# change the extent in url when the user move map #}
         function synchronize_extent(map, options) {
             map.on('moveend', function() {
                 var bounds = map.getBounds();
@@ -48,28 +48,57 @@
             popupAnchor: [0.5, -30] // point from which the popup should open relative to the iconAnchor
         });
 
-        function add_active_fires(map, options) {
-            {# L.marker([4, -80], {icon: fireIcon}).addTo(map).bindPopup("I am a green leaf.");#}
-            {# L.marker([4, -80]).addTo(map).bindPopup("I am a green leaf.");#}
-
-            var dataurl = "{% url 'data' %}" + "?" + "{{ get_parameters }}";
+        function active_fires(map, options) {
+            $.ajaxSetup({async: true});
+            // clear all markers in the map before add the new
+            if ( typeof map.markers !== 'undefined') {
+                map.removeLayer(map.markers);
+            }
+            var markers = new L.FeatureGroup();
+            var data_url = "{% url 'active-fires' %}" + window.location.search;
             // Download GeoJSON via Ajax
-            $.getJSON(dataurl, function (data) {
+            $.getJSON(data_url, function (data) {
                 // Add GeoJSON layer
                 L.geoJson(data, {
                     pointToLayer: function (feature, latlng) {
-                    {# alert(JSON.stringify(feature, null, 4));#}
-                        return L.marker(latlng, {icon: fireIcon}).addTo(map).bindPopup(feature.properties.popup_text);
+                        // market
+                        // return L.marker(latlng, {icon: fireIcon}).addTo(map).bindPopup(feature.properties.popup_text);
+                        var marker = L.marker(latlng, {
+                            icon: L.divIcon({
+                                html: '<svg transform="scale(1 1)" viewBox="-1 -1 2 2">  <circle cx="0" cy="0" r="0.9" fill-opacity="0.6" fill="#CC3D36" /></svg>'
+                            })
+                        });
+                        // popup
+                        marker.bindPopup("");
+                        function onPopupClick(e) {
+                            var popup = e.target.getPopup();
+                            $.ajax({
+                                url: "{% url 'get-popup' %}" + window.location.search,
+                                data: {id: feature.properties.id},
+                                dataType: 'json',
+                                async: true,
+                            })
+                            .done(function(popup_text) {
+                                popup.setContent(popup_text);
+                                popup.update();
+                            });
+                        }
+                        marker.on('click', onPopupClick );
+                        // add this market
+                        markers.addLayer(marker);
                 }});
             });
+            // add to map
+            map.addLayer(markers);
+            // save markers in map variable
+            map.markers = markers
         }
     </script>
 
     {#  Cargar mapa  #}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         function load_map(map, options) {
-            add_active_fires(map, options);
-            {# add_area_estudio(map, options);#}
+            active_fires(map, options);
             set_extent(map, options);
             synchronize_extent(map, options)
         }

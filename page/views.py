@@ -80,18 +80,6 @@ def init(request):
                                               'extent': extent})
 
 
-def new_parameters(request):
-    # set the new period
-    date_range = request.GET.get('date_range')
-    from_date = date_range.split(' - ')[0]
-    to_date = date_range.split(' - ')[1]
-    # set the extent
-    extent = request.GET.get('extent')
-    # redirect to a new URL:
-    return response_with_get_parameters('/', {'from_date': from_date, 'to_date': to_date,
-                                              'extent': extent})
-
-
 def home(request):
     # capturing the date range of period
     if 'from_date' in request.GET and 'to_date' in request.GET and 'extent'in request.GET:

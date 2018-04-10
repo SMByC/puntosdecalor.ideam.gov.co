@@ -18,8 +18,6 @@ urlpatterns = [
 
     # master view and process
     url(r'^$', views.home, name='home'),
-    # set new parameters from form by user
-    url(r'^new-parameters/$', views.new_parameters, name='new_parameters'),
     # active fires points - send data through ajax with geojson
     url(r'^active_fires.geojson/$', views.ActiveFiresMapLayer.as_view(model=ActiveFire, properties=('id',)), name='active-fires'),
     # get popup information

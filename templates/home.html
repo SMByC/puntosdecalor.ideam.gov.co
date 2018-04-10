@@ -23,19 +23,13 @@
         {# change the extent in url and form when the user move map #}
         function synchronize_extent(map, options) {
             map.on('moveend', function() {
-                var u = new Url;  {# from scripts/url.min.js #}
                 var bounds = map.getBounds();
                 {# change locations maps #}
                 {# nw_lat nw_lgn se_lat se_lng #}
-                u.query.extent = "("+bounds.getNorthWest().lat+"_"+bounds.getNorthWest().lng
-                                +"_"+bounds.getSouthEast().lat+"_"+bounds.getSouthEast().lng+")";
-
-                {# update extent in hidden extent form #}
-                $('input[name=extent]').val(u.query.extent);
-
+                var new_extent = "("+bounds.getNorthWest().lat+"_"+bounds.getNorthWest().lng
+                                 +"_"+bounds.getSouthEast().lat+"_"+bounds.getSouthEast().lng+")";
                 {# update extent in url get parameter #}
-                var getParameters = '?' + u.query.toString();
-                history.pushState('', '', getParameters);
+                updateUrlParameter("extent", new_extent);
             });
         }
     </script>

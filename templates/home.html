@@ -26,6 +26,16 @@
                 updateUrlParameter("extent", new_extent);
             });
         }
+
+        $(function () {
+            // fill the period from the url get parameters
+            var from_date = getParameterByName("from_date");
+            var to_date = getParameterByName("to_date");
+            if ((from_date !== null) && (to_date !== null)) {
+                $('#date-range').data('dateRangePicker').setDateRange(from_date, to_date);
+            }
+
+        });
     </script>
 
     {#  Leaflet and maps javascripts  #}
@@ -94,7 +104,14 @@
         function load_map(map, options) {
             active_fires(map, options);
             set_extent(map, options);
-            synchronize_extent(map, options)
+            synchronize_extent(map, options);
+
+            // update the map after date change
+            $('#date-range').on('datepicker-change', function (event, obj) {
+                updateUrlParameter("from_date", moment(obj.date1).format("YYYY-MM-DD"));
+                updateUrlParameter("to_date", moment(obj.date2).format("YYYY-MM-DD"));
+                active_fires(map, options);
+            });
         }
     </script>
 {% endblock %}

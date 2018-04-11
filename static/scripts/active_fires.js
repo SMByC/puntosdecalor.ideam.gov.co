@@ -73,11 +73,4 @@ $(function () {
         $("div#header-menu").find("li").first().addClass("menuOn")
     }
 
-    // fill the period from the url get parameters
-    var from_date = getParameterByName("from_date");
-    var to_date = getParameterByName("to_date");
-    if ((from_date !== null) && (to_date !== null)) {
-        $('#date-range').data('dateRangePicker').setDateRange(from_date, to_date);
-    }
-
 });

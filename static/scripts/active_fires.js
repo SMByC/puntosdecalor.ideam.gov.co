@@ -48,12 +48,14 @@ function getParameterByName(name, url) {
 
 $(function () {
     // wait cursor for request ajax
+    var map_mouse;
     $(document).ajaxStart(function() {
         $(document.body).css({'cursor' : 'wait'});
+        map_mouse = $('#active_fires_map').css('cursor');
         $('#active_fires_map').css({'cursor' : 'wait'});
     }).ajaxStop(function() {
         $(document.body).css({'cursor' : 'default'});
-        $('#active_fires_map').css({'cursor' : 'default'});
+        $('#active_fires_map').css({'cursor' : map_mouse});
     });
 
     //MENU-HEADER

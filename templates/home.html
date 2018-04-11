@@ -91,11 +91,13 @@
                         // add this market
                         markers.addLayer(marker);
                 }});
+                // update the number-result
+                $('#number-result').text(data.features.length);
             });
             // add to map
             map.addLayer(markers);
             // save markers in map variable
-            map.markers = markers
+            map.markers = markers;
         }
     </script>
 
@@ -142,12 +144,13 @@
     {# Region #}
     <div class="lateral-item">
         <div class="lateral-item-title" >Region</div>
-        <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de él:</div>
+        <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de éste:</div>
         <div id="">
             De: <input id="" size="9" value=""> a: <input id="to" size="9" value="">
         </div>
     </div>
 
+{% comment %}
     {# Satellite #}
     <div class="lateral-item">
         <div class="lateral-item-title" >Satelite</div>
@@ -156,12 +159,13 @@
             De: <input id="" size="9" value=""> a: <input id="to" size="9" value="">
         </div>
     </div>
+{% endcomment %}
 
     {# Result #}
     <div class="lateral-item">
         <div class="lateral-item-title" >Resultado</div>
         <div class="lateral-item-content" >
-            Encontrados <span id="number-result">{{ qs_active_fires_in_period|length }}</span> puntos de calor.<br>
+            Encontrados <span id="number-result"></span> puntos de calor.<br>
             Archivo csv de los resultados:<span class="link"><a href="/descargar-resultado/">descargar</a></span>
         </div>
     </div>

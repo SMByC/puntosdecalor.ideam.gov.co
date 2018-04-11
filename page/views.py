@@ -83,23 +83,16 @@ def init(request):
 def home(request):
     # capturing the date range of period
     if 'from_date' in request.GET and 'to_date' in request.GET and 'extent'in request.GET:
-        from_date = request.GET.get('from_date')
-        to_date = request.GET.get('to_date')
         # saved map location
         # extent -> [[lat-lng top-left], [lat-lng bottom-right]]
         extent = request.GET.get('extent')
         extent = [float(x) for x in extent.replace('(', '').replace(')', '').split('_')]
         extent = [[extent[0], extent[1]], [extent[2], extent[3]]]
-
     # request without get parameters (url clean or first view)
     else:
         return init(request)
 
-    # send the variables to process (variables that define the period, location, and more)
-    get_parameters = urlencode({'from_date': from_date, 'to_date': to_date})
-
     context = {
-        "get_parameters": get_parameters,
         "extent": extent
     }
 

@@ -86,27 +86,21 @@ def home(request):
         from_date = request.GET.get('from_date')
         to_date = request.GET.get('to_date')
         # saved map location
-        # extent_points -> [[lat-lng top-left], [lat-lng bottom-right]]
+        # extent -> [[lat-lng top-left], [lat-lng bottom-right]]
         extent = request.GET.get('extent')
-        extent_points = [float(x) for x in extent.replace('(', '').replace(')', '').split('_')]
-        extent_points = [[extent_points[0], extent_points[1]], [extent_points[2], extent_points[3]]]
+        extent = [float(x) for x in extent.replace('(', '').replace(')', '').split('_')]
+        extent = [[extent[0], extent[1]], [extent[2], extent[3]]]
 
     # request without get parameters (url clean or first view)
     else:
         return init(request)
 
-    # get list of active fires inside period
-    from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
-    to_datetime = datetime.strptime(to_date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
-    qs_active_fires_in_period = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime).order_by('-date')
-
     # send the variables to process (variables that define the period, location, and more)
     get_parameters = urlencode({'from_date': from_date, 'to_date': to_date})
 
     context = {
-        "qs_active_fires_in_period": qs_active_fires_in_period,
         "get_parameters": get_parameters,
-        "extent_points": extent_points
+        "extent": extent
     }
 
     return render(request, 'home.html', context)

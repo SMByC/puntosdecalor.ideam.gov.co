@@ -25,14 +25,15 @@
     {# leaflet map #}
 	{% leaflet_js %}
     {% leaflet_css %}
-	{% block leaflet_scripts %}
-	{% endblock %}
 
     {# custom jQuery #}
 	<script src="{% static "scripts/active_fires.js" %}" type="text/javascript"></script>
 
     {# custom CSS #}
 	<link rel="stylesheet" type="text/css" href="{% static "css/active_fires.css" %}" />
+
+	{% block javascripts %}
+	{% endblock %}
 
 	<link rel="shortcut icon" href="{% static "img/favicon.png" %}" />
 </head>

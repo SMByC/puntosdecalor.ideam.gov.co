@@ -33,10 +33,20 @@ function updateUrlParameter(key, value) {
     window.history.pushState('', '', updateQueryStringParameter(window.location.search, key, value));
 }
 
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+}
+
 //==============================================================================
 //run when DOM is ready
 
-jQuery(document).ready(function($){
+$(function () {
 
     //MENU-HEADER
     //activacion del submenu del menu principal de navegacion
@@ -51,6 +61,13 @@ jQuery(document).ready(function($){
     });
     if (sublink_activated == false) {
         $("div#header-menu").find("li").first().addClass("menuOn")
+    }
+
+    // fill the period from the url get parameters
+    var from_date = getParameterByName("from_date");
+    var to_date = getParameterByName("to_date");
+    if ((from_date !== null) && (to_date !== null)) {
+        $('#date-range').data('dateRangePicker').setDateRange(from_date, to_date);
     }
 
 });

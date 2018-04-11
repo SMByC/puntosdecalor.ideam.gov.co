@@ -4,20 +4,14 @@
 {% load leaflet_tags %}
 {% load geojson_tags %}
 
-{% block leaflet_scripts %}
+{% block javascripts %}
 
+    {#  General javascripts  #}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-
-        function popup(feature, layer) {
-            if (feature.properties && feature.properties.name) {
-                layer.bindPopup(feature.properties.name);
-            }
-        }
-
         {# apply extent #}
         function set_extent(map, options) {
             {# extent = [[lat-lng top-left], [lat-lng bottom-right]] #}
-            map.fitBounds({{ extent_points }});
+            map.fitBounds({{ extent }});
         }
 
         {# change the extent in url when the user move map #}
@@ -34,7 +28,7 @@
         }
     </script>
 
-    {#  Puntos activos de incendios  #}
+    {#  Leaflet and maps javascripts  #}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         var fireIcon = L.icon({
             iconUrl: "{% static "img/fire/active_fire.png" %}",
@@ -103,13 +97,6 @@
             synchronize_extent(map, options)
         }
     </script>
-
-    {#  Cargar mapa  #}
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
-
-
-    </script>
-
 {% endblock %}
 
 {% block title %}
@@ -139,8 +126,8 @@
     <div class="lateral-item">
         <div class="lateral-item-title" >Region</div>
         <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de él:</div>
-        <div id="date-range">
-            De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
+        <div id="">
+            De: <input id="" size="9" value=""> a: <input id="to" size="9" value="">
         </div>
     </div>
 
@@ -148,8 +135,8 @@
     <div class="lateral-item">
         <div class="lateral-item-title" >Satelite</div>
         <div class="lateral-item-content" >Seleccione el satelite origen para mostrar unicamente los detectados por éste:</div>
-        <div id="date-range">
-            De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
+        <div id="">
+            De: <input id="" size="9" value=""> a: <input id="to" size="9" value="">
         </div>
     </div>
 

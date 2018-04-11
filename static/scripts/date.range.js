@@ -31,12 +31,6 @@ $(function () {
                 }
             },
             {
-                name: '-1 Día',
-                dates: function () {
-                    return [moment().subtract(1, 'days').toDate(), moment().toDate()];
-                }
-            },
-            {
                 name: '-3 Días',
                 dates: function () {
                     return [moment().subtract(3, 'days').toDate(), moment().toDate()];
@@ -52,6 +46,12 @@ $(function () {
                 name: 'Mes actual',
                 dates: function () {
                     return [moment().startOf('month').toDate(), moment().toDate()];
+                }
+            },
+            {
+                name: '-3 Meses',
+                dates: function () {
+                    return [moment().subtract(3, 'months').toDate(), moment().toDate()];
                 }
             },
             {

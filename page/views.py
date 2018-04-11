@@ -92,8 +92,12 @@ def home(request):
     else:
         return init(request)
 
+    # get the last item
+    last_active_fire = ActiveFire.objects.order_by('date').last()
+
     context = {
-        "extent": extent
+        "extent": extent,
+        "last_update": last_active_fire.date,
     }
 
     return render(request, 'home.html', context)

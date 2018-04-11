@@ -130,7 +130,7 @@
 
 {% block lateral-content %}
     <div id="lateral-content-title" >Selección</div>
-    <div id="lateral-content-update" >Última actualización: <span id="last-update"></span></div>
+    <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ last_update|date:"N j, Y, P" }}</span></div>
     {# date range input #}
     <div class="lateral-item">
         <div class="lateral-item-title" >Periodo</div>

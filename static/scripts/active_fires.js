@@ -47,6 +47,14 @@ function getParameterByName(name, url) {
 //run when DOM is ready
 
 $(function () {
+    // wait cursor for request ajax
+    $(document).ajaxStart(function() {
+        $(document.body).css({'cursor' : 'wait'});
+        $('#active_fires_map').css({'cursor' : 'wait'});
+    }).ajaxStop(function() {
+        $(document.body).css({'cursor' : 'default'});
+        $('#active_fires_map').css({'cursor' : 'default'});
+    });
 
     //MENU-HEADER
     //activacion del submenu del menu principal de navegacion

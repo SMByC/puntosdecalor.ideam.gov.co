@@ -53,9 +53,13 @@ $(function () {
         $(document.body).css({'cursor' : 'wait'});
         map_mouse = $('#active_fires_map').css('cursor');
         $('#active_fires_map').css({'cursor' : 'wait'});
+        $('.month-wrapper table .day').css({'cursor' : 'wait'});
+        $('.custom-shortcut a').css({'cursor' : 'wait'});
     }).ajaxStop(function() {
         $(document.body).css({'cursor' : 'default'});
         $('#active_fires_map').css({'cursor' : map_mouse});
+        $('.month-wrapper table .day').css({'cursor' : 'pointer'});
+        $('.custom-shortcut a').css({'cursor' : 'pointer'});
     });
 
     //MENU-HEADER

@@ -272,6 +272,7 @@ div#period input#from-date, div#period input#to-date {
     font-size: 1em;
     color: #CC3D36;
     font-weight: bold;
+    text-align: center;
 }
 
 #number-result {
@@ -282,11 +283,18 @@ div#period input#from-date, div#period input#to-date {
 /* region list */
 
 div.lateral-item #region-div {
-    /*width: calc(100% - 16px);*/
-    padding: 4px 8px;
+    margin: 10px 0px;
     text-align: center;
 }
 
+span#select2-region-container.select2-selection__rendered {
+    color: #CC3D36;
+    font-weight: bold;
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: rgba(204, 61, 54, 0.66);
+}
 
 /* table
 --------------------------------------------------------------------- */

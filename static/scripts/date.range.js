@@ -1,6 +1,6 @@
 $(function () {
 
-    $('#date-range').dateRangePicker(
+    $('#period').dateRangePicker(
 	{
         autoClose: false,
 	    format: 'YYYY-MM-DD',
@@ -9,15 +9,15 @@ $(function () {
         startOfWeek: 'monday',
         getValue: function()
         {
-            if ($('#date-range-from').val() && $('#date-range-to').val() )
-                return $('#date-range-from').val() + ' a ' + $('#date-range-to').val();
+            if ($('#from-date').val() && $('#to-date').val() )
+                return $('#from-date').val() + ' a ' + $('#to-date').val();
             else
                 return '';
         },
         setValue: function(s,s1,s2)
         {
-            $('#date-range-from').val(s1);
-            $('#date-range-to').val(s2);
+            $('#from-date').val(s1);
+            $('#to-date').val(s2);
         },
         startDate: "2016-01-01",
         endDate: moment().endOf("day"),

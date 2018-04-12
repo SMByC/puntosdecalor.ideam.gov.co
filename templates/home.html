@@ -32,7 +32,7 @@
             var from_date = getParameterByName("from_date");
             var to_date = getParameterByName("to_date");
             if ((from_date !== null) && (to_date !== null)) {
-                $('#date-range').data('dateRangePicker').setDateRange(from_date, to_date);
+                $('#period').data('dateRangePicker').setDateRange(from_date, to_date);
             }
 
         });
@@ -109,7 +109,7 @@
             synchronize_extent(map, options);
 
             // update the map after date change
-            $('#date-range').on('datepicker-change', function (event, obj) {
+            $('#period').on('datepicker-change', function (event, obj) {
                 updateUrlParameter("from_date", moment(obj.date1).format("YYYY-MM-DD"));
                 updateUrlParameter("to_date", moment(obj.date2).format("YYYY-MM-DD"));
                 active_fires(map, options);
@@ -135,8 +135,8 @@
     <div class="lateral-item">
         <div class="lateral-item-title" >Periodo</div>
         <div class="lateral-item-content" >Seleccione el periodo para mostrar los puntos de calor en el rango de fechas seleccionadas:
-            <div id="date-range">
-                De: <input id="date-range-from" size="9" value=""> a: <input id="date-range-to" size="9" value="">
+            <div id="period">
+                De: <input id="from-date" size="7" value=""> a: <input id="to-date" size="7" value="">
             </div>
         </div>
     </div>

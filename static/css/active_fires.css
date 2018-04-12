@@ -254,6 +254,7 @@ body {
     margin-top: 2px;
     color: #666;
     text-align: justify;
+    font-size: 1.1em;
 }
 
 .lateral-item-disable {
@@ -262,13 +263,12 @@ body {
 
 /* period range dates */
 
-#date-range {
-    width: calc(100% - 16px);
-    padding: 4px 8px;
+#period {
+    margin: 10px 0px;
     text-align: center;
 }
 
-div#date-range input#date-range-from, div#date-range input#date-range-to {
+div#period input#from-date, div#period input#to-date {
     font-size: 1em;
     color: #CC3D36;
     font-weight: bold;

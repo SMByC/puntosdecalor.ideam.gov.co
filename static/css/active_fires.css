@@ -270,7 +270,7 @@ body {
 
 div#date-range input#date-range-from, div#date-range input#date-range-to {
     font-size: 1em;
-    color: #666;
+    color: #CC3D36;
     font-weight: bold;
 }
 
@@ -278,6 +278,15 @@ div#date-range input#date-range-from, div#date-range input#date-range-to {
     color: #CC3D36;
     font-weight: bold;
 }
+
+/* region list */
+
+div.lateral-item #region-div {
+    /*width: calc(100% - 16px);*/
+    padding: 4px 8px;
+    text-align: center;
+}
+
 
 /* table
 --------------------------------------------------------------------- */

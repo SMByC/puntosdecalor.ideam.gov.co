@@ -77,4 +77,6 @@ $(function () {
         $("div#header-menu").find("li").first().addClass("menuOn")
     }
 
+    // set the class to select2
+    $('#region').select2();
 });

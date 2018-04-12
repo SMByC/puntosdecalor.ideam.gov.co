@@ -145,8 +145,18 @@
     <div class="lateral-item">
         <div class="lateral-item-title" >Region</div>
         <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de éste:</div>
-        <div id="">
-            De: <input id="" size="9" value=""> a: <input id="to" size="9" value="">
+        <div id="region-div">
+            <select id="region" name="region">
+                <optgroup label="General">
+                    <option>Colombia</option>
+                </optgroup>
+                <optgroup label="Regiones naturales">
+                    <option>region del amazonas</option>
+                </optgroup>
+                {% for region in regions %}
+                    <option value={{ region.slug }}>{{ region.name }}</option>
+                {% endfor %}
+            </select>
         </div>
     </div>
 

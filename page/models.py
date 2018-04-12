@@ -70,3 +70,9 @@ class ActiveFire(models.Model):
 
     class Meta:
         ordering = ['date', 'source']
+
+
+class Region(models.Model):
+    name = models.CharField(max_length=80)
+    slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)
+    shape = models.MultiPolygonField()

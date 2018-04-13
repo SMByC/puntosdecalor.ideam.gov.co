@@ -8,7 +8,7 @@ from django.conf.urls import url
 from django.contrib.gis import admin
 
 from page import views, static_hotspot_files
-from page.models import ActiveFire
+from page.models import ActiveFire, Region
 
 urlpatterns = [
     # Examples:
@@ -18,6 +18,8 @@ urlpatterns = [
 
     # master view and process
     url(r'^$', views.home, name='home'),
+    # get region
+    url(r'^region.geojson/$', views.RegionMapLayer.as_view(model=Region, geometry_field='shape', properties=('name')), name='region'),
     # active fires points - send data through ajax with geojson
     url(r'^active_fires.geojson/$', views.ActiveFiresMapLayer.as_view(model=ActiveFire, properties=('id',)), name='active-fires'),
     # get popup information

@@ -15,18 +15,33 @@ from djgeojson.views import GeoJSONLayerView
 from page.models import ActiveFire, Region
 
 
+class RegionMapLayer(GeoJSONLayerView):
+    def get_queryset(self):
+        if self.request.method == 'GET' and 'region' in self.request.GET:
+            region_slug = self.request.GET.get('region')
+            qs = self.model.objects.filter(slug=region_slug)
+            return qs
+
+
 class ActiveFiresMapLayer(GeoJSONLayerView):
     def get_queryset(self):
         """Inspired by Glen Roberton's django-geojson-tiles view
         """
-        from_date = self.request.GET.get('from_date')
-        to_date = self.request.GET.get('to_date')
+        if self.request.method == 'GET' and 'from_date' in self.request.GET \
+                and 'to_date' in self.request.GET and 'region' in self.request.GET:
+            from_date = self.request.GET.get('from_date')
+            to_date = self.request.GET.get('to_date')
+            region_slug = self.request.GET.get('region')
 
-        from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
-        to_datetime = datetime.strptime(to_date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+            from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+            to_datetime = datetime.strptime(to_date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
 
-        qs = self.model.objects.filter(date__gte=from_datetime, date__lte=to_datetime)
-        return qs
+            if region_slug == "colombia":
+                active_fires = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime)
+            else:
+                region = Region.objects.get(slug=region_slug)
+                active_fires = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime, geom__within=region.shape)
+            return active_fires
 
 
 #### Ajax and json queries
@@ -71,13 +86,15 @@ def init(request):
     # initialize the from_date (-1 days) and to_date (now)
     from_date = date.today() + relativedelta(days=-1)
     to_date = date.today()
-
     # set extent for Colombia
     extent = "(16.130262012034756_-94.39453125_-6.970049417296218_-51.37207031249999)"
+    # default region
+    region = "colombia"
 
     return response_with_get_parameters('/', {'from_date': from_date.isoformat(),
                                               'to_date': to_date.isoformat(),
-                                              'extent': extent})
+                                              'extent': extent,
+                                              'region': region})
 
 
 def home(request):

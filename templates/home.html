@@ -34,12 +34,44 @@
             if ((from_date !== null) && (to_date !== null)) {
                 $('#period').data('dateRangePicker').setDateRange(from_date, to_date);
             }
-
+            var get_region = getParameterByName("region");
+            $('#region').val(get_region).trigger('change');
         });
     </script>
 
     {#  Leaflet and maps javascripts  #}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+        // REGIONS
+
+        var region_style = {
+            'color': '#2b2b2b',
+            'weight': 2,
+            'opacity': 0.4,
+            'fillOpacity': 0.03,
+            'interactive': false,
+        };
+        function region(map, new_region) {
+            // set asynchronize ajax
+            $.ajaxSetup({async: true});
+            // clear all markers in the map before add the new
+            if ( typeof map.shapes !== 'undefined') {
+                map.removeLayer(map.shapes);
+            }
+            var shapes = new L.FeatureGroup();
+            var data_url = "{% url 'region' %}" + "?region=" + new_region;
+            // Download GeoJSON via Ajax
+            $.getJSON(data_url, function (data) {
+                var shape = L.geoJson(data, {style: region_style});
+                shapes.addLayer(shape);
+            });
+            // add to map
+            map.addLayer(shapes);
+            // save markers in map variable
+            map.shapes = shapes;
+        }
+
+        // ACTIVE FIRES POINTS
+
         var fireIcon = L.icon({
             iconUrl: "{% static "img/fire/active_fire.png" %}",
 {#            shadowUrl: "{% static "img/fire/active_fire_shadow.png" %}", TODO #}
@@ -104,14 +136,24 @@
     {#  Cargar mapa  #}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         function load_map(map, options) {
+            // load map in request url with get parameter
             set_extent(map, options);
             synchronize_extent(map, options);
+            region(map, getParameterByName("region"));
             active_fires(map, options);
 
             // update the map after date change
             $('#period').on('datepicker-change', function (event, obj) {
                 updateUrlParameter("from_date", moment(obj.date1).format("YYYY-MM-DD"));
                 updateUrlParameter("to_date", moment(obj.date2).format("YYYY-MM-DD"));
+                active_fires(map, options);
+            });
+
+            // load region/points when changed the drop-list
+            $('#region').change(function() {
+                var new_region = $(this).val();
+                updateUrlParameter("region", new_region);
+                region(map, new_region);
                 active_fires(map, options);
             });
         }
@@ -159,8 +201,8 @@
                 </optgroup>
 
                 <optgroup label="Regiones Naturales">
-                {% for department in departments %}
-                    <option value={{ department.slug }}>{{ department.name }}</option>
+                {% for natural_region in natural_regions %}
+                    <option value={{ natural_region.slug }}>{{ natural_region.name }}</option>
                 {% endfor %}
                 </optgroup>
 

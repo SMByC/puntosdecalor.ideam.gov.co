@@ -80,6 +80,6 @@ $(function () {
     // set the class to select2
     $('#region').select2({
         language: "es",
-        width: '90%'
+        width: '75%'
     });
 });

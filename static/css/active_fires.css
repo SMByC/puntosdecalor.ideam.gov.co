@@ -218,7 +218,7 @@ body {
 #lateral-content-update {
     display: inline-block;
     width: calc(300px - 18px);
-    font-size: 0.9em;
+    font-size: 0.95em;
     font-weight: normal;
     color: #6e6e6e;
     text-align: center;

@@ -147,15 +147,23 @@
         <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de éste:</div>
         <div id="region-div">
             <select id="region" name="region">
+
                 <optgroup label="General">
-                    <option>Colombia</option>
+                    <option value="colombia">Colombia</option>
                 </optgroup>
-                <optgroup label="Regiones naturales">
-                    <option>region del amazonas</option>
-                </optgroup>
-                {% for region in regions %}
-                    <option value={{ region.slug }}>{{ region.name }}</option>
+
+                <optgroup label="Departamentos">
+                {% for department in departments %}
+                    <option value={{ department.slug }}>{{ department.name }}</option>
                 {% endfor %}
+                </optgroup>
+
+                <optgroup label="Regiones Naturales">
+                {% for department in departments %}
+                    <option value={{ department.slug }}>{{ department.name }}</option>
+                {% endfor %}
+                </optgroup>
+
             </select>
         </div>
     </div>

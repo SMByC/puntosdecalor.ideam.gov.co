@@ -12,7 +12,7 @@ from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
 from djgeojson.views import GeoJSONLayerView
 
-from page.models import ActiveFire
+from page.models import ActiveFire, Region
 
 
 class ActiveFiresMapLayer(GeoJSONLayerView):
@@ -95,9 +95,15 @@ def home(request):
     # get the last item
     last_active_fire = ActiveFire.objects.order_by('date').last()
 
+    # get groups of regions
+    departments = Region.objects.filter(group="departamentos").order_by('name')
+    natural_regions = Region.objects.filter(group="regiones_naturales").order_by('name')
+
     context = {
         "extent": extent,
         "last_update": last_active_fire.date,
+        "departments": departments,
+        "natural_regions": natural_regions,
     }
 
     return render(request, 'home.html', context)

@@ -72,7 +72,11 @@ class ActiveFire(models.Model):
         ordering = ['date', 'source']
 
 
+REGION_GROUPS = (('departamentos', 'Departamentos'), ('regiones_naturales', 'Regiones Naturales'))
+
+
 class Region(models.Model):
     name = models.CharField(max_length=80)
     slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)
+    group = models.CharField(choices=REGION_GROUPS, max_length=30, null=True, blank=True)
     shape = models.MultiPolygonField()

@@ -32,6 +32,12 @@
 	{% leaflet_js %}
     {% leaflet_css %}
 
+    {# leaflet cluster #}
+    {#  https://github.com/Leaflet/Leaflet.markercluster #}
+    <link href="{% static "css/MarkerCluster.css" %}" rel="stylesheet" />
+    <link href="{% static "css/MarkerCluster.Default.css" %}" rel="stylesheet" />
+    <script type="text/javascript" src="{% static 'scripts/leaflet.markercluster.js' %}"></script>
+
     {# custom jQuery #}
 	<script src="{% static "scripts/active_fires.js" %}" type="text/javascript"></script>
 

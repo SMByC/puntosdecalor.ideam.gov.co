@@ -90,7 +90,12 @@
             if ( typeof map.markers !== 'undefined') {
                 map.removeLayer(map.markers);
             }
-            var markers = new L.FeatureGroup();
+            //var markers = new L.FeatureGroup();
+            var markers = new L.markerClusterGroup({
+                disableClusteringAtZoom: 12,
+                spiderfyOnMaxZoom: false,
+                animate: false,
+            });
             var data_url = "{% url 'active-fires' %}" + window.location.search;
             // Download GeoJSON via Ajax
             $.getJSON(data_url, function (data) {

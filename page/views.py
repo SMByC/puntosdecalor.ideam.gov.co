@@ -3,10 +3,10 @@
 #
 #  (c) Copyright SMByC-IDEAM, 2016-2018
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
-
+import csv
 import json
 from datetime import datetime, date
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse, parse_qs
 from django.http import HttpResponse
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
@@ -71,6 +71,41 @@ def get_popup(request):
     return HttpResponse(json.dumps(popup_text))
 
 
+def download_result(request):
+    # get the referer (previous) url with the query
+    url_referer = request.META.get('HTTP_REFERER')
+    query_params = parse_qs(urlparse(url_referer).query)
+    if 'from_date' in query_params and 'to_date' in query_params and 'region' in query_params:
+        from_date = query_params['from_date'][0]
+        to_date = query_params['to_date'][0]
+        region_slug = query_params['region'][0]
+        # get data
+        from_datetime = datetime.strptime(from_date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+        to_datetime = datetime.strptime(to_date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
+        try:
+            if region_slug == "colombia":
+                active_fires = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime)
+            else:
+                region = Region.objects.get(slug=region_slug)
+                active_fires = ActiveFire.objects.filter(date__gte=from_datetime, date__lte=to_datetime,
+                                                         geom__within=region.shape)
+        except:
+            return HttpResponse(status=204)
+        # generate the data
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(region_slug, from_date, to_date)
+
+        writer = csv.writer(response)
+        writer.writerow(['LON', 'LAT', 'DATETIME', 'SOURCE'])
+        for active_fire in active_fires:
+            writer.writerow([active_fire.geom.x, active_fire.geom.y,
+                             active_fire.date.strftime("%Y-%m-%d %H:%M"),
+                             active_fire.source])
+
+        return response
+
+    return HttpResponse(status=204)
+
 #### Django response
 
 def response_with_get_parameters(base_path, parameters):
@@ -84,22 +119,21 @@ def response_with_get_parameters(base_path, parameters):
 def init(request):
     """Set the default parameters from url clean or first view"""
     # initialize the from_date (-1 days) and to_date (now)
-    from_date = date.today() + relativedelta(days=-1)
-    to_date = date.today()
-    # set extent for Colombia
-    extent = "(16.130262012034756_-94.39453125_-6.970049417296218_-51.37207031249999)"
-    # default region
-    region = "colombia"
+    from_date = request.GET.get('from_date') if 'from_date' in request.GET else (date.today() + relativedelta(days=-1)).isoformat()
+    to_date = request.GET.get('to_date') if 'to_date' in request.GET else date.today().isoformat()
+    region = request.GET.get('region') if 'region' in request.GET else "colombia"
+    # saved map location
+    extent = request.GET.get('extent') if 'extent' in request.GET else "(16.130262012034756_-94.39453125_-6.970049417296218_-51.37207031249999)"
 
-    return response_with_get_parameters('/', {'from_date': from_date.isoformat(),
-                                              'to_date': to_date.isoformat(),
+    return response_with_get_parameters('/', {'from_date': from_date,
+                                              'to_date': to_date,
                                               'extent': extent,
                                               'region': region})
 
 
 def home(request):
     # capturing the date range of period
-    if 'from_date' in request.GET and 'to_date' in request.GET and 'extent'in request.GET:
+    if 'from_date' in request.GET and 'to_date' in request.GET and 'extent'in request.GET and 'region'in request.GET:
         # saved map location
         # extent -> [[lat-lng top-left], [lat-lng bottom-right]]
         extent = request.GET.get('extent')

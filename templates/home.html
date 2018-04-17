@@ -231,7 +231,9 @@
         <div class="lateral-item-title" >Resultado</div>
         <div class="lateral-item-content" >
             Encontrados <span id="number-result">...</span> puntos de calor.<br>
-            Archivo csv de los resultados:<span class="link"><a href="/descargar-resultado/">descargar</a></span>
+            Archivo csv de los resultados:<span class="link">
+            <a href="{% url 'download-result' %}">
+            descargar</a></span>
         </div>
     </div>
 

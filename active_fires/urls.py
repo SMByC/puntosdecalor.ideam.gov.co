@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^active_fires.geojson/$', views.ActiveFiresMapLayer.as_view(model=ActiveFire, properties=('id',)), name='active-fires'),
     # get popup information
     url(r'^get_popup.geojson/$', views.get_popup, name='get-popup'),
+    # download active fires points
+    url(r'^download-result/$', views.download_result, name='download-result'),
 
     ### for static ftp csv files of hostpot
     url(r'^archivos-ftp/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/activefires/apps/Active_Fires/page/data/ftp_files', 'show_indexes': True}),

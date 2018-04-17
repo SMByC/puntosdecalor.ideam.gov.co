@@ -74,14 +74,14 @@
 
         var fireIcon = L.icon({
             iconUrl: "{% static "img/fire/active_fire.png" %}",
-{#            shadowUrl: "{% static "img/fire/active_fire_shadow.png" %}", TODO #}
+            shadowUrl: "{% static "img/fire/active_fire_shadow.png" %}",
 
-            iconSize: [18, 30], // size of the icon
-            shadowSize: [37, 30], // size of the shadow
+            iconSize: [16, 28], // size of the icon
+            shadowSize: [30, 24], // size of the shadow
 
-            iconAnchor: [9, 30], // point of the icon which will correspond to marker's location
-            shadowAnchor: [4, 29],  // the same for the shadow
-            popupAnchor: [0.5, -30] // point from which the popup should open relative to the iconAnchor
+            iconAnchor: [8, 28], // point of the icon which will correspond to marker's location
+            shadowAnchor: [4, 23],  // the same for the shadow
+            popupAnchor: [0.5, -28] // point from which the popup should open relative to the iconAnchor
         });
 
         function active_fires(map, options) {
@@ -103,12 +103,15 @@
                 L.geoJson(data, {
                     pointToLayer: function (feature, latlng) {
                         // market
-                        // return L.marker(latlng, {icon: fireIcon}).addTo(map).bindPopup(feature.properties.popup_text);
+                        var marker = L.marker(latlng, {icon: fireIcon});
+                        {% comment %}
                         var marker = L.marker(latlng, {
                             icon: L.divIcon({
                                 html: '<svg transform="scale(1 1)" viewBox="-1 -1 2 2">  <circle cx="0" cy="0" r="0.9" fill-opacity="0.6" fill="#CC3D36" /></svg>'
                             })
                         });
+                        {% endcomment %}
+
                         // popup
                         marker.bindPopup("");
                         function onPopupClick(e) {

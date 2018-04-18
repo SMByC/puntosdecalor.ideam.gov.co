@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from dateutil.relativedelta import relativedelta
 from django.shortcuts import render, redirect
 from djgeojson.views import GeoJSONLayerView
+from django.http import StreamingHttpResponse
 
 from page.models import ActiveFire, Region
 
@@ -71,6 +72,12 @@ def get_popup(request):
     return HttpResponse(json.dumps(popup_text))
 
 
+class Echo:
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
+
+
 def download_result(request):
     # get the referer (previous) url with the query
     url_referer = request.META.get('HTTP_REFERER')
@@ -92,16 +99,15 @@ def download_result(request):
         except:
             return HttpResponse(status=204)
         # generate the data
-        response = HttpResponse(content_type='text/csv')
+        rows = [['LON', 'LAT', 'DATETIME', 'SOURCE']]
+        rows += [[active_fire.geom.x, active_fire.geom.y, active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.source]
+                 for active_fire in active_fires]
+
+        pseudo_buffer = Echo()
+        writer = csv.writer(pseudo_buffer)
+        response = StreamingHttpResponse((writer.writerow(row) for row in rows),
+                                         content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(region_slug, from_date, to_date)
-
-        writer = csv.writer(response)
-        writer.writerow(['LON', 'LAT', 'DATETIME', 'SOURCE'])
-        for active_fire in active_fires:
-            writer.writerow([active_fire.geom.x, active_fire.geom.y,
-                             active_fire.date.strftime("%Y-%m-%d %H:%M"),
-                             active_fire.source])
-
         return response
 
     return HttpResponse(status=204)

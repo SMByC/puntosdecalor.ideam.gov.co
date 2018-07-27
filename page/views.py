@@ -100,11 +100,12 @@ def download_result(request):
             return HttpResponse(status=204)
         # generate the data
         rows = [['LON', 'LAT', 'DATETIME', 'SOURCE']]
-        rows += [[active_fire.geom.x, active_fire.geom.y, active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.source]
+        rows += [[str(active_fire.geom.x).replace(".", ","), str(active_fire.geom.y).replace(".", ","),
+                  active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.source]
                  for active_fire in active_fires]
 
         pseudo_buffer = Echo()
-        writer = csv.writer(pseudo_buffer)
+        writer = csv.writer(pseudo_buffer, delimiter=";")
         response = StreamingHttpResponse((writer.writerow(row) for row in rows),
                                          content_type="text/csv")
         response['Content-Disposition'] = 'attachment; filename="{}_{}_{}.csv"'.format(region_slug, from_date, to_date)

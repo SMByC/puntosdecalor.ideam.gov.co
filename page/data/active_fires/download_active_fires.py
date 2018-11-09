@@ -11,8 +11,9 @@
 #  python3.6 download_active_fires.py -s viirs -d "2014-12-04"
 
 import sys, os
+from time import sleep
+from datetime import date, timedelta
 
-# change working directory to directory file
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 
 ######
@@ -47,8 +48,6 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 fh.setFormatter(formatter)
 log.addHandler(fh)
 
-##### Testing date arguments
-from datetime import date, timedelta, datetime
 
 if downloadDate == 'yesterday':
     yesterday = date.today() - timedelta(1)
@@ -63,82 +62,34 @@ log.info('processing date: %s' % downloadDate)
 
 downloadDateArr = downloadDate.split('-')
 
-#### FTP
-import ftplib
-
-# open FTP connection
-try:
-    ftp_host = cfg.get(args.source, 'ftp_host')
-    ftp_username = cfg.get(args.source, 'ftp_username')
-    ftp_password = cfg.get(args.source, 'ftp_password')
-    # if is empty get from environment variables of OS
-    if ftp_username == "":
-        ftp_username = os.environ.get("ftp_username", '')
-    if ftp_password == "":
-        ftp_password = os.environ.get("ftp_password", '')
-    tmp_file = ftplib.FTP(ftp_host, ftp_username, ftp_password)
-except Exception as e:
-    log.error('cannot login to ftp: %s' % cfg.get(args.source, 'ftp_host'))
-    log.error(e)
-    sys.exit()
-
-log.info('connected to ftp: %s' % cfg.get(args.source, 'ftp_host'))
-
-# changing directory
-try:
-    tmp_file.cwd(cfg.get(args.source, 'ftp_remote_path'))
-except Exception as e:
-    tmp_file.quit()
-    log.error('cannot CD to %s ' % cfg.get(args.source, 'ftp_remote_path'))
-    log.error(e)
-    sys.exit()
-
-log.info('CD to %s ' % cfg.get(args.source, 'ftp_remote_path'))
-
 # generating the filename - it uses julian date, 2013-06-03 = 154
 try:
     julianDay = date(int(downloadDateArr[0]), int(downloadDateArr[1]), int(downloadDateArr[2])).strftime('%j')
 except Exception as e:
-    tmp_file.quit()
     log.error('converting julian date from %s ' % downloadDateArr)
     log.error(e)
     sys.exit()
 
-log.debug('Julian day since begin of the year: %s' % julianDay)
+remoteFilename = cfg.get(args.source, 'basename') + downloadDateArr[0] + julianDay + '.txt'
+localFilename = cfg.get(args.source, 'local_path') + remoteFilename
 
-remoteFilename = cfg.get(args.source, 'ftp_basename') + downloadDateArr[0] + julianDay + '.txt'
-log.info('remote filename: %s' % remoteFilename)
-
-localFilename = cfg.get(args.source, 'ftp_local_path') + remoteFilename
-log.info('local filename: %s' % localFilename)
-
-# check if the file exists on the FTP site
-try:
-    fileSize = tmp_file.size(remoteFilename)
-except Exception as e:
-    tmp_file.quit()
-    log.error('File doesnt exist in the FTP: ' + remoteFilename)
-    log.error(e)
-    sys.exit()
-
-# downloading file
-try:
-    tmp_file.retrbinary('RETR %s' % remoteFilename, open(localFilename, 'wb').write)
-except Exception as e:
-    # os.unlink(localFilename)
-    tmp_file.quit()
-    log.error('cannot download: %s' % remoteFilename)
-    log.error(e)
-    sys.exit()
-
-log.info('donwloaded: %s' % remoteFilename)
-tmp_file.quit()
-log.info('closing connection to ftp')
-
-log.info('summary')
-log.info('today date: %s' % datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-log.info('processing date: %s' % downloadDate)
-log.info('total points imported %s' % (downloadDate))
+for attempt in range(10):
+    url = cfg.get(args.source, 'host') + cfg.get(args.source, 'remote_path') + remoteFilename
+    log.info('download started:  ' + url)
+    # download with wget
+    app_key = os.environ.get("app_key", '')
+    wget_cmd = "wget -e robots=off -m -np -R .html,.tmp -nH -nd --header" \
+               " \"Authorization: Bearer {}\" ".format(app_key) + url + " -P " + cfg.get(args.source, 'local_path')
+    wget_status = os.system(wget_cmd)
+    # TODO: check time for wget process
+    # check wget_status
+    if wget_status == 0:
+        log.info('download finished: ' + localFilename)
+        break
+    else:
+        # if wget_status =! 0 is due a some error
+        log.info("attempt " + str(attempt) + ': error downloading: ' + url)
+        sleep(120)
 
 ###########################################################################
 # import active fires to databases
@@ -163,4 +114,4 @@ return_code = os.popen("/usr/local/bin/python3.6 manage.py shell < page/data/act
 [print(i) for i in return_code]
 
 os.remove('page/data/active_fires/tmp_import.py')
-print("\nDONE")
+log.info("\nDONE")

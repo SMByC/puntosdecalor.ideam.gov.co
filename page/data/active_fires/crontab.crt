@@ -2,9 +2,9 @@ SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 
 # download and import active fires from MODIS
-0 6,12 * * * source /home/activefires/.bashrc; python3.6 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s modis -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
-0 */3 * * * source /home/activefires/.bashrc; python3.6 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s modis -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
+0 6,12 * * * source /home/activefires/.bashrc; python3.7 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s modis -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
+0 */3 * * * source /home/activefires/.bashrc; python3.7 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s modis -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
 
 # download and import active fires from VIIRS
-0 6,12 * * * source /home/activefires/.bashrc; python3.6 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
-0 */3 * * * source /home/activefires/.bashrc; python3.6 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
+0 6,12 * * * source /home/activefires/.bashrc; python3.7 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
+0 */3 * * * source /home/activefires/.bashrc; python3.7 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs -d `date +\%Y-\%m-\%d` > /dev/null 2>&1

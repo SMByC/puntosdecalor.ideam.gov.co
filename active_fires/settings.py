@@ -28,7 +28,7 @@ SECRET_KEY = 'm%tfjngc5i%%6m*mlt!oz_+l38ku+udds*^-j)bc=@2hd3zt!a'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['incendiosactivos.ideam.gov.co']
+ALLOWED_HOSTS = ['incendiosactivos.ideam.gov.co', 'puntosdecalor.ideam.gov.co']
 
 # Application definition
 

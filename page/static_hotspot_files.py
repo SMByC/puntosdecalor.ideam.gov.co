@@ -88,7 +88,7 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
     <title>{% blocktrans %}Index of {{ directory }}{% endblocktrans %}</title>
   </head>
   <body>
-    <h1>Índice de archivos de puntos activos de incendios por día</h1>
+    <h1>Índice de archivos de puntos activos de calor por día</h1>
     <ul>
       {% ifnotequal directory "/" %}
       <li><a href="../">../</a></li>

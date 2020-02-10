@@ -103,14 +103,12 @@
                 L.geoJson(data, {
                     pointToLayer: function (feature, latlng) {
                         // market
-                        var marker = L.marker(latlng, {icon: fireIcon});
-                        {% comment %}
+                        {# var marker = L.marker(latlng, {icon: fireIcon}); #}
                         var marker = L.marker(latlng, {
                             icon: L.divIcon({
                                 html: '<svg transform="scale(1 1)" viewBox="-1 -1 2 2">  <circle cx="0" cy="0" r="0.9" fill-opacity="0.6" fill="#CC3D36" /></svg>'
                             })
                         });
-                        {% endcomment %}
 
                         // popup
                         marker.bindPopup("");

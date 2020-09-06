@@ -100,7 +100,7 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
   </body>
 </html>
 """
-template_translatable = ugettext_lazy("Index of %(directory)s")
+template_translatable = gettext_lazy("Index of %(directory)s")
 
 
 def directory_index(path, fullpath):

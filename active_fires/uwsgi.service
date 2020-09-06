@@ -9,9 +9,16 @@
 
 [Unit]
 Description=uWSGI instance to serve Active Fires page
+After=syslog.target
 
 [Service]
 ExecStart=/usr/bin/bash -c 'cd /home/activefires/apps/Active_Fires/active_fires; source /home/activefires/.bashrc; uwsgi --ini uwsgi.ini'
+RuntimeDirectory=uwsgi
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+StandardError=syslog
+NotifyAccess=all
 
 [Install]
 WantedBy=multi-user.target

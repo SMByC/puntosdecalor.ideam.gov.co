@@ -4,29 +4,26 @@
 #  (c) Copyright SMByC-IDEAM, 2016-2018
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
-from django.conf.urls import url
+from django.urls import path, re_path
 from django.contrib.gis import admin
 
 from page import views, static_hotspot_files
 from page.models import ActiveFire, Region
 
 urlpatterns = [
-    # Examples:
-    # url(r'^$', 'active_fires.views.home', name='home'),
-    # url(r'^blog/', include('blog.urls')),
-    url(r'^admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 
     # master view and process
-    url(r'^$', views.home, name='home'),
+    path('', views.home, name='home'),
     # get region
-    url(r'^region.geojson/$', views.RegionMapLayer.as_view(model=Region, geometry_field='shape', properties=('name')), name='region'),
+    path('region.geojson/', views.RegionMapLayer.as_view(model=Region, geometry_field='shape', properties=('name')), name='region'),
     # active fires points - send data through ajax with geojson
-    url(r'^active_fires.geojson/$', views.ActiveFiresMapLayer.as_view(model=ActiveFire, properties=('id',)), name='active-fires'),
+    path('active_fires.geojson/', views.ActiveFiresMapLayer.as_view(model=ActiveFire, properties=('id',)), name='active-fires'),
     # get popup information
-    url(r'^get_popup.geojson/$', views.get_popup, name='get-popup'),
+    path('get_popup.geojson/', views.get_popup, name='get-popup'),
     # download active fires points
-    url(r'^download-result/$', views.download_result, name='download-result'),
+    path('download-result/', views.download_result, name='download-result'),
 
     ### for static ftp csv files of hostpot
-    url(r'^archivos-ftp/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/activefires/apps/Active_Fires/page/data/ftp_files', 'show_indexes': True}),
+    re_path(r'^archivos-ftp/(?P<path>.*)$', static_hotspot_files.serve, {'document_root': '/home/activefires/apps/Active_Fires/page/data/ftp_files', 'show_indexes': True}),
 ]

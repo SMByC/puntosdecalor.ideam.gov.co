@@ -7,8 +7,8 @@
 # use:
 #
 # cd /home/activefires/apps/Active_Fires/page/data/active_fires
-#  python3.7 download_active_fires.py -s modis -d "2014-12-04"
-#  python3.7 download_active_fires.py -s viirs -d "2014-12-04"
+#  python3.8 download_active_fires.py -s modis -d "2014-12-04"
+#  python3.8 download_active_fires.py -s viirs -d "2014-12-04"
 
 import sys, os
 from time import sleep
@@ -110,7 +110,7 @@ os.chdir("..")
 os.chdir("..")
 tmp_file.close()
 
-return_code = os.popen("/usr/local/bin/python3.7 manage.py shell < page/data/active_fires/tmp_import.py")
+return_code = os.popen("/usr/local/bin/python3.8 manage.py shell < page/data/active_fires/tmp_import.py")
 [print(i) for i in return_code]
 
 os.remove('page/data/active_fires/tmp_import.py')

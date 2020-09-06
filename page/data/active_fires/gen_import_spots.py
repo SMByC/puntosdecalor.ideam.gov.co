@@ -18,7 +18,7 @@ date_range = pd.date_range("2016-01-01", "2017-08-15", freq="D")
 f = open('import.sh', 'w')
 for date_import in date_range:
 
-    f.write("python3.7 download_active_fires.py -s modis -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
-    f.write("python3.7 download_active_fires.py -s viirs -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    f.write("python3.8 download_active_fires.py -s modis -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    f.write("python3.8 download_active_fires.py -s viirs -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
 
 f.close()

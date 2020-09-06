@@ -16,11 +16,11 @@ import posixpath
 import re
 import stat
 
+from urllib.parse import unquote
 from django.http import (Http404, HttpResponse, HttpResponseRedirect,
                          HttpResponseNotModified, StreamingHttpResponse)
 from django.template import loader, Template, Context, TemplateDoesNotExist
 from django.utils.http import http_date, parse_http_date
-from django.utils.six.moves.urllib.parse import unquote
 from django.utils.translation import ugettext as _, ugettext_lazy
 
 

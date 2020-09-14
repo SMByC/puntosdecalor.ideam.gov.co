@@ -82,4 +82,24 @@ $(function () {
         language: "es",
         width: '75%'
     });
+
+    // modal window
+    var modal = document.getElementById("myModal");
+    var modal_link = document.getElementById("modal_window");
+    var modal_close = document.getElementsByClassName("close")[0];
+    // When the user clicks the button, open the modal
+    modal_link.onclick = function() {
+      modal.style.display = "block";
+    }
+    // When the user clicks on <span> (x), close the modal
+    modal_close.onclick = function() {
+      modal.style.display = "none";
+    }
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    }
+
 });

@@ -51,6 +51,22 @@
 
 <body>
 
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+
+      <!-- Modal content -->
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <div class="lateral-item-title" >Contexto</div>
+        <div class="lateral-item-content" > <br>
+            En los últimos años, el monitoreo forestal ha sido esencial para orientar los procesos de toma de decisiones relacionados con la gestión forestal y la lucha contra la deforestación. El conocimiento y monitoreo de las dinámicas de puntos de calor asociadas a ecosistemas naturales, especialmente de bosques es un insumo importante para orientar  las acciones de intervención estratégica del territorio y su gestión integral y para reducir los procesos de degradación ambiental, entre otros.
+            <br><br>
+            Los puntos de calor detectados por sensores satelitales son una aproximación a la ocurrencia de incendios:  Estos representan el centro de un píxel donde se ha detectado una anomalía térmica. En la mayoría de los casos estos puntos identifican fuegos en áreas con algún tipo de vegetación, pero también pueden ser llamas por combustión de gases, tormentas eléctricas, etc. No hay manera de saber cuál tipo de anomalía térmica es detectada basada solamente con la información satelital por lo que para la correcta identificación de los incendios en vegetación se requieren insumos y análisis adicionales. No obstante, existe un vínculo entre la ocurrencia de incendios y el cambio de cobertura terrestre, en especial con la deforestación.
+        </div>
+      </div>
+
+    </div>
+
 	<div id="wrapper">
 		<div id="header">
             <div id="header-left">
@@ -61,7 +77,9 @@
 			<div id="header-main">
 				<p id="title"> <a href="http://{{ request.get_host }}"
                                   title="Página de inicio">Monitoreo de puntos de calor en Colombia</a></p>
-                <p id="subtitle">Sistema para el monitoreo de puntos de calor sobre la superficie detectados satelitalmente*</p>
+                <p id="subtitle">Sistema para el monitoreo de puntos de calor sobre la superficie detectados satelitalmente
+                    <span id="modal_window">(contexto)</span>
+                </p>
 			</div>
 		</div>
 

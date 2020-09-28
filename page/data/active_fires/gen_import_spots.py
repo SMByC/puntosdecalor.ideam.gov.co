@@ -7,6 +7,7 @@
 # use:
 #
 # cd /home/activefires/apps/Active_Fires/page/data/active_fires
+# python3 gen_import_spots.py
 # bash import.sh
 
 
@@ -19,6 +20,8 @@ f = open('import.sh', 'w')
 for date_import in date_range:
 
     f.write("python3.8 download_active_fires.py -s modis -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
-    f.write("python3.8 download_active_fires.py -s viirs -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    #f.write("python3.8 download_active_fires.py -s viirs -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    f.write("python3.8 download_active_fires.py -s viirs-noaa-20 -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    f.write("python3.8 download_active_fires.py -s viirs-suomi-npp -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
 
 f.close()

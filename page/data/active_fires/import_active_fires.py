@@ -58,14 +58,25 @@ def from_source(source, active_fires_file):
             # Brightness Temperature
             brightness = float(line['brightness'])
             # Confidence
-            confidence = int(line['confidence'])
+            confidence = f"{line['confidence']} %"
         if source == 'viirs':
             satellite = 'VIIRS'
             # Brightness Temperature
             brightness = float(line['bright_ti4'])
             # Confidence
             confidence = None
-
+        if source == 'viirs-noaa-20':
+            satellite = 'VIIRS-NOAA-20'
+            # Brightness Temperature
+            brightness = float(line['bright_ti4'])
+            # Confidence
+            confidence = {'low': 'Baja', 'nominal': 'Nominal', 'high': 'Alta'}.get(line['confidence'])
+        if source == 'viirs-suomi-npp':
+            satellite = 'VIIRS-NOAA-20'
+            # Brightness Temperature
+            brightness = float(line['bright_ti4'])
+            # Confidence
+            confidence = {'low': 'Baja', 'nominal': 'Nominal', 'high': 'Alta'}.get(line['confidence'])
         # Fire Radiative Power
         frp = round(float(line['frp']), 1)
         if int(frp) == 0:

@@ -52,9 +52,8 @@ worldborder_mapping = {
 ##################################################
 # ACTIVE FIRES
 
-SOURCE_TYPE = (('MODIS-Aqua', 'MODIS-Aqua'),
-               ('MODIS-Terra', 'MODIS-Terra'),
-               ('VIIRS', 'VIIRS'))
+SOURCE_TYPE = (('MODIS-Aqua', 'MODIS-Aqua'), ('MODIS-Terra', 'MODIS-Terra'),
+               ('VIIRS', 'VIIRS'), ('VIIRS-NOAA-20', 'VIIRS-Suomi-NPP'))
 
 
 class ActiveFire(models.Model):
@@ -62,8 +61,8 @@ class ActiveFire(models.Model):
     date = models.DateTimeField()  # datetime: acq_date + acq_time (adjusted in Colombia zone -5h)
     source = models.CharField(choices=SOURCE_TYPE, max_length=20)  # from satellite
     brightness = models.FloatField()  # Brightness Temperature (Kelvin)
-    confidence = models.PositiveIntegerField(null=True)  # Confidence (0–100%) or None (for VIIRS)
-    frp = models.FloatField(null=True)  # Fire Radiative Power (MW) or None (for VIIRS)
+    confidence = models.CharField(null=True, blank=True, max_length=10)  # 0–100% for MODIS or "Baja, Nominal, Alta" for VIIRS
+    frp = models.FloatField(null=True)  # Fire Radiative Power (MW)
 
     def __unicode__(self):
         return self.name

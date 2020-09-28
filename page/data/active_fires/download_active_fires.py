@@ -8,7 +8,9 @@
 #
 # cd /home/activefires/apps/Active_Fires/page/data/active_fires
 #  python3.8 download_active_fires.py -s modis -d "2014-12-04"
-#  python3.8 download_active_fires.py -s viirs -d "2014-12-04"
+#  python3.8 download_active_fires.py -s viirs -d "2014-12-04"  (No longer recommended)
+#  python3.8 download_active_fires.py -s viirs-noaa-20 -d "2014-12-04"
+#  python3.8 download_active_fires.py -s viirs-suomi-npp -d "2014-12-04"
 
 import sys, os
 from time import sleep
@@ -27,8 +29,8 @@ import argparse
 parser = argparse.ArgumentParser(description='Import fire points from FIRMS FTP and load into Active_Fires database')
 parser.add_argument('-d', dest='date', action='store', required=True,
                     help='Day to run the process format: "YYYY-MM-DD" or "yesterday"')
-parser.add_argument('-s', dest='source', action='store', choices=('modis', 'viirs'), required=True,
-                    help='Choose source')
+parser.add_argument('-s', dest='source', action='store', choices=('modis', 'viirs', 'viirs-noaa-20', 'viirs-suomi-npp'),
+                    required=True, help='Choose source')
 
 args = parser.parse_args()
 downloadDate = args.date

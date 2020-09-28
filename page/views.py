@@ -58,14 +58,14 @@ def get_popup(request):
         'Fuente: {source}<br/>' \
         '<hr>' \
         'Radiación térmica: {frp} MW<br/>' \
-        'Temperatura: {brightness} C<br/>' \
+        'Temperatura: {brightness} &#8451;<br/>' \
         'Confianza: {confidence}<br/>' \
         .format(
             datetime=active_fire.date.strftime("%Y-%m-%d %H:%M"),
             lon=round(active_fire.geom.x, 3),
             lat=round(active_fire.geom.y, 3),
             source=active_fire.source,
-            brightness=round(active_fire.brightness - 273.15, 0),
+            brightness=int(round(active_fire.brightness - 273.15, 0)),
             confidence='--' if active_fire.confidence is None else active_fire.confidence,
             frp='--' if active_fire.frp is None else active_fire.frp,
         )

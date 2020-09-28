@@ -53,7 +53,8 @@ worldborder_mapping = {
 # ACTIVE FIRES
 
 SOURCE_TYPE = (('MODIS-Aqua', 'MODIS-Aqua'), ('MODIS-Terra', 'MODIS-Terra'),
-               ('VIIRS', 'VIIRS'), ('VIIRS-NOAA-20', 'VIIRS-Suomi-NPP'))
+               ('VIIRS', 'VIIRS'), ('VIIRS-NOAA-20', 'VIIRS-NOAA-20'),
+               ('VIIRS-Suomi-NPP','VIIRS-Suomi-NPP'))
 
 
 class ActiveFire(models.Model):

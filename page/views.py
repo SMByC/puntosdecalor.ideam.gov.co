@@ -142,14 +142,6 @@ def init(request):
 
 
 def home(request):
-
-    context = {
-        "extent": [19.145168196205297,-97.64648437500001,-10.01212955790814,-48.12011718750001],
-        "last_update": datetime.now(),
-        "departments": ["departments"],
-        "natural_regions": ["departments"],
-    }
-    return render(request, 'home.html', context)
     # capturing the date range of period
     if 'from_date' in request.GET and 'to_date' in request.GET and 'extent'in request.GET and 'region'in request.GET:
         # saved map location

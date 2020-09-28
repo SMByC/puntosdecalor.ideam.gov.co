@@ -53,19 +53,19 @@ def get_popup(request):
     popup_text = \
         '<span style="font-style: italic;display: block;text-align: center;">Foco de calor</span>' \
         '<hr>' \
-        'Fecha: {datetime} HLC<br/>' \
-        'Lon: {lon}&ensp;Lat: {lat}<br/>' \
-        'Satélite: {source}<br/>' \
+        'Fecha: {datetime} HL<br/>' \
+        'Lat: {lat}&ensp;Lon: {lon}<br/>' \
+        'Fuente: {source}<br/>' \
         '<hr>' \
-        'Temp. brillo: {brightness} C<br/>' \
-        'Confianza: {confidence} %<br/>' \
         'Radiación térmica: {frp} MW<br/>' \
+        'Temperatura: {brightness} C<br/>' \
+        'Confianza: {confidence}<br/>' \
         .format(
             datetime=active_fire.date.strftime("%Y-%m-%d %H:%M"),
             lon=round(active_fire.geom.x, 3),
             lat=round(active_fire.geom.y, 3),
             source=active_fire.source,
-            brightness=round(active_fire.brightness - 273.15, 2),
+            brightness=round(active_fire.brightness - 273.15, 0),
             confidence='--' if active_fire.confidence is None else active_fire.confidence,
             frp='--' if active_fire.frp is None else active_fire.frp,
         )
@@ -142,6 +142,14 @@ def init(request):
 
 
 def home(request):
+
+    context = {
+        "extent": [19.145168196205297,-97.64648437500001,-10.01212955790814,-48.12011718750001],
+        "last_update": datetime.now(),
+        "departments": ["departments"],
+        "natural_regions": ["departments"],
+    }
+    return render(request, 'home.html', context)
     # capturing the date range of period
     if 'from_date' in request.GET and 'to_date' in request.GET and 'extent'in request.GET and 'region'in request.GET:
         # saved map location

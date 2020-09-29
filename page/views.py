@@ -99,10 +99,10 @@ def download_result(request):
         except:
             return HttpResponse(status=204)
         # generate the data
-        rows = [['LON', 'LAT', 'DATETIME', 'SOURCE', "TEMP. BRILLO (C)", "CONFIANZA", "RADIACIÓN TÉRMICA (MW)"]]
-        rows += [[str(active_fire.geom.x).replace(".", ","), str(active_fire.geom.y).replace(".", ","),
-                  active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.source,
-                  str(round(active_fire.brightness - 273.15, 2)).replace(".", ","),
+        rows = [['DATE (UTC-5)', 'LNG', 'LAT', 'SOURCE', 'TEMP (C)', 'CONFIDENCE', 'FRP (MW)']]
+        rows += [[active_fire.date.strftime("%Y-%m-%d %H:%M"), str(active_fire.geom.x).replace(".", ","),
+                  str(active_fire.geom.y).replace(".", ","), active_fire.source,
+                  str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
                   '--' if active_fire.confidence is None else active_fire.confidence,
                   '--' if str(active_fire.frp).replace(".", ",") is None else active_fire.frp]
                  for active_fire in active_fires]

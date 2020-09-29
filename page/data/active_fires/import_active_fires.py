@@ -72,7 +72,7 @@ def from_source(source, active_fires_file):
             # Confidence
             confidence = {'low': 'Baja', 'nominal': 'Nominal', 'high': 'Alta'}.get(line['confidence'])
         if source == 'viirs-suomi-npp':
-            satellite = 'VIIRS-NOAA-20'
+            satellite = 'VIIRS-Suomi-NPP'
             # Brightness Temperature
             brightness = float(line['bright_ti4'])
             # Confidence

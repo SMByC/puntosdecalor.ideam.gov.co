@@ -28,14 +28,15 @@ def save_in_csv_table(active_fire):
     ftp_path = os.path.join(settings.BASE_DIR, 'page', 'data', 'ftp_files')
     filename = 'Puntos_de_calor_Colombia_{0}.csv'.format(active_fire.date.strftime("%Y-%m-%d"))
     if os.path.exists(os.path.join(ftp_path, filename)):
-        csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'a'), delimiter=',')
+        csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'a'), delimiter=';')
     else:
-        csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'w'), delimiter=',')
+        csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'w'), delimiter=';')
         csv_f.writerow(['Fecha (UTC-5)', 'Lat', 'Lon', 'Fuente', 'Temperatura (C)', 'Radiación térmica (MW)', 'Confianza'])
     csv_f.writerow([
-        active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.geom.y,
-        active_fire.geom.x, active_fire.source, round(active_fire.brightness - 273.15, 1),
-        '--' if active_fire.frp is None else active_fire.frp,
+        active_fire.date.strftime("%Y-%m-%d %H:%M"), str(active_fire.geom.y).replace(".", ","),
+        str(active_fire.geom.x).replace(".", ","), active_fire.source,
+        str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
+        '--' if str(active_fire.frp).replace(".", ",") is None else active_fire.frp,
         '--' if active_fire.confidence is None else active_fire.confidence,
         ])
 

@@ -36,7 +36,7 @@ def save_in_csv_table(active_fire):
         active_fire.date.strftime("%Y-%m-%d %H:%M"), str(active_fire.geom.y).replace(".", ","),
         str(active_fire.geom.x).replace(".", ","), active_fire.source,
         str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
-        '--' if str(active_fire.frp).replace(".", ",") is None else active_fire.frp,
+        '--' if active_fire.frp is None else str(active_fire.frp).replace(".", ","),
         '--' if active_fire.confidence is None else active_fire.confidence,
         ])
 

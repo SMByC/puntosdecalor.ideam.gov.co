@@ -88,7 +88,14 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
     <title>{% blocktrans %}Index of {{ directory }}{% endblocktrans %}</title>
   </head>
   <body>
-    <h1>Índice de archivos de puntos activos de calor por día</h1>
+    <h1>Índice de archivos de puntos de calor por día</h1>
+    <div style="background-color:#fffadd;padding: 1px 15px;margin: 5px;">
+        <p><strong>Nota:</strong> A partir del 4 de Octubre del 2020 todos los archivos fueron regenerados para incluir 
+        VIIRS Collection 2 (este ultimo solo para el 2020) y otros cambios como el orden de las columnas y la estructura del CSV</p>
+    </div>
+    <div style="background-color:#fffadd;padding: 1px 15px;margin: 5px;">    
+        <p><strong>Formato:</strong> El CSV usa punto coma ';' como separador de elementos y usa coma ',' para la separación de decimales</p>
+    </div>
     <ul>
       {% ifnotequal directory "/" %}
       <li><a href="../">../</a></li>

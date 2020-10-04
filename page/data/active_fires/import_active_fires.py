@@ -94,7 +94,7 @@ def from_source(source, active_fires_file):
                                          confidence=confidence,
                                          frp=frp,
                                          )
-                save_csv(active_fire)
+                # save_csv(active_fire)  # TODO
                 active_fire.save()
             else:
                 print('  Active fire exists!')

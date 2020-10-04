@@ -24,19 +24,19 @@ from page.models import ActiveFire
 from page.models import WorldBorder
 
 
-def save_csv(active_fire):
+def save_in_csv_table(active_fire):
     ftp_path = os.path.join(settings.BASE_DIR, 'page', 'data', 'ftp_files')
-    filename = 'Active_fires_Colombia_{0}.csv'.format(active_fire.date.strftime("%Y-%m-%d"))
+    filename = 'Puntos_de_calor_Colombia_{0}.csv'.format(active_fire.date.strftime("%Y-%m-%d"))
     if os.path.exists(os.path.join(ftp_path, filename)):
         csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'a'), delimiter=',')
     else:
         csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'w'), delimiter=',')
-        csv_f.writerow(['DATE (UTC-5)', 'LNG', 'LAT', 'SOURCE', 'TEMP (C)', 'CONFIDENCE', 'FRP (MW)'])
+        csv_f.writerow(['Fecha (UTC-5)', 'Lat', 'Lon', 'Fuente', 'Temperatura (C)', 'Radiación térmica (MW)', 'Confianza'])
     csv_f.writerow([
-        active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.geom.x,
-        active_fire.geom.y, active_fire.source, round(active_fire.brightness - 273.15, 2),
-        '--' if active_fire.confidence is None else active_fire.confidence,
+        active_fire.date.strftime("%Y-%m-%d %H:%M"), active_fire.geom.y,
+        active_fire.geom.x, active_fire.source, round(active_fire.brightness - 273.15, 1),
         '--' if active_fire.frp is None else active_fire.frp,
+        '--' if active_fire.confidence is None else active_fire.confidence,
         ])
 
 
@@ -94,7 +94,7 @@ def from_source(source, active_fires_file):
                                          confidence=confidence,
                                          frp=frp,
                                          )
-                # save_csv(active_fire)  # TODO
+                # save_in_csv_table(active_fire)  # TODO
                 active_fire.save()
             else:
                 print('  Active fire exists!')

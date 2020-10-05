@@ -232,19 +232,15 @@
         <div class="lateral-item-title" >Resultado</div>
         <div class="lateral-item-content" >
             Encontrados <span id="number-result">...</span> puntos de calor.<br>
-            Archivo csv de los resultados:<span class="link">
-            <a href="{% url 'download-result' %}">
-            descargar</a></span>
+            Archivo csv de los resultados:
+            <a class="link" href="{% url 'download-result' %}">
+            descargar</a>
         </div>
     </div>
 
     <div id="footer-links">
-{#        <span class="link">#}
-{#            <a href="/acerca-de/">Acerca de</a>#}
-{#        </span>#}
-        <span class="link">
-            <a href="/archivos-ftp/">Archivos ftp</a>
-        </span>
+        <a class="link" href="/archivos-ftp/">Archivos ftp</a>
+        <span class="link" id="modal_about_us_link">Acerca de</span>
     </div>
     {% comment %}<div id="content-footer">
         <p>Puntos de incendios proveniente del sistema LANCE de los satelites de MODIS Terra & Aqua de la NASA</p>

@@ -52,11 +52,9 @@
 <body>
 
     <!-- The Modal -->
-    <div id="myModal" class="modal">
-
-      <!-- Modal content -->
+    <div id="modal_context" class="modal">
       <div class="modal-content">
-        <span class="close">&times;</span>
+        <span class="modal_context_close">&times;</span>
         <div class="lateral-item-title" >Contexto</div>
         <div class="lateral-item-content" > <br>
             En los últimos años, el monitoreo forestal ha sido esencial para orientar los procesos de toma de decisiones relacionados con la gestión forestal y la lucha contra la deforestación. El conocimiento y monitoreo de las dinámicas de puntos de calor asociadas a ecosistemas naturales, especialmente de bosques es un insumo importante para orientar  las acciones de intervención estratégica del territorio y su gestión integral y para reducir los procesos de degradación ambiental, entre otros.
@@ -64,7 +62,29 @@
             Los puntos de calor detectados por sensores satelitales son una aproximación a la ocurrencia de incendios:  Estos representan el centro de un píxel donde se ha detectado una anomalía térmica. En la mayoría de los casos estos puntos identifican fuegos en áreas con algún tipo de vegetación, pero también pueden ser llamas por combustión de gases, tormentas eléctricas, etc. No hay manera de saber cuál tipo de anomalía térmica es detectada basada solamente con la información satelital por lo que para la correcta identificación de los incendios en vegetación se requieren insumos y análisis adicionales. No obstante, existe un vínculo entre la ocurrencia de incendios y el cambio de cobertura terrestre, en especial con la deforestación.
         </div>
       </div>
-
+    </div>
+    <div id="modal_about_us" class="modal">
+      <div class="modal-content">
+        <span class="modal_about_us_close">&times;</span>
+        <div class="lateral-item-title" >Acerca de</div>
+        <div class="lateral-item-content" > <br>
+            La página de monitoreo de puntos de calor es una iniciativa del Sistema de Monitoreo de Bosques y Carbono para
+            disponer de una plataforma de consulta sobre los últimos o históricos focos de calor detectados satelitalmente
+            en el territorio Colombiano, que sirva de base para entes de control y vigilancia del pais. La idea no es ofrecer
+            únicamente la información satélital sino de enriquecerla conectandola con otros datos nacionales que puedan ayudar
+            a dar más detalles sobre estos eventos. Por lo que la plataforma sigue en constante cambios y mejoras.
+            <br><br>
+            Los datos de puntos de calor provienen de dos sensores en 4 satélites distintos, con diferentes características:<br><br>
+            <ul><li>
+                <a  class="link" href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a> (Aqua y Terra)</li><li>
+                <a  class="link" href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a> (NOAA-20 y Suomi-NPP)
+            </li></ul>
+            <br><br>
+            Si hace uso de estos datos realiza la restiva referencia a los datos originales.
+            <br><br>
+            Sistema de Monitoreo de Bosque y Carbono<br>IDEAM, Colombia<br>Contacto: xcorredorl@ideam.gov.co
+        </div>
+      </div>
     </div>
 
 	<div id="wrapper">
@@ -78,7 +98,7 @@
 				<p id="title"> <a href="http://{{ request.get_host }}"
                                   title="Página de inicio">Monitoreo de puntos de calor en Colombia</a></p>
                 <p id="subtitle">Sistema para el monitoreo de puntos de calor sobre la superficie detectados satelitalmente
-                    <span id="modal_window">(contexto)</span>
+                    <span class="link" id="modal_context_link">(contexto)</span>
                 </p>
 			</div>
 		</div>

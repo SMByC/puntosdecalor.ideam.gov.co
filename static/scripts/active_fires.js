@@ -83,23 +83,29 @@ $(function () {
         width: '75%'
     });
 
-    // modal window
-    var modal = document.getElementById("myModal");
-    var modal_link = document.getElementById("modal_window");
-    var modal_close = document.getElementsByClassName("close")[0];
+    // modal window context
+    var modal_context = document.getElementById("modal_context");
+    var modal_context_link = document.getElementById("modal_context_link");
+    var modal_context_close = document.getElementsByClassName("modal_context_close")[0];
     // When the user clicks the button, open the modal
-    modal_link.onclick = function() {
-      modal.style.display = "block";
-    }
+    modal_context_link.onclick = function() {modal_context.style.display = "block";}
     // When the user clicks on <span> (x), close the modal
-    modal_close.onclick = function() {
-      modal.style.display = "none";
-    }
+    modal_context_close.onclick = function() {modal_context.style.display = "none";}
     // When the user clicks anywhere outside of the modal, close it
     window.onclick = function(event) {
-      if (event.target === modal) {
-        modal.style.display = "none";
-      }
+      if (event.target === modal_context) {modal_context.style.display = "none";}
+    }
+    // modal window about_us
+    var modal_about_us = document.getElementById("modal_about_us");
+    var modal_about_us_link = document.getElementById("modal_about_us_link");
+    var modal_about_us_close = document.getElementsByClassName("modal_about_us_close")[0];
+    // When the user clicks the button, open the modal
+    modal_about_us_link.onclick = function() {modal_about_us.style.display = "block";}
+    // When the user clicks on <span> (x), close the modal
+    modal_about_us_close.onclick = function() {modal_about_us.style.display = "none";}
+    // When the user clicks anywhere outside of the modal, close it
+    window.onclick = function(event) {
+      if (event.target === modal_about_us) {modal_about_us.style.display = "none";}
     }
 
 });

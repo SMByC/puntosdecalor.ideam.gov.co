@@ -161,22 +161,6 @@ body {
   background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
-span#modal_window {
-    color: #CC3D36;
-    text-decoration: none;
-    margin: 2px;
-    padding: 1px 3px;
-    font-weight: normal;
-}
-span#modal_window:hover {
-    color: white;
-    background-color: #CC3D36;
-    text-decoration: none;
-    padding: 1px 3px;
-    border-radius: 3px;
-    cursor: pointer;
-}
-
 /* Modal Content */
 .modal-content {
   background-color: #f8f8f8;
@@ -187,15 +171,15 @@ span#modal_window:hover {
 }
 
 /* The Close Button */
-.close {
+.modal_context_close, .modal_about_us_close {
   color: #aaaaaa;
   float: right;
   font-size: 28px;
   font-weight: bold;
 }
 
-.close:hover,
-.close:focus {
+.modal_context_close:hover, .modal_context_close:focus,
+.modal_about_us_close:hover, .modal_about_us_close:focus{
   color: #000;
   text-decoration: none;
   cursor: pointer;
@@ -391,18 +375,20 @@ span#select2-region-container.select2-selection__rendered {
     font-size: 0.85em;
     font-weight: bold;
 }
-.link a {
+
+a.link, span.link  {
     color: #CC3D36;
     text-decoration: none;
     margin: 2px;
     padding: 1px 3px;
 }
-.link a:hover {
+a.link:hover, span.link:hover {
     color: white;
     background-color: #CC3D36;
     text-decoration: none;
     padding: 1px 3px;
     border-radius: 3px;
+    cursor: pointer;
 }
 
 /* text code

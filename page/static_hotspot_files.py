@@ -88,13 +88,19 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
     <title>{% blocktrans %}Index of {{ directory }}{% endblocktrans %}</title>
   </head>
   <body>
-    <h1>Índice de archivos de puntos de calor por día</h1>
+    <h1 style="font-size: x-large;">Índice de archivos de puntos de calor por día para todo el territorio Colombiano</h1>
     <div style="background-color:#fffadd;padding: 1px 15px;margin: 5px;">
-        <p><strong>Nota:</strong> A partir del 4 de Octubre del 2020 todos los archivos fueron regenerados para incluir 
-        VIIRS Collection 2 (este ultimo solo para el 2020) y otros cambios como el orden de las columnas y la estructura del CSV</p>
+        <p><strong>Nota:</strong> El 4 de Octubre del 2020 todos los archivos CSV fueron regenerados para incluir 
+        VIIRS Collection 2 (solo para el 2020) y se realizaron otros cambios como el nombre del archivo, el orden de las columnas y la estructura del CSV</p>
     </div>
     <div style="background-color:#fffadd;padding: 1px 15px;margin: 5px;">    
-        <p><strong>Formato:</strong> El CSV usa punto coma ';' como separador de elementos y usa coma ',' para la separación de decimales</p>
+        <p><strong>Formato:</strong> El formato CSV de los archivos usa punto y coma ';' como separador de elementos y usa coma ',' para la separación decimal</p>
+    </div>
+    <div style="background-color:#fffadd;padding: 1px 15px;margin: 5px;">    
+        <p><strong>Acerca de:</strong> Si hace uso de estos datos realiza la restiva referencia a los datos originales de 
+        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a> y 
+        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a>. 
+        Contacto referente a esta página: xcorredorl@ideam.gov.co</p>
     </div>
     <ul>
       {% ifnotequal directory "/" %}

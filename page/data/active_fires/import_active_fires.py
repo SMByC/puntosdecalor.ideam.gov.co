@@ -31,13 +31,17 @@ def save_in_csv_table(active_fire):
         csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'a'), delimiter=';')
     else:
         csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'w'), delimiter=';')
-        csv_f.writerow(['Fecha (UTC-5)', 'Lat', 'Lon', 'Fuente', 'Temperatura (C)', 'Radiación térmica (MW)', 'Confianza'])
+        csv_f.writerow(['Fecha (UTC-5)', 'Lat', 'Lon', 'Fuente', 'Temperatura (C)', 'Temperatura Alt* (C)',
+                        'Radiación térmica (MW)', 'Confianza', 'Captura (Dia-Noche)',
+                        'Scan - real pixel size (km)', 'Track - real pixel size (km)'])
     csv_f.writerow([
         active_fire.date.strftime("%Y-%m-%d %H:%M"), str(active_fire.geom.y).replace(".", ","),
         str(active_fire.geom.x).replace(".", ","), active_fire.source,
         str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
-        '--' if active_fire.frp is None else str(active_fire.frp).replace(".", ","),
-        '--' if active_fire.confidence is None else active_fire.confidence,
+        str(round(active_fire.brightness_alt - 273.15, 1)).replace(".", ","),
+        str(active_fire.frp).replace(".", ","), active_fire.confidence,
+        active_fire.day_night, str(active_fire.scan).replace(".", ","),
+        str(active_fire.track).replace(".", ","),
         ])
 
 
@@ -58,30 +62,31 @@ def from_source(source, active_fires_file):
             satellite = 'MODIS-Aqua' if line['satellite'].strip() == 'A' else 'MODIS-Terra'
             # Brightness Temperature
             brightness = float(line['brightness'])
+            brightness_alt = float(line['bright_t31'])
             # Confidence
             confidence = f"{line['confidence']} %"
-        if source == 'viirs':
+        if source == 'viirs':  # old, not currently used
             satellite = 'VIIRS'
             # Brightness Temperature
             brightness = float(line['bright_ti4'])
             # Confidence
             confidence = None
-        if source == 'viirs-noaa-20':
-            satellite = 'VIIRS-NOAA-20'
+        if source in ('viirs-noaa-20', 'viirs-suomi-npp'):
+            satellite = 'VIIRS-NOAA-20' if source == 'viirs-noaa-20' else 'VIIRS-Suomi-NPP'
             # Brightness Temperature
             brightness = float(line['bright_ti4'])
+            brightness_alt = float(line['bright_ti5'])
             # Confidence
             confidence = {'low': 'Baja', 'nominal': 'Nominal', 'high': 'Alta'}.get(line['confidence'])
-        if source == 'viirs-suomi-npp':
-            satellite = 'VIIRS-Suomi-NPP'
-            # Brightness Temperature
-            brightness = float(line['bright_ti4'])
-            # Confidence
-            confidence = {'low': 'Baja', 'nominal': 'Nominal', 'high': 'Alta'}.get(line['confidence'])
+
         # Fire Radiative Power
         frp = round(float(line['frp']), 1)
         if int(frp) == 0:
             frp = None
+        # Others
+        day_night = line['daynight']
+        scan = float(line['scan'])
+        track = float(line['track'])
 
         if colombia.mpoly.contains(active_fire_point):
             print('Active fire inside Colombia?: yes')
@@ -92,8 +97,12 @@ def from_source(source, active_fires_file):
                                          date=active_fire_datetime,
                                          source=satellite,
                                          brightness=brightness,
+                                         brightness_alt=brightness_alt,
                                          confidence=confidence,
                                          frp=frp,
+                                         day_night=day_night,
+                                         scan=scan,
+                                         track=track,
                                          )
                 save_in_csv_table(active_fire)
                 active_fire.save()

@@ -61,9 +61,13 @@ class ActiveFire(models.Model):
     geom = models.PointField()  # Geodjango Point (longitude, latitude)
     date = models.DateTimeField()  # datetime: acq_date + acq_time (adjusted in Colombia zone -5h)
     source = models.CharField(choices=SOURCE_TYPE, max_length=20)  # from satellite
-    brightness = models.FloatField()  # Brightness Temperature (Kelvin)
+    brightness = models.FloatField()  # Brightness Temperature (Kelvin) - VIIRS: band 4, MODIS: Channel 21/22
+    brightness_alt = models.FloatField(null=True, blank=True)  # Brightness Temperature (Kelvin) - VIIRS: band 5, MODIS: Channel 31
     confidence = models.CharField(null=True, blank=True, max_length=10)  # 0–100% for MODIS or "Baja, Nominal, Alta" for VIIRS
-    frp = models.FloatField(null=True)  # Fire Radiative Power (MW)
+    frp = models.FloatField(null=True, blank=True)  # Fire Radiative Power (MW)
+    day_night = models.CharField(choices=(('D', 'Day'), ('N', 'Night')), max_length=10, null=True, blank=True)
+    scan = models.FloatField(null=True, blank=True)  # Scan and track reflect actual pixel size
+    track = models.FloatField(null=True, blank=True)  # Scan and track reflect actual pixel size
 
     def __unicode__(self):
         return self.name

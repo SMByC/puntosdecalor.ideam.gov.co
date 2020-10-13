@@ -91,7 +91,8 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
     <h1 style="font-size: x-large;">Índice de archivos de puntos de calor por día para todo el territorio Colombiano</h1>
     <div style="background-color:#fffadd;padding: 1px 16px;margin: 4px;width: 80%;">
         <p><strong>Nota:</strong> El 4 de Octubre del 2020 todos los archivos CSV fueron regenerados para incluir 
-        VIIRS Collection 2 (solo para el 2020) y se realizaron otros cambios como el nombre del archivo, el orden de las columnas y la estructura del CSV</p>
+        VIIRS Collection 2 (solo para el 2020) y se realizaron otros cambios como el nombre del archivo, el orden de las 
+        columnas y la estructura del CSV. Octubre 12: fueron agregados nuevos campos: Temp alt, captura dia/noche, scan y track</p>
     </div>
     <div style="background-color:#fffadd;padding: 1px 16px;margin: 4px;width: 80%;">    
         <p><strong>Formato:</strong> El formato CSV de los archivos usa "punto y coma" (;) como separador de elementos y usa "coma" (,) para la separación decimal</p>

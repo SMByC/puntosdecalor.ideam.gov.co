@@ -9,3 +9,4 @@ to_datetime = datetime.strptime("2020-12-31 23:59:59", "%Y-%m-%d %H:%M:%S")
 
 active_fires = ActiveFire.objects.filter(source='VIIRS', date__gte=from_datetime, date__lte=to_datetime)
 
+active_fires.delete()

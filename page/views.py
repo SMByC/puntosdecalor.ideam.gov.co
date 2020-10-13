@@ -104,11 +104,13 @@ def download_result(request):
                  'Scan - real pixel size (km)', 'Track - real pixel size (km)']]
         rows += [[active_fire.date.strftime("%Y-%m-%d %H:%M"), str(active_fire.geom.y).replace(".", ","),
                   str(active_fire.geom.x).replace(".", ","), active_fire.source,
-                  str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
-                  str(round(active_fire.brightness_alt - 273.15, 1)).replace(".", ","),
-                  str(active_fire.frp).replace(".", ","), active_fire.confidence,
-                  active_fire.day_night, str(active_fire.scan).replace(".", ","),
-                  str(active_fire.track).replace(".", ",")]
+                  '' if active_fire.brightness is None else str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
+                  '' if active_fire.brightness_alt is None else str(round(active_fire.brightness_alt - 273.15, 1)).replace(".", ","),
+                  '' if active_fire.frp is None else str(active_fire.frp).replace(".", ","),
+                  '' if active_fire.confidence is None else active_fire.confidence,
+                  '' if active_fire.day_night is None else active_fire.day_night,
+                  '' if active_fire.scan is None else str(active_fire.scan).replace(".", ","),
+                  '' if active_fire.track is None else str(active_fire.track).replace(".", ",")]
                  for active_fire in active_fires]
 
         pseudo_buffer = Echo()

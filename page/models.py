@@ -89,5 +89,5 @@ class Region(models.Model):
 class BurnedArea(models.Model):
     date = models.DateField(null=True, blank=True)  # year-month (day=1)
     slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)  # yyyy-mm
-    source = models.CharField(choices=(('MCD64A1', 'MCD64A1')), max_length=20, null=True, blank=True)
+    source = models.CharField(choices=(('MCD64A1', 'MCD64A1'),), max_length=20, null=True, blank=True)
     shape = models.MultiPolygonField()

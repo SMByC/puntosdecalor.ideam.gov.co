@@ -28,6 +28,7 @@ def from_source(source, burned_area_file, ba_date):
     lm.save(verbose=True)
 
     burned_area = BurnedArea.objects.latest('id')
+    burned_area.date = ba_date
     burned_area.slug = ba_date.strftime("%Y-%m")
     burned_area.source = source
     burned_area.save()

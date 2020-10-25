@@ -7,7 +7,7 @@
 # use:
 #
 # cd /home/activefires/apps/Active_Fires/page/data/burned_area
-#  python3.8 download_burned_area.py -s MCD64A1 -d 2020-1
+#  python3.8 download_burned_area.py -s mcd64a1 -d 2020-1
 
 import glob
 import shutil
@@ -39,7 +39,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Import burned area from MCD64A1 to database')
 parser.add_argument('-d', dest='date', action='store', required=True,
                     help='Day to run the process format: "YYYY-MM" or next')
-parser.add_argument('-s', dest='source', action='store', choices=('MCD64A1',),
+parser.add_argument('-s', dest='source', action='store', choices=('mcd64a1',),
                     required=True, help='Choose source')
 
 args = parser.parse_args()
@@ -133,4 +133,4 @@ from page.data.burned_area.import_burned_area import from_source
 
 ba_date = date(int(downloadDateArr[0]), int(downloadDateArr[1]), 1)
 
-from_source(args.source, burned_area_file, ba_date)
+from_source(args.source.upper(), burned_area_file, ba_date)

@@ -75,10 +75,17 @@ log.info('---- new batch of BURNED AREA ----')
 log.info('processing date: %s' % downloadDate)
 
 downloadDateArr = downloadDate.split('-')
+ba_date = date(int(downloadDateArr[0]), int(downloadDateArr[1]), 1)
+
+# check if exists
+if BurnedArea.objects.filter(date=ba_date).count() > 0:
+    print('Burned area already exists!')
+    log.info('Burned area already exists!')
+    sys.exit()
 
 # generating the filename - it uses julian date, 2013-06-03 = 154
 try:
-    julianDay = date(int(downloadDateArr[0]), int(downloadDateArr[1]), 1).strftime('%j')
+    julianDay = ba_date.strftime('%j')
 except Exception as e:
     log.error('converting julian date from %s ' % downloadDateArr)
     log.error(e)
@@ -131,6 +138,6 @@ df_clip.to_file(burned_area_file)
 # import active fires to databases
 from page.data.burned_area.import_burned_area import from_source
 
-ba_date = date(int(downloadDateArr[0]), int(downloadDateArr[1]), 1)
-
 from_source(args.source.upper(), burned_area_file, ba_date)
+
+print('DONE')

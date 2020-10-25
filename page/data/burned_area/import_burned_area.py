@@ -25,10 +25,10 @@ def from_source(source, burned_area_file, ba_date):
 
     mapping = {'shape': 'MULTIPOLYGON'}
     lm = LayerMapping(BurnedArea, burned_area_file, mapping)
-    lm.save(verbose=True)
-    print("No. shapes: ", len(lm.model.objects.all()))
+    print(lm.save(verbose=True))
+    print(lm)
 
-    burned_area = lm.model.objects.all().first()
+    burned_area = BurnedArea.objects.latest('id')
     burned_area.slug = ba_date.strftime("%Y-%m")
     burned_area.source = source
     burned_area.save()

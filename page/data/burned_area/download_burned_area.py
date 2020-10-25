@@ -78,7 +78,7 @@ downloadDateArr = downloadDate.split('-')
 ba_date = date(int(downloadDateArr[0]), int(downloadDateArr[1]), 1)
 
 # check if exists
-if BurnedArea.objects.filter(date=ba_date).count() > 0:
+if BurnedArea.objects.filter(slug=ba_date.strftime("%Y-%m")).first():
     print('Burned area already exists!')
     log.info('Burned area already exists!')
     sys.exit()

@@ -19,14 +19,13 @@ from page.models import BurnedArea
 def from_source(source, burned_area_file, ba_date):
 
     # check if exists
-    if BurnedArea.objects.filter(date=ba_date).count() > 0:
+    if BurnedArea.objects.filter(slug=ba_date.strftime("%Y-%m")).first():
         print('Burned area already exists!')
         return
 
     mapping = {'shape': 'MULTIPOLYGON'}
     lm = LayerMapping(BurnedArea, burned_area_file, mapping)
-    print(lm.save(verbose=True))
-    print(lm)
+    lm.save(verbose=True)
 
     burned_area = BurnedArea.objects.latest('id')
     burned_area.slug = ba_date.strftime("%Y-%m")

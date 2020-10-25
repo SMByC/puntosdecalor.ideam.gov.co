@@ -223,10 +223,10 @@
 
 {% block lateral-content %}
 
-{# puntos de calor #}
+    {# puntos de calor #}
 
     <div id="lateral-content-title" >Puntos de calor</div>
-    <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ last_update|date:"N j, Y, P" }}</span></div>
+    <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ af_last_update|date:"N j, Y, P" }}</span></div>
     {# date range input #}
     <div class="lateral-item">
         <div class="lateral-item-title" >Periodo</div>
@@ -238,6 +238,7 @@
     </div>
 
     {# Region #}
+
     <div class="lateral-item">
         <div class="lateral-item-title" >Region</div>
         <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de éste:</div>
@@ -264,18 +265,8 @@
         </div>
     </div>
 
-{% comment %}
-    {# Satellite #}
-    <div class="lateral-item">
-        <div class="lateral-item-title" >Satelite</div>
-        <div class="lateral-item-content" >Seleccione el satelite origen para mostrar unicamente los detectados por éste:</div>
-        <div id="">
-            De: <input id="" size="9" value=""> a: <input id="to" size="9" value="">
-        </div>
-    </div>
-{% endcomment %}
-
     {# Result #}
+
     <div class="lateral-item">
         <div class="lateral-item-title" >Resultado</div>
         <div class="lateral-item-content" >
@@ -286,11 +277,27 @@
         </div>
     </div>
 
+    {# burned area #}
+
+    <div id="lateral-content-title" >Área quemada</div>
+    <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ af_last_update|date:"N j, Y" }}</span></div>
+
+    <div class="lateral-item">
+        <div class="lateral-item-content" >Datos mensuales de MODIS-MCD64A1 de 500m de resolución</div>
+        <div id="burned-area-div">
+            <select id="burned_area" name="burned_area[]" multiple="multiple">
+                {% for burned_area in burned_areas %}
+                    <option value={{ burned_area.slug }}>{{ burned_area.slug }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    {# footer #}
+
     <div id="footer-links">
         <a class="link" href="/archivos-ftp/">Archivos ftp</a>
         <span class="link" id="modal_about_us_link">Acerca de</span>
     </div>
-    {% comment %}<div id="content-footer">
-        <p>Puntos de incendios proveniente del sistema LANCE de los satelites de MODIS Terra & Aqua de la NASA</p>
-    </div>{% endcomment %}
+
 {% endblock %}

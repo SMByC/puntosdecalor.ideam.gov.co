@@ -82,6 +82,10 @@ $(function () {
         language: "es",
         width: '75%'
     });
+    $('#burned_area').select2({
+        language: "es",
+        width: '75%'
+    });
 
     // modal window context
     var modal_context = document.getElementById("modal_context");

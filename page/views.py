@@ -13,7 +13,7 @@ from django.shortcuts import render, redirect
 from djgeojson.views import GeoJSONLayerView
 from django.http import StreamingHttpResponse
 
-from page.models import ActiveFire, Region
+from page.models import ActiveFire, Region, BurnedArea
 
 
 class RegionMapLayer(GeoJSONLayerView):
@@ -170,16 +170,22 @@ def home(request):
 
     # get the last item
     last_active_fire = ActiveFire.objects.order_by('date').last()
+    last_burned_area = BurnedArea.objects.order_by('date').last()
 
     # get groups of regions
     departments = Region.objects.filter(group="departamentos").order_by('name')
     natural_regions = Region.objects.filter(group="regiones_naturales").order_by('name')
 
+    # get burned areas
+    burned_areas = BurnedArea.objects.all().order_by('-date')
+
     context = {
         "extent": extent,
-        "last_update": last_active_fire.date,
+        "af_last_update": last_active_fire.date,
+        "ba_last_update": last_burned_area.date,
         "departments": departments,
         "natural_regions": natural_regions,
+        "burned_areas": burned_areas,
     }
 
     return render(request, 'home.html', context)

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  (c) Copyright SMByC-IDEAM, 2016-2020
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
 from django.contrib.gis.db import models
@@ -83,4 +83,11 @@ class Region(models.Model):
     name = models.CharField(max_length=80)
     slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)
     group = models.CharField(choices=REGION_GROUPS, max_length=30, null=True, blank=True)
+    shape = models.MultiPolygonField()
+
+
+class BurnedArea(models.Model):
+    date = models.DateField(null=True, blank=True)  # year-month (day=1)
+    slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)  # yyyy-mm
+    source = models.CharField(choices=(('MCD64A1', 'MCD64A1')), max_length=20, null=True, blank=True)
     shape = models.MultiPolygonField()

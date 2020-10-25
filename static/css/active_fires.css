@@ -236,11 +236,11 @@ body {
     position: relative;
     display: block;
     float: right;
-    padding: 9px;
-    padding-bottom: 2px;
+    padding: 2px;
+    padding-bottom: 1px;
     /*margin-top: -2px;*/
     overflow: hidden;
-    height: calc(100vh - 40px - 11px);
+    height: calc(100vh - 34px - 11px);
     width: calc(300px - 18px);
     min-height: 300px;
 }
@@ -252,7 +252,9 @@ body {
     font-weight: bold;
     color: #6e6e6e;
     text-align: center;
-    margin-top: 5px;
+    margin-top: 12px;
+    margin-bottom: 2px;
+    border-bottom: 1px dashed #d3d3d3;
 }
 
 #lateral-content-update {
@@ -267,8 +269,7 @@ body {
 
 .lateral-item {
     display: inline-block;
-    margin-top: 5px;
-    margin-bottom: 0px;
+    margin: 0px;
     padding: 5px;
 }
 
@@ -304,7 +305,7 @@ body {
 /* period range dates */
 
 #period {
-    margin: 10px 0px;
+    margin: 8px 0px;
     text-align: center;
 }
 
@@ -323,7 +324,7 @@ div#period input#from-date, div#period input#to-date {
 /* region list */
 
 div.lateral-item #region-div {
-    margin: 10px 0px;
+    margin: 8px 0px;
     text-align: center;
 }
 
@@ -417,7 +418,6 @@ a.link:hover, span.link:hover {
     /*font-weight: lighter;*/
     vertical-align: bottom;
     width: 290px;
-    margin: 5px;
     margin-top: 10px;
     margin-bottom: 4px;
 }

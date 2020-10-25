@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  (c) Copyright SMByC-IDEAM, 2016-2020
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
 from django.urls import path, re_path
 from django.contrib.gis import admin
 
 from page import views, static_hotspot_files
-from page.models import ActiveFire, Region
+from page.models import ActiveFire, Region, BurnedArea
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -17,6 +17,8 @@ urlpatterns = [
     path('', views.home, name='home'),
     # get region
     path('region.geojson/', views.RegionMapLayer.as_view(model=Region, geometry_field='shape', properties=('name')), name='region'),
+    # get burned area
+    path('burned_area.geojson/', views.BurnedAreaMapLayer.as_view(model=BurnedArea, geometry_field='shape', properties=('slug')), name='burned-area'),
     # active fires points - send data through ajax with geojson
     path('active_fires.geojson/', views.ActiveFiresMapLayer.as_view(model=ActiveFire, properties=('id',)), name='active-fires'),
     # get popup information

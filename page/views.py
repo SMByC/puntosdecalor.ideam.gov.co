@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  (c) Copyright SMByC-IDEAM, 2016-2020
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 import csv
 import json
@@ -21,6 +21,15 @@ class RegionMapLayer(GeoJSONLayerView):
         if self.request.method == 'GET' and 'region' in self.request.GET:
             region_slug = self.request.GET.get('region')
             qs = self.model.objects.filter(slug=region_slug)
+            return qs
+
+
+class BurnedAreaMapLayer(GeoJSONLayerView):
+    def get_queryset(self):
+        if self.request.method == 'GET' and 'date' in self.request.GET:
+            date_split = self.request.GET.get('date').split("-")
+            ba_date = date(int(date_split[0]), int(date_split[1]), 1)
+            qs = self.model.objects.get(date=ba_date)
             return qs
 
 

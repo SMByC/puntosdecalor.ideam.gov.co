@@ -41,33 +41,78 @@
 
     {#  Leaflet and maps javascripts  #}
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+
         // REGIONS
 
         var region_style = {
             'color': '#2b2b2b',
             'weight': 2,
-            'opacity': 0.4,
-            'fillOpacity': 0.03,
+            'opacity': 0.35,
+            'fillOpacity': 0.025,
             'interactive': false,
         };
         function region(map, new_region) {
             // set asynchronize ajax
             $.ajaxSetup({async: true});
             // clear all markers in the map before add the new
-            if ( typeof map.shapes !== 'undefined') {
-                map.removeLayer(map.shapes);
+            if ( typeof map.region !== 'undefined') {
+                map.removeLayer(map.region);
             }
-            var shapes = new L.FeatureGroup();
+            var region = new L.FeatureGroup();
             var data_url = "{% url 'region' %}" + "?region=" + new_region;
             // Download GeoJSON via Ajax
             $.getJSON(data_url, function (data) {
                 var shape = L.geoJson(data, {style: region_style});
-                shapes.addLayer(shape);
+                region.addLayer(shape);
             });
             // add to map
-            map.addLayer(shapes);
+            map.addLayer(region);
             // save markers in map variable
-            map.shapes = shapes;
+            map.region = region;
+        }
+
+        // BURNED AREA
+
+        var burned_area_style = {
+            1: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            2: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            3: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            4: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            5: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            6: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            7: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            8: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            9: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            10: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            11: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+            12: {'color': '#cfa117', 'weight': 0, 'fillOpacity': 0.1, 'interactive': false},
+        }
+        function add_burned_area(map, ba_date) {  // ba_date: yyyy-mm
+            // set asynchronize ajax
+            $.ajaxSetup({async: true});
+            var burned_area = new L.FeatureGroup();
+            var data_url = "{% url 'burned-area' %}" + "?date=" + ba_date;
+            // Download GeoJSON via Ajax
+            $.getJSON(data_url, function (data) {
+                var shape = L.geoJson(data, {style: burned_area_style[parseInt(ba_date.split('-')[1])]});
+                burned_area.addLayer(shape);
+            });
+            // add to map
+            map.addLayer(burned_area);
+            // save markers in map variable
+            if ( typeof map.burned_area !== 'undefined') {
+                map.burned_area = {};
+            }
+            map.burned_area[ba_date] = burned_area;
+        }
+        function remove_burned_area(map, ba_date) {  // ba_date: yyyy-mm
+            // set asynchronize ajax
+            $.ajaxSetup({async: true});
+            // clear all markers in the map before add the new
+            if (ba_date in map.burned_area) {
+                map.removeLayer(map.burned_area[ba_date]);
+                delete map.burned_area[ba_date];
+            }
         }
 
         // ACTIVE FIRES POINTS
@@ -177,7 +222,10 @@
 {% endblock %}
 
 {% block lateral-content %}
-    <div id="lateral-content-title" >Selección</div>
+
+{# puntos de calor #}
+
+    <div id="lateral-content-title" >Puntos de calor</div>
     <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ last_update|date:"N j, Y, P" }}</span></div>
     {# date range input #}
     <div class="lateral-item">

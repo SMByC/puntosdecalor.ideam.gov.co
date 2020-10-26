@@ -209,13 +209,13 @@
             });
 
             // load burned areas when changed the drop-list
-            $('#burned_area').on("select2:select", function(){
-                 var selected_value = $('#burned_area').val();
-                 add_burned_area(map, selected_value);
+            $('#burned_area').on("select2:select", function(e){
+                var selected_value = e.params.data['text'];
+                add_burned_area(map, selected_value);
             }).trigger('change');
-            $('#burned_area').on("select2:unselecting", function(){
-                 var unselected_value = $('#burned_area').val();
-                 remove_burned_area(map, unselected_value);
+            $('#burned_area').on("select2:unselecting", function(e){
+                var unselected_value = e.params.data['text'];
+                remove_burned_area(map, unselected_value);
             }).trigger('change');
 
         }

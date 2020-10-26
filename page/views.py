@@ -29,7 +29,7 @@ class BurnedAreaMapLayer(GeoJSONLayerView):
         if self.request.method == 'GET' and 'date' in self.request.GET:
             date_split = self.request.GET.get('date').split("-")
             ba_date = date(int(date_split[0]), int(date_split[1]), 1)
-            qs = self.model.objects.get(date=ba_date)
+            qs = self.model.objects.filter(date=ba_date)
             return qs
 
 

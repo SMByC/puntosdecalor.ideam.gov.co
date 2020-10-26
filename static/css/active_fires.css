@@ -241,7 +241,7 @@ body {
     /*margin-top: -2px;*/
     overflow: hidden;
     overflow-y: auto;
-    height: calc(100vh - 34px - 11px);
+    height: calc(100vh - 58px);
     width: calc(300px - 4px);
     min-height: 300px;
 }
@@ -574,7 +574,7 @@ input[type=submit] {
 #active_fires_map {
     /* all maps */
     /*width: calc(100% - 300px);*/
-    height: calc(100vh - 40px);
+    height: calc(100vh - 55px);
     border-right: 1px solid #d0d0d0;
 }
 

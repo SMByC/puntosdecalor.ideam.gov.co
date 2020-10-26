@@ -240,26 +240,27 @@ body {
     padding-bottom: 1px;
     /*margin-top: -2px;*/
     overflow: hidden;
+    overflow-y: auto;
     height: calc(100vh - 34px - 11px);
-    width: calc(300px - 18px);
+    width: calc(300px - 4px);
     min-height: 300px;
 }
 
 #lateral-content-title {
     display: inline-block;
-    width: calc(300px - 18px);
+    width: calc(300px - 4px);
     font-size: 1.2em;
     font-weight: bold;
     color: #6e6e6e;
     text-align: center;
-    margin-top: 12px;
+    margin-top: 16px;
     margin-bottom: 2px;
     border-bottom: 1px dashed #d3d3d3;
 }
 
 #lateral-content-update {
     display: inline-block;
-    width: calc(300px - 18px);
+    width: calc(300px - 4px);
     font-size: 0.95em;
     font-weight: normal;
     color: #6e6e6e;
@@ -372,7 +373,7 @@ span#select2-region-container.select2-selection__rendered {
     clear: both;
     position: absolute;
     bottom: 60px;
-    width: calc(300px - 18px);
+    width: calc(300px - 4px);
     font-size: 0.85em;
     font-weight: bold;
 }

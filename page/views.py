@@ -182,7 +182,7 @@ def home(request):
     context = {
         "extent": extent,
         "af_last_update": last_active_fire.date,
-        "ba_last_update": last_burned_area.date,
+        "ba_last_update": last_burned_area.slug,
         "departments": departments,
         "natural_regions": natural_regions,
         "burned_areas": burned_areas,

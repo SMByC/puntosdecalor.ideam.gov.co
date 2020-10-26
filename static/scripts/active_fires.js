@@ -84,7 +84,7 @@ $(function () {
     });
     $('#burned_area').select2({
         language: "es",
-        width: '75%'
+        width: '85%'
     });
 
     // modal window context

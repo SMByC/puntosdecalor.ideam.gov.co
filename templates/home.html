@@ -207,6 +207,17 @@
                 region(map, new_region);
                 active_fires(map, options);
             });
+
+            // load burned areas when changed the drop-list
+            $('#burned_area').on("select2:select", function(){
+                 var selected_value = $('#burned_area').val();
+                 add_burned_area(map, selected_value);
+            }).trigger('change');
+            $('#burned_area').on("select2:unselecting", function(){
+                 var unselected_value = $('#burned_area').val();
+                 remove_burned_area(map, unselected_value);
+            }).trigger('change');
+
         }
     </script>
 {% endblock %}
@@ -280,10 +291,10 @@
     {# burned area #}
 
     <div id="lateral-content-title" >Área quemada</div>
-    <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ af_last_update|date:"N j, Y" }}</span></div>
+    <div id="lateral-content-update" >Último mes: <span id="last-update">{{ ba_last_update }}</span></div>
 
     <div class="lateral-item">
-        <div class="lateral-item-content" >Datos mensuales de MODIS-MCD64A1 de 500m de resolución</div>
+        <div class="lateral-item-content" >Datos mensuales de Modis-MCD64A1 (500m), presentan un retraso de ~3 meses.</div>
         <div id="burned-area-div">
             <select id="burned_area" name="burned_area[]" multiple="multiple">
                 {% for burned_area in burned_areas %}

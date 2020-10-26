@@ -94,7 +94,7 @@
             var data_url = "{% url 'burned-area' %}" + "?date=" + ba_date;
             // Download GeoJSON via Ajax
             $.getJSON(data_url, function (data) {
-                var shape = L.geoJson(data, {style: burned_area_style[parseInt(ba_date.split('-')[1])]});
+                var shape = L.geoJson(data, {style: burned_area_style[parseInt(ba_date.toString().split('-')[1])]});
                 burned_area.addLayer(shape);
             });
             // add to map

@@ -170,7 +170,9 @@ def home(request):
 
     # get the last item
     last_active_fire = ActiveFire.objects.order_by('date').last()
-    last_burned_area = BurnedArea.objects.order_by('date').last()
+
+    # burned area availability data
+    range_burned_area = f"de {BurnedArea.objects.order_by('date').first().date.strftime('%Y-%m')} hasta {BurnedArea.objects.order_by('date').last().date.strftime('%Y-%m')}"
 
     # get groups of regions
     departments = Region.objects.filter(group="departamentos").order_by('name')
@@ -182,7 +184,7 @@ def home(request):
     context = {
         "extent": extent,
         "af_last_update": last_active_fire.date,
-        "ba_last_update": last_burned_area.slug,
+        "range_burned_area": range_burned_area,
         "departments": departments,
         "natural_regions": natural_regions,
         "burned_areas": burned_areas,

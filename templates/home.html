@@ -100,7 +100,7 @@
             // add to map
             map.addLayer(burned_area);
             // save markers in map variable
-            if ( typeof map.burned_area !== 'undefined') {
+            if ( typeof map.burned_area == 'undefined') {
                 map.burned_area = {};
             }
             map.burned_area[ba_date] = burned_area;

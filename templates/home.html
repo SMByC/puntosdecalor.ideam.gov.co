@@ -213,7 +213,7 @@
                 var selected_value = e.params.data['text'];
                 add_burned_area(map, selected_value);
             }).trigger('change');
-            $('#burned_area').on("select2:unselecting", function(e){
+            $('#burned_area').on("select2:unselect", function(e){
                 var unselected_value = e.params.data['text'];
                 remove_burned_area(map, unselected_value);
             }).trigger('change');

@@ -221,8 +221,8 @@
                 for (i of items) {
                     $('#burned_area').val(i.text);
                     if (i.text.startsWith(selected_year)){add_burned_area(map, i.text);}
+                    $('#burned_area').trigger('change');
                 }
-                $('#burned_area').trigger('change');
             });
             // unselect
             $('#burned_area').on("select2:unselect", function(e){
@@ -321,9 +321,9 @@
                 </select>
             </div>
             {# accesos rapidos por año #}
-            <div id="lateral-content-update" >Seleccionar:
+            <div id="lateral-content-update" style="text-align: right;width: 250px;">Seleccionar:
                 {% for year_burned_area in years_burned_area %}
-                    <a class="link" href="#" id="burned_area_by_year">{{ year_burned_area }}</a>
+                    <a class="link" href="#" id="burned_area_by_year" style="margin: 0px;padding: 0px 2px;">{{ year_burned_area }}</a>
                 {% endfor %}
                 <a class="link" href="#" id="burned_area_unselect_all">ninguno</a>
             </div>

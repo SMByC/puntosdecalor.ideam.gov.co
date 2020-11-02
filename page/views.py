@@ -173,6 +173,7 @@ def home(request):
 
     # burned area availability data
     range_burned_area = f"de {BurnedArea.objects.order_by('date').first().date.strftime('%Y-%m')} hasta {BurnedArea.objects.order_by('date').last().date.strftime('%Y-%m')}"
+    years_burned_area = [i.date.year for i in BurnedArea.objects.order_by('date')]
 
     # get groups of regions
     departments = Region.objects.filter(group="departamentos").order_by('name')
@@ -185,6 +186,7 @@ def home(request):
         "extent": extent,
         "af_last_update": last_active_fire.date,
         "range_burned_area": range_burned_area,
+        "years_burned_area": years_burned_area,
         "departments": departments,
         "natural_regions": natural_regions,
         "burned_areas": burned_areas,

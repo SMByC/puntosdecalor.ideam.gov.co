@@ -209,15 +209,31 @@
             });
 
             // load burned areas when changed the drop-list
+            // select
             $('#burned_area').on("select2:select", function(e){
                 var selected_value = e.params.data['text'];
                 add_burned_area(map, selected_value);
             }).trigger('change');
+            // burned area by year
+            $('#burned_area_by_year').click(function(e){
+                var selected_year = $(this).text();
+                var items = $('#burned_area').find("option");
+                for (i of items) {
+                    if (i.text.startsWith(selected_year)){add_burned_area(map, i.text);}
+                }
+                $('#burned_area').trigger('change');
+            });
+            // unselect
             $('#burned_area').on("select2:unselect", function(e){
                 var unselected_value = e.params.data['text'];
                 remove_burned_area(map, unselected_value);
             }).trigger('change');
-
+            // unselect all
+            $('#burned_area_unselect_all').click(function(e){
+                var items = $('#burned_area').select2('data');
+                for (i of items) {remove_burned_area(map, i.text);}
+                $('#burned_area').trigger('change');
+            });
         }
     </script>
 {% endblock %}
@@ -301,6 +317,13 @@
                         <option value={{ burned_area.slug }}>{{ burned_area.slug }}</option>
                     {% endfor %}
                 </select>
+            </div>
+            {# accesos rapidos por año #}
+            <div id="lateral-content-update" >Seleccionar:
+                {% for year_burned_area in years_burned_area %}
+                    <a class="link" href="#" id="burned_area_by_year">{{ year_burned_area }}</a>
+                {% endfor %}
+                <a class="link" href="#" id="burned_area_unselect_all">ninguno</a>
             </div>
         </div>
     </div>

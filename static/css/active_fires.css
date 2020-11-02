@@ -273,6 +273,7 @@ body {
     display: inline-block;
     margin: 2px 0px 0px;
     padding: 5px;
+    width: calc(300px - 15px);
 }
 
 .lateral-item-title {

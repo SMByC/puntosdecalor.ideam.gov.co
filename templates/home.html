@@ -219,6 +219,7 @@
                 var selected_year = $(this).text();
                 var items = $('#burned_area').find("option");
                 for (i of items) {
+                    $('#burned_area').val(i.text);
                     if (i.text.startsWith(selected_year)){add_burned_area(map, i.text);}
                 }
                 $('#burned_area').trigger('change');
@@ -232,6 +233,7 @@
             $('#burned_area_unselect_all').click(function(e){
                 var items = $('#burned_area').select2('data');
                 for (i of items) {remove_burned_area(map, i.text);}
+                $('#burned_area').val('');
                 $('#burned_area').trigger('change');
             });
         }

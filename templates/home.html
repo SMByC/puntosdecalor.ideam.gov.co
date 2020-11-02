@@ -281,8 +281,7 @@
 
     <div class="lateral-item">
         <div class="lateral-item-title" >Resultado</div>
-        <div class="lateral-item-content" >
-            Encontrados <span id="number-result">...</span> puntos de calor
+        <div class="lateral-item-content" ><span id="number-result">...</span> puntos de calor
             <a class="link" href="{% url 'download-result' %}">descargar</a>
         </div>
     </div>
@@ -290,11 +289,12 @@
     {# burned area #}
 
     <div id="lateral-content-title" >Área quemada</div>
-    <div id="lateral-content-update" >Disponibilidad: <span id="last-update">{{ range_burned_area }}</span></div>
+    <div id="lateral-content-update" >Disponibilidad: <span id="last-update">{{ range_burned_area }}</span>
+    <br />presentan un retraso de ~3 meses</div>
 
     <div class="lateral-item">
-        <div class="lateral-item-title" >Modis-MCD64A1</div>
-        <div class="lateral-item-content" >Datos mensuales de 500m, presentan un retraso de ~3 meses.
+        <div class="lateral-item-title" >Modis</div>
+        <div class="lateral-item-content" >Datos mensuales de Modis-MCD64A1 (500m)
             <div id="burned-area-div">
                 <select id="burned_area" name="burned_area[]" multiple="multiple">
                     {% for burned_area in burned_areas %}

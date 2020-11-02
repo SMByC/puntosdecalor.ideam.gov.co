@@ -241,7 +241,7 @@
     {# date range input #}
     <div class="lateral-item">
         <div class="lateral-item-title" >Periodo</div>
-        <div class="lateral-item-content" >Seleccione el periodo para mostrar los puntos de calor en el rango de fechas seleccionadas:
+        <div class="lateral-item-content" >
             <div id="period">
                 De: <input id="from-date" size="7" value=""> a: <input id="to-date" size="7" value="">
             </div>
@@ -252,27 +252,28 @@
 
     <div class="lateral-item">
         <div class="lateral-item-title" >Region</div>
-        <div class="lateral-item-content" >Seleccione la region para mostrar y filtrar los puntos de calor que estén dentro de éste:</div>
-        <div id="region-div">
-            <select id="region" name="region">
+        <div class="lateral-item-content" >
+            <div id="region-div">
+                <select id="region" name="region">
 
-                <optgroup label="General">
-                    <option value="colombia">Colombia</option>
-                </optgroup>
+                    <optgroup label="General">
+                        <option value="colombia">Colombia</option>
+                    </optgroup>
 
-                <optgroup label="Departamentos">
-                {% for department in departments %}
-                    <option value={{ department.slug }}>{{ department.name }}</option>
-                {% endfor %}
-                </optgroup>
+                    <optgroup label="Departamentos">
+                    {% for department in departments %}
+                        <option value={{ department.slug }}>{{ department.name }}</option>
+                    {% endfor %}
+                    </optgroup>
 
-                <optgroup label="Regiones Naturales">
-                {% for natural_region in natural_regions %}
-                    <option value={{ natural_region.slug }}>{{ natural_region.name }}</option>
-                {% endfor %}
-                </optgroup>
+                    <optgroup label="Regiones Naturales">
+                    {% for natural_region in natural_regions %}
+                        <option value={{ natural_region.slug }}>{{ natural_region.name }}</option>
+                    {% endfor %}
+                    </optgroup>
 
-            </select>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -281,10 +282,8 @@
     <div class="lateral-item">
         <div class="lateral-item-title" >Resultado</div>
         <div class="lateral-item-content" >
-            Encontrados <span id="number-result">...</span> puntos de calor.<br>
-            Archivo csv de los resultados:
-            <a class="link" href="{% url 'download-result' %}">
-            descargar</a>
+            Encontrados <span id="number-result">...</span> puntos de calor
+            <a class="link" href="{% url 'download-result' %}">descargar</a>
         </div>
     </div>
 
@@ -294,13 +293,15 @@
     <div id="lateral-content-update" >Disponibilidad: <span id="last-update">{{ range_burned_area }}</span></div>
 
     <div class="lateral-item">
-        <div class="lateral-item-content" >Datos mensuales de Modis-MCD64A1 (500m), presentan un retraso de ~3 meses.</div>
-        <div id="burned-area-div">
-            <select id="burned_area" name="burned_area[]" multiple="multiple">
-                {% for burned_area in burned_areas %}
-                    <option value={{ burned_area.slug }}>{{ burned_area.slug }}</option>
-                {% endfor %}
-            </select>
+        <div class="lateral-item-title" >Modis-MCD64A1</div>
+        <div class="lateral-item-content" >Datos mensuales de 500m, presentan un retraso de ~3 meses.
+            <div id="burned-area-div">
+                <select id="burned_area" name="burned_area[]" multiple="multiple">
+                    {% for burned_area in burned_areas %}
+                        <option value={{ burned_area.slug }}>{{ burned_area.slug }}</option>
+                    {% endfor %}
+                </select>
+            </div>
         </div>
     </div>
 

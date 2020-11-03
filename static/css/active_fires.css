@@ -240,10 +240,14 @@ body {
     padding-bottom: 1px;
     /*margin-top: -2px;*/
     overflow: hidden;
-    overflow-y: auto;
     height: calc(100vh - 46px);
     width: calc(300px - 4px);
     min-height: 300px;
+}
+
+#overflow-content {
+    overflow: hidden;
+    overflow-y: auto;
 }
 
 #lateral-content-title {

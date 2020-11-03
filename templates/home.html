@@ -251,81 +251,82 @@
 {% endblock %}
 
 {% block lateral-content %}
+    <div id="overflow-content">
+        {# puntos de calor #}
 
-    {# puntos de calor #}
-
-    <div id="lateral-content-title" >Puntos de calor</div>
-    <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ af_last_update|date:"N j, Y, P" }}</span></div>
-    {# date range input #}
-    <div class="lateral-item">
-        <div class="lateral-item-title" >Periodo</div>
-        <div class="lateral-item-content" >
-            <div id="period">
-                De: <input id="from-date" size="7" value=""> a: <input id="to-date" size="7" value="">
+        <div id="lateral-content-title" >Puntos de calor</div>
+        <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ af_last_update|date:"N j, Y, P" }}</span></div>
+        {# date range input #}
+        <div class="lateral-item">
+            <div class="lateral-item-title" >Periodo</div>
+            <div class="lateral-item-content" >
+                <div id="period">
+                    De: <input id="from-date" size="7" value=""> a: <input id="to-date" size="7" value="">
+                </div>
             </div>
         </div>
-    </div>
 
-    {# Region #}
+        {# Region #}
 
-    <div class="lateral-item">
-        <div class="lateral-item-title" >Region</div>
-        <div class="lateral-item-content" >
-            <div id="region-div">
-                <select id="region" name="region">
+        <div class="lateral-item">
+            <div class="lateral-item-title" >Region</div>
+            <div class="lateral-item-content" >
+                <div id="region-div">
+                    <select id="region" name="region">
 
-                    <optgroup label="General">
-                        <option value="colombia">Colombia</option>
-                    </optgroup>
+                        <optgroup label="General">
+                            <option value="colombia">Colombia</option>
+                        </optgroup>
 
-                    <optgroup label="Departamentos">
-                    {% for department in departments %}
-                        <option value={{ department.slug }}>{{ department.name }}</option>
-                    {% endfor %}
-                    </optgroup>
+                        <optgroup label="Departamentos">
+                        {% for department in departments %}
+                            <option value={{ department.slug }}>{{ department.name }}</option>
+                        {% endfor %}
+                        </optgroup>
 
-                    <optgroup label="Regiones Naturales">
-                    {% for natural_region in natural_regions %}
-                        <option value={{ natural_region.slug }}>{{ natural_region.name }}</option>
-                    {% endfor %}
-                    </optgroup>
+                        <optgroup label="Regiones Naturales">
+                        {% for natural_region in natural_regions %}
+                            <option value={{ natural_region.slug }}>{{ natural_region.name }}</option>
+                        {% endfor %}
+                        </optgroup>
 
-                </select>
+                    </select>
+                </div>
             </div>
         </div>
-    </div>
 
-    {# Result #}
+        {# Result #}
 
-    <div class="lateral-item">
-        <div class="lateral-item-title" >Resultado</div>
-        <div class="lateral-item-content" ><span id="number-result">...</span> puntos de calor
-            <a class="link" href="{% url 'download-result' %}">descargar</a>
-        </div>
-    </div>
-
-    {# burned area #}
-
-    <div id="lateral-content-title" >Área quemada</div>
-    <div id="lateral-content-update" >Disponibilidad: <span id="last-update">{{ range_burned_area }}</span>
-    <br />presentan un retraso de ~3 meses</div>
-
-    <div class="lateral-item">
-        <div class="lateral-item-title" >Modis</div>
-        <div class="lateral-item-content" >Datos mensuales de Modis-MCD64A1 (500m)
-            <div id="burned-area-div">
-                <select id="burned_area" name="burned_area[]" multiple="multiple">
-                    {% for burned_area in burned_areas %}
-                        <option value={{ burned_area.slug }}>{{ burned_area.slug }}</option>
-                    {% endfor %}
-                </select>
+        <div class="lateral-item">
+            <div class="lateral-item-title" >Resultado</div>
+            <div class="lateral-item-content" ><span id="number-result">...</span> puntos de calor
+                <a class="link" href="{% url 'download-result' %}">descargar</a>
             </div>
-            {# accesos rapidos por año #}
-            <div id="lateral-content-update" style="text-align: right;width: 250px;">Seleccionar:
-                {% for year_burned_area in years_burned_area %}
-                    <a class="link burned_area_by_year" href="#" style="margin: 0px;padding: 0px 2px;">{{ year_burned_area }}</a>
-                {% endfor %}
-                <a class="link" href="#" id="burned_area_unselect_all">ninguno</a>
+        </div>
+
+        {# burned area #}
+
+        <div id="lateral-content-title" >Área quemada</div>
+        <div id="lateral-content-update" >Disponibilidad: <span id="last-update">{{ range_burned_area }}</span>
+        <br />presentan un retraso de ~3 meses</div>
+
+        <div class="lateral-item">
+            <div class="lateral-item-title" >Modis</div>
+            <div class="lateral-item-content" >Datos mensuales de Modis-MCD64A1 (500m)
+                <div id="burned-area-div">
+                    <select id="burned_area" name="burned_area[]" multiple="multiple">
+                        {% for burned_area in burned_areas %}
+                            <option value={{ burned_area.slug }}>{{ burned_area.slug }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                {# accesos rapidos por año #}
+                <div id="lateral-content-update" style="text-align: right;width: 250px;">Seleccionar:
+                    {% for year_burned_area in years_burned_area %}
+                        <a class="link burned_area_by_year" href="#" style="margin: 0px;padding: 0px 2px;">{{ year_burned_area }}</a>
+                    {% endfor %}
+                    <a class="link" href="#" id="burned_area_unselect_all">ninguno</a>
+                </div>
             </div>
         </div>
     </div>

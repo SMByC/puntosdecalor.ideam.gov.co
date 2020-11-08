@@ -173,7 +173,7 @@ def home(request):
 
     # burned area availability data
     range_burned_area = f"de {BurnedArea.objects.order_by('date').first().date.strftime('%Y-%m')} hasta {BurnedArea.objects.order_by('date').last().date.strftime('%Y-%m')}"
-    years_burned_area = sorted(list(set([i.date.year for i in BurnedArea.objects])))
+    years_burned_area = [i.date.year for i in BurnedArea.objects.order_by('date__year').distinct('date__year')]
 
     # get groups of regions
     departments = Region.objects.filter(group="departamentos").order_by('name')

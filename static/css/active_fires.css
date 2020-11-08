@@ -331,9 +331,16 @@ div#period input#from-date, div#period input#to-date {
 
 /* region list */
 
-div.lateral-item #region-div, div.lateral-item #burned-area-div {
+div.lateral-item #region-div {
     margin: 8px 0px;
     text-align: center;
+}
+
+div.lateral-item #burned-area-div {
+    margin: 8px 0px;
+    text-align: center;
+    font-family: monospace;
+    font-size: 0.9em;
 }
 
 span#select2-region-container.select2-selection__rendered {

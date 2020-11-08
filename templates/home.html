@@ -220,7 +220,7 @@
                 var items = $('#burned_area').find("option");
                 var items_selected = $('#burned_area').select2('data');
                 for (i of items) {
-                    if (i.text.startsWith(selected_year) && items_selected.some(items_selected => items_selected.text === i.text)) {
+                    if (i.text.startsWith(selected_year) && !items_selected.some(items_selected => items_selected.text === i.text)) {
                         $('#burned_area').val($('#burned_area').val().concat([i.text])).trigger('change');
                         add_burned_area(map, i.text);
                     }

@@ -1,0 +1,5 @@
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
+
+# download and import burned areas from MODIS
+45 0 */5 * * source /home/activefires/.bashrc; python3.8 /home/activefires/apps/Active_Fires/page/data/burned_area/download_burned_area.py -s mcd64a1 -d next > /dev/null 2>&1

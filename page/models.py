@@ -76,7 +76,8 @@ class ActiveFire(models.Model):
         ordering = ['date', 'source']
 
 
-REGION_GROUPS = (('departamentos', 'Departamentos'), ('regiones_naturales', 'Regiones Naturales'))
+REGION_GROUPS = (('departamentos', 'Departamentos'), ('regiones_naturales', 'Regiones Naturales'),
+                 ('parques_nacionales', 'Parques Nacionales'), ('corporaciones', 'Corporaciones'))
 
 
 class Region(models.Model):

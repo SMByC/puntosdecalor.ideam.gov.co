@@ -291,6 +291,18 @@
                         {% endfor %}
                         </optgroup>
 
+                        <optgroup label="Parques Nacionales">
+                        {% for parque_nacional in parques_nacionales %}
+                            <option value={{ parque_nacional.slug }}>{{ parque_nacional.name }}</option>
+                        {% endfor %}
+                        </optgroup>
+
+                        <optgroup label="Corporaciones">
+                        {% for corporacion in corporaciones %}
+                            <option value={{ corporacion.slug }}>{{ corporacion.name }}</option>
+                        {% endfor %}
+                        </optgroup>
+
                     </select>
                 </div>
             </div>

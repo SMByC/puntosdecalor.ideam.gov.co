@@ -178,6 +178,8 @@ def home(request):
     # get groups of regions
     departments = Region.objects.filter(group="departamentos").order_by('name')
     natural_regions = Region.objects.filter(group="regiones_naturales").order_by('name')
+    parques_nacionales = Region.objects.filter(group="parques_nacionales").order_by('name')
+    corporaciones = Region.objects.filter(group="corporaciones").order_by('name')
 
     # get burned areas
     burned_areas = BurnedArea.objects.all().order_by('-date')
@@ -189,6 +191,8 @@ def home(request):
         "years_burned_area": years_burned_area,
         "departments": departments,
         "natural_regions": natural_regions,
+        "parques_nacionales": parques_nacionales,
+        "corporaciones": corporaciones,
         "burned_areas": burned_areas,
     }
 

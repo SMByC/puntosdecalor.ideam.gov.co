@@ -67,6 +67,12 @@
             });
             // add to map
             map.addLayer(region);
+            // zoom to the region
+            if ( new_region === "colombia" ) {
+                map.fitBounds([[16.130262012034756,-94.39453125],[-6.970049417296218,-51.37207031249999]]);
+            } else {
+                map.fitBounds(region.getBounds());
+            }
             // save markers in map variable
             map.region = region;
         }
@@ -188,10 +194,10 @@
     <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
         function load_map(map, options) {
             // load map in request url with get parameter
-            set_extent(map, options);
-            synchronize_extent(map, options);
             region(map, getParameterByName("region"));
             active_fires(map, options);
+            set_extent(map, options);
+            synchronize_extent(map, options);
 
             // update the map after date change
             $('#period').on('datepicker-change', function (event, obj) {

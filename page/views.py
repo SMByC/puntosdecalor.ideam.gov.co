@@ -79,7 +79,7 @@ def get_popup(request):
         'Temperatura: {brightness} &#8451;<br/>' \
         'Confianza: {confidence}<br/>' \
         '<hr>' \
-        'Elevación: {elevation}<br/>' \
+        'Elevación: {elevation} msnm<br/>' \
         .format(
             datetime=active_fire.date.strftime("%Y-%m-%d %H:%M"),
             lon=round(active_fire.geom.x, 3),

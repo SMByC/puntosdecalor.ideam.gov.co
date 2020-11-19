@@ -5,6 +5,7 @@
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 import csv
 import json
+import xarray as xr
 from datetime import datetime, date
 from urllib.parse import urlencode, urlparse, parse_qs
 from django.http import HttpResponse
@@ -56,6 +57,14 @@ class ActiveFiresMapLayer(GeoJSONLayerView):
 
 #### Ajax and json queries
 
+# load raster
+dem_xarr = xr.open_rasterio("/home/activefires/apps/Active_Fires/static/dem/DEM-90_WGS84.img")[0, :, :]  # Slice one of the bands
+
+
+def get_elevation(lon, lat):
+    return dem_xarr.sel(x=lon, y=lat, method="nearest").item()
+
+
 def get_popup(request):
     id = int(request.GET["id"])
     active_fire = ActiveFire.objects.get(id=id)
@@ -69,6 +78,8 @@ def get_popup(request):
         'Radiación térmica: {frp} MW<br/>' \
         'Temperatura: {brightness} &#8451;<br/>' \
         'Confianza: {confidence}<br/>' \
+        '<hr>' \
+        'Elevación: {elevation}<br/>' \
         .format(
             datetime=active_fire.date.strftime("%Y-%m-%d %H:%M"),
             lon=round(active_fire.geom.x, 3),
@@ -77,6 +88,7 @@ def get_popup(request):
             brightness=int(round(active_fire.brightness - 273.15, 0)),
             confidence='--' if active_fire.confidence is None else active_fire.confidence,
             frp='--' if active_fire.frp is None else active_fire.frp,
+            elevation=get_elevation(active_fire.geom.x, active_fire.geom.y),
         )
     return HttpResponse(json.dumps(popup_text))
 

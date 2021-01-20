@@ -107,7 +107,7 @@ for attempt in range(4):
     url = cfg.get(args.source, 'host') + ":" + cfg.get(args.source, 'remote_path') + f"/{downloadDateArr[0]}/" + remoteFilename
     log.info('download started:  ' + url)
     # download with wget
-    sftp_cmd = "sftp fire@" + url + " " + cfg.get(args.source, 'local_path')
+    sftp_cmd = "sshpass -p 'burnt' sftp fire@" + url + " " + cfg.get(args.source, 'local_path')
     sftp_status = os.system(sftp_cmd)
     # TODO: check time for wget process
     # check wget_status

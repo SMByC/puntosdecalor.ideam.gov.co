@@ -101,15 +101,14 @@ remoteFilename = f"MCD64monthly.A{downloadDateArr[0]}{fix_zeros(julianDay, 3)}.W
 localFilename = cfg.get(args.source, 'local_path') + remoteFilename
 
 for attempt in range(4):
-    url = cfg.get(args.source, 'host') + cfg.get(args.source, 'remote_path') + f"/{downloadDateArr[0]}/" + remoteFilename
+    url = cfg.get(args.source, 'host') + ":" + cfg.get(args.source, 'remote_path') + f"/{downloadDateArr[0]}/" + remoteFilename
     log.info('download started:  ' + url)
     # download with wget
-    wget_cmd = "wget -e robots=off -m -np -R .html,.tmp -nH -nd" \
-               " --ftp-user=user --ftp-password=burnt_data " + url + " -P " + cfg.get(args.source, 'local_path')
-    wget_status = os.system(wget_cmd)
+    sftp_cmd = "sftp fire@" + url + " " + cfg.get(args.source, 'local_path')
+    sftp_status = os.system(sftp_cmd)
     # TODO: check time for wget process
     # check wget_status
-    if wget_status == 0:
+    if sftp_status == 0:
         log.info('download finished: ' + localFilename)
         break
     else:

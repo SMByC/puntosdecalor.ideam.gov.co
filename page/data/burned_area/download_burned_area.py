@@ -8,6 +8,9 @@
 #
 # cd /home/activefires/apps/Active_Fires/page/data/burned_area
 #  python3.8 download_burned_area.py -s mcd64a1 -d 2020-1
+#
+# DATA SOURCES:
+# https://modis-fire.umd.edu/index.html
 
 import glob
 import shutil

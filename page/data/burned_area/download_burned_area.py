@@ -134,12 +134,7 @@ df_clip = gpd.clip(f_dissolve, gpd.read_file("../shapes/Colombia.shp"))
 
 for f in glob.glob(burned_area_file.replace(".shp", "*")):
     os.remove(f)
-
-if df_clip.empty:
-    burned_area_file = None
-else:
-    df_clip.to_file(burned_area_file)
-
+df_clip.to_file(burned_area_file)
 
 ###########################################################################
 # import active fires to databases

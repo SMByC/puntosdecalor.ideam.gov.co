@@ -23,10 +23,9 @@ def from_source(source, burned_area_file, ba_date):
         print('Burned area already exists!')
         return
 
-    if burned_area_file:
-        mapping = {'shape': 'MULTIPOLYGON'}
-        lm = LayerMapping(BurnedArea, burned_area_file, mapping)
-        lm.save(verbose=True)
+    mapping = {'shape': 'MULTIPOLYGON'}
+    lm = LayerMapping(BurnedArea, burned_area_file, mapping)
+    lm.save(verbose=True)
 
     burned_area = BurnedArea.objects.latest('id')
     burned_area.date = ba_date

@@ -5,7 +5,7 @@
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 import csv
 import json
-import xarray as xr
+import rioxarray
 from datetime import datetime, date
 from urllib.parse import urlencode, urlparse, parse_qs
 from django.http import HttpResponse
@@ -58,7 +58,7 @@ class ActiveFiresMapLayer(GeoJSONLayerView):
 #### Ajax and json queries
 
 # load raster
-dem_xarr = xr.open_dataset("/home/activefires/apps/Active_Fires/static/dem/DEM-90_WGS84.img", engine="rasterio")[0, :, :]  # Slice one of the bands
+dem_xarr = rioxarray.open_rasterio("/home/activefires/apps/Active_Fires/static/dem/DEM-90_WGS84.img")[0, :, :]  # Slice one of the bands
 
 
 def get_elevation(lon, lat):

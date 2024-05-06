@@ -58,8 +58,7 @@ class ActiveFiresMapLayer(GeoJSONLayerView):
 #### Ajax and json queries
 
 # load raster
-dem_xarr = rioxarray.open_rasterio("/home/activefires/apps/Active_Fires/static/dem/DEM-90_WGS84.img")[0, :, :]  # Slice one of the bands
-
+dem_xarr = rioxarray.open_rasterio("/home/activefires/apps/Active_Fires/static/dem/DEM_COL.img")
 
 def get_elevation(lon, lat):
     return dem_xarr.sel(x=lon, y=lat, method="nearest").item()

@@ -75,7 +75,7 @@ except Exception as e:
 remoteFilename = cfg.get(args.source, 'basename') + downloadDateArr[0] + julianDay + '.txt'
 localFilename = cfg.get(args.source, 'local_path') + remoteFilename
 
-for attempt in range(10):
+for attempt in range(3):
     url = cfg.get(args.source, 'host') + cfg.get(args.source, 'remote_path') + remoteFilename
     log.info('download started:  ' + url)
     # download with wget
@@ -91,7 +91,11 @@ for attempt in range(10):
     else:
         # if wget_status =! 0 is due a some error
         log.info("attempt " + str(attempt) + ': error downloading: ' + url)
-        sleep(120)
+        sleep(5)
+
+if wget_status != 0:
+    log.error('Error downloading: ' + url)
+    sys.exit()
 
 ###########################################################################
 # import active fires to databases

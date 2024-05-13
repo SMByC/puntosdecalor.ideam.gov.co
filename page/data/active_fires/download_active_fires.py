@@ -80,7 +80,7 @@ for attempt in range(10):
     log.info('download started:  ' + url)
     # download with wget
     app_key = os.environ.get("app_key", '')
-    wget_cmd = "wget -e robots=off -m -np -R .html,.tmp -nH -nd --header" \
+    wget_cmd = "wget -e robots=off -m -np -R .html,.tmp -nH -nd --secure-protocol tlsv1 --header" \
                " \"Authorization: Bearer {}\" ".format(app_key) + url + " -P " + cfg.get(args.source, 'local_path')
     wget_status = os.system(wget_cmd)
     # TODO: check time for wget process

@@ -100,7 +100,7 @@ def fix_zeros(value, digits):
     if digits == 3:
         return '00' + str(value) if len(str(value)) == 1 else ('0' + str(value) if len(str(value)) == 2 else str(value))
 
-remoteFilename = f"MCD64monthly.A{downloadDateArr[0]}{fix_zeros(julianDay, 3)}.Win05.006.burndate.shapefiles.tar.gz"
+remoteFilename = f"MCD64monthly.A{downloadDateArr[0]}{fix_zeros(julianDay, 3)}.Win05.061.burndate.shapefiles.tar.gz"
 localFilename = cfg.get(args.source, 'local_path') + remoteFilename
 
 for attempt in range(4):

@@ -21,7 +21,7 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Add the directory containing your local Python modules to python path
-sys.path.append('/home/activefires/.local/lib/python3.9/site-packages')
+sys.path.insert(0, '/home/activefires/.local/lib/python3.9/site-packages')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/

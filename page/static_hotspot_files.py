@@ -18,7 +18,7 @@ import stat
 
 from urllib.parse import unquote
 from django.http import (Http404, HttpResponse, HttpResponseRedirect,
-                         HttpResponseNotModified, StreamingHttpResponse)
+                         HttpResponseNotModified, StreamingHttpResponse, HttpResponsePermanentRedirect)
 from django.template import loader, Template, Context, TemplateDoesNotExist
 from django.utils.http import http_date, parse_http_date
 from django.utils.translation import ugettext as _, gettext_lazy
@@ -161,3 +161,7 @@ def was_modified_since(header=None, mtime=0, size=0):
     except (AttributeError, ValueError, OverflowError):
         return True
     return False
+
+
+def ftp_2_csv_redirect(request, path):
+    return HttpResponsePermanentRedirect("/archivos-csv/" + path)

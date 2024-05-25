@@ -9,6 +9,10 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 15 6,14 * * * source /home/activefires/.bashrc; python3.9 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-20 -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
 25 */2 * * * source /home/activefires/.bashrc; python3.9 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-20 -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
 
+# download and import active fires from VIIRS viirs-noaa-21
+20 6,14 * * * source /home/activefires/.bashrc; python3.9 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-21 -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
+30 */2 * * * source /home/activefires/.bashrc; python3.9 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-21 -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
+
 # download and import active fires from VIIRS viirs-suomi-npp
 45 6,14 * * * source /home/activefires/.bashrc; python3.9 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-suomi-npp -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
 35 */2 * * * source /home/activefires/.bashrc; python3.9 /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-suomi-npp -d `date +\%Y-\%m-\%d` > /dev/null 2>&1

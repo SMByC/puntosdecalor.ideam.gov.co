@@ -21,7 +21,8 @@ for date_import in date_range:
 
     f.write("python3.9 download_active_fires.py -s modis -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
     # f.write("python3.9 download_active_fires.py -s viirs -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
-    # f.write("python3.9 download_active_fires.py -s viirs-noaa-20 -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
-    # f.write("python3.9 download_active_fires.py -s viirs-suomi-npp -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    f.write("python3.9 download_active_fires.py -s viirs-noaa-20 -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    f.write("python3.9 download_active_fires.py -s viirs-noaa-21 -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
+    f.write("python3.9 download_active_fires.py -s viirs-suomi-npp -d \"{}\"\n".format(date_import.strftime("%Y-%m-%d")))
 
 f.close()

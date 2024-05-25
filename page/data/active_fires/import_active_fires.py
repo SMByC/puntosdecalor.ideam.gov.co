@@ -47,18 +47,32 @@ def save_in_csv_table(active_fire):
         ])
 
 
-def from_source(source, active_fires_file):
-    reader = csv.DictReader(open(active_fires_file, 'rt', encoding='utf8'), delimiter=",")
+def from_source(source=None, csv_input_file=None):
+    reader = csv.DictReader(open(csv_input_file, 'rt', encoding='utf8'), delimiter=",")
     colombia = WorldBorder.objects.get(name='Colombia')
     for line in reader:
         date = [int(i) for i in line['acq_date'].split('-')]
-        time = [int(i) for i in line['acq_time'].split(':')]
-        # time = list(str(line['acq_time']).strip())
-        # time = [int(''.join(time[0:2])), int(''.join(time[2:4]))]
+
+        if ":" in line['acq_time']:
+            time = [int(i) for i in line['acq_time'].split(':')]
+        else:
+            # split hhmm into hh and mm, e.g. 1230 -> [12, 30], 545 -> [5, 45]
+            time = [int(line['acq_time'][-4:-2]), int(line['acq_time'][-2:])]
+
         lng = float(line['longitude'])
         lat = float(line['latitude'])
         active_fire_point = Point(lng, lat)
         active_fire_datetime = datetime.datetime(date[0], date[1], date[2], time[0], time[1]) + relativedelta(hours=-5)  # fix to Colombian zone
+
+        if source is None:
+            if line['satellite'] in ('A', 'T'):
+                source = 'modis'
+            elif line['satellite'] == 'N':
+                source = 'viirs-suomi-npp'
+            elif line['satellite'] == 'N20':
+                source = 'viirs-noaa-20'
+            elif line['satellite'] == 'N21':
+                source = 'viirs-noaa-21'
 
         if source == 'modis':
             satellite = 'MODIS-Aqua' if line['satellite'].strip() == 'A' else 'MODIS-Terra'
@@ -73,13 +87,21 @@ def from_source(source, active_fires_file):
             brightness = float(line['bright_ti4'])
             # Confidence
             confidence = None
-        if source in ('viirs-noaa-20', 'viirs-suomi-npp'):
-            satellite = 'VIIRS-NOAA-20' if source == 'viirs-noaa-20' else 'VIIRS-Suomi-NPP'
+        if source in ('viirs-noaa-20', 'viirs-noaa-21', 'viirs-suomi-npp'):
+            if source == 'viirs-noaa-20':
+                satellite = 'VIIRS-NOAA-20'
+            elif source == 'viirs-noaa-21':
+                satellite = 'VIIRS-NOAA-21'
+            elif source == 'viirs-suomi-npp':
+                satellite = 'VIIRS-Suomi-NPP'
             # Brightness Temperature
             brightness = float(line['bright_ti4'])
             brightness_alt = float(line['bright_ti5'])
             # Confidence
-            confidence = {'low': 'Baja', 'nominal': 'Nominal', 'high': 'Alta'}.get(line['confidence'])
+            if line['confidence'] in ('l', 'n', 'h'):
+                confidence = {'l': 'Baja', 'n': 'Nominal', 'h': 'Alta'}.get(line['confidence'])
+            else:
+                confidence = {'low': 'Baja', 'nominal': 'Nominal', 'high': 'Alta'}.get(line['confidence'])
 
         # Fire Radiative Power
         frp = round(float(line['frp']), 1)

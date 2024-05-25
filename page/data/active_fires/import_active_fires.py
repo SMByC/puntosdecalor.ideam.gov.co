@@ -65,7 +65,7 @@ def from_source(source=None, csv_input_file=None):
         active_fire_datetime = datetime.datetime(date[0], date[1], date[2], time[0], time[1]) + relativedelta(hours=-5)  # fix to Colombian zone
 
         if source is None:
-            if line['satellite'] in ('A', 'T'):
+            if line['satellite'].strip() in ('A', 'T', 'Aqua', 'Terra'):
                 source = 'modis'
             elif line['satellite'] == 'N':
                 source = 'viirs-suomi-npp'
@@ -75,7 +75,7 @@ def from_source(source=None, csv_input_file=None):
                 source = 'viirs-noaa-21'
 
         if source == 'modis':
-            satellite = 'MODIS-Aqua' if line['satellite'].strip() == 'A' else 'MODIS-Terra'
+            satellite = 'MODIS-Aqua' if line['satellite'].strip() in ('A', 'Aqua') else 'MODIS-Terra'
             # Brightness Temperature
             brightness = float(line['brightness'])
             brightness_alt = float(line['bright_t31'])

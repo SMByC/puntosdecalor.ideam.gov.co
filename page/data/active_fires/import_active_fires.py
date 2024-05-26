@@ -95,8 +95,8 @@ def from_source(source=None, csv_input_file=None):
             elif source == 'viirs-suomi-npp':
                 satellite = 'VIIRS-Suomi-NPP'
             # Brightness Temperature
-            brightness = float(line['bright_ti4'])
-            brightness_alt = float(line['bright_ti5'])
+            brightness = float(line['bright_ti4']) if 'bright_ti4' in line else float(line['brightness'])
+            brightness_alt = float(line['bright_ti5']) if 'bright_ti5' in line else float(line['bright_t31'])
             # Confidence
             if line['confidence'] in ('l', 'n', 'h'):
                 confidence = {'l': 'Baja', 'n': 'Nominal', 'h': 'Alta'}.get(line['confidence'])

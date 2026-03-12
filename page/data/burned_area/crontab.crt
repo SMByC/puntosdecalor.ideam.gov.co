@@ -1,5 +1,9 @@
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 
-# download and import burned areas from MODIS
-45 0 */5 * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/burned_area/download_burned_area.py -s mcd64a1 -d next > /dev/null 2>&1
+APP_DIR=/home/activefires/apps/Active_Fires
+ENV_FILE=/home/activefires/apps/Active_Fires/.env
+SCRIPT=page/data/burned_area/download_burned_area.py
+
+# download and import burned areas from MODIS MCD64A1
+45 4 5,15,28 * * set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s mcd64a1 -d next > /dev/null 2>&1

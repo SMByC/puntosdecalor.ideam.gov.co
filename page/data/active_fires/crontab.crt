@@ -1,18 +1,22 @@
 SHELL=/bin/bash
 PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 
+APP_DIR=/home/activefires/apps/Active_Fires
+ENV_FILE=/home/activefires/apps/Active_Fires/.env
+SCRIPT=page/data/active_fires/download_active_fires.py
+
 # download and import active fires from MODIS
-10 7,15 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s modis -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
-20 */2 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s modis -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
+10 7,15 * * * set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s modis -d $(date +\%Y-\%m-\%d --date="-1 days") > /dev/null 2>&1
+20 * * * *    set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s modis -d $(date +\%Y-\%m-\%d) > /dev/null 2>&1
 
-# download and import active fires from VIIRS viirs-noaa-20
-15 6,14 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-20 -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
-25 */2 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-20 -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
+# download and import active fires from VIIRS NOAA-20
+15 6,14 * * * set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s viirs-noaa-20 -d $(date +\%Y-\%m-\%d --date="-1 days") > /dev/null 2>&1
+25 * * * *    set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s viirs-noaa-20 -d $(date +\%Y-\%m-\%d) > /dev/null 2>&1
 
-# download and import active fires from VIIRS viirs-noaa-21
-20 6,14 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-21 -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
-30 */2 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-noaa-21 -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
+# download and import active fires from VIIRS NOAA-21
+20 6,14 * * * set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s viirs-noaa-21 -d $(date +\%Y-\%m-\%d --date="-1 days") > /dev/null 2>&1
+30 * * * *    set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s viirs-noaa-21 -d $(date +\%Y-\%m-\%d) > /dev/null 2>&1
 
-# download and import active fires from VIIRS viirs-suomi-npp
-45 6,14 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-suomi-npp -d `date +\%Y-\%m-\%d  --date="-1 days"` > /dev/null 2>&1
-35 */2 * * * source /home/activefires/.bashrc; python /home/activefires/apps/Active_Fires/page/data/active_fires/download_active_fires.py -s viirs-suomi-npp -d `date +\%Y-\%m-\%d` > /dev/null 2>&1
+# download and import active fires from VIIRS Suomi-NPP
+45 6,14 * * * set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s viirs-suomi-npp -d $(date +\%Y-\%m-\%d --date="-1 days") > /dev/null 2>&1
+35 * * * *    set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s viirs-suomi-npp -d $(date +\%Y-\%m-\%d) > /dev/null 2>&1

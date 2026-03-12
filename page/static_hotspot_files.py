@@ -108,7 +108,7 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """\
     <h1>{{ title }}</h1>
 
     {% if info %}
-    <div class="info">{{ info }}</div>
+    <div class="info">{{ info|safe }}</div>
     {% endif %}
 
     <ul>

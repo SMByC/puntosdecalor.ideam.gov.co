@@ -18,7 +18,7 @@ from django.http import (
     HttpResponsePermanentRedirect,
     HttpResponseRedirect,
 )
-from django.template import Template, loader
+from django.template import Context, Template, loader
 from django.template.exceptions import TemplateDoesNotExist
 from django.utils.http import http_date, parse_http_date
 from django.utils.translation import gettext as _, gettext_lazy
@@ -148,10 +148,10 @@ def _directory_index(path, fullpath):
         name = f"{entry.name}/" if entry.is_dir() else entry.name
         entries.append(name)
 
-    context = {
+    context = Context({
         'directory': path + '/' if path else '/',
         'file_list': sorted(entries, reverse=True),
-    }
+    })
     return HttpResponse(t.render(context))
 
 

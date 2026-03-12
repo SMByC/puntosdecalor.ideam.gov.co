@@ -16,12 +16,13 @@
 import argparse
 import logging
 import os
-import subprocess
 import sys
 from configparser import ConfigParser
 from datetime import date, timedelta
 from pathlib import Path
 from time import sleep
+from urllib.error import URLError
+from urllib.request import Request, urlopen
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parents[2]
@@ -87,30 +88,21 @@ def resolve_date(date_str):
         return None
 
 
-def download_file(url, dest_dir, app_key, log):
-    """Download a file using wget with Bearer token auth. Returns True on success."""
-    cmd = [
-        "wget",
-        "-e", "robots=off",
-        "-m", "-np",
-        "-R", ".html,.tmp",
-        "-nH", "-nd",
-        "--header", f"Authorization: Bearer {app_key}",
-        url,
-        "-P", str(dest_dir),
-    ]
+def download_file(url, dest_path, app_key, log):
+    """Download a file via HTTPS with Bearer token auth. Returns True on success."""
+    req = Request(url, headers={"Authorization": f"Bearer {app_key}"})
 
     for attempt in range(1, MAX_DOWNLOAD_ATTEMPTS + 1):
         log.info(f"Download attempt {attempt}/{MAX_DOWNLOAD_ATTEMPTS}: {url}")
-        result = subprocess.run(cmd, capture_output=True, text=True)
-
-        if result.returncode == 0:
-            log.info(f"Download successful: {url}")
+        try:
+            with urlopen(req, timeout=120) as response:
+                dest_path.write_bytes(response.read())
+            log.info(f"Download successful: {dest_path}")
             return True
-
-        log.warning(f"Attempt {attempt} failed (exit code {result.returncode})")
-        if result.stderr:
-            log.debug(f"wget stderr: {result.stderr[:500]}")
+        except URLError as e:
+            log.warning(f"Attempt {attempt} failed: {e}")
+        except OSError as e:
+            log.warning(f"Attempt {attempt} I/O error: {e}")
 
         if attempt < MAX_DOWNLOAD_ATTEMPTS:
             sleep(5)
@@ -155,12 +147,8 @@ def main():
     url = cfg.get(args.source, 'host') + cfg.get(args.source, 'remote_path') + remote_filename
     app_key = os.environ.get("app_key", '')
 
-    if not download_file(url, local_dir, app_key, log):
+    if not download_file(url, local_file, app_key, log):
         log.error(f"Failed to download after {MAX_DOWNLOAD_ATTEMPTS} attempts: {url}")
-        sys.exit(1)
-
-    if not local_file.exists():
-        log.error(f"Downloaded file not found at: {local_file}")
         sys.exit(1)
 
     setup_django()

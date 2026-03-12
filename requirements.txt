@@ -16,3 +16,5 @@ shapely
 
 # Date utilities
 python-dateutil
+
+uwsgi

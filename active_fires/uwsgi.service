@@ -22,7 +22,7 @@ Group=nginx
 WorkingDirectory=/home/activefires/apps/Active_Fires/active_fires
 EnvironmentFile=-/home/activefires/apps/Active_Fires/.env
 
-ExecStart=uwsgi --ini uwsgi.ini
+ExecStart=/home/activefires/.local/bin/uwsgi --ini uwsgi.ini
 ExecReload=/bin/kill -HUP $MAINPID
 ExecStop=/bin/kill -INT $MAINPID
 

@@ -14,12 +14,5 @@ __pycache__/
 .idea/
 .vscode/
 
-# Mercurial (legacy VCS)
-.hg/
-
-# OS
-.DS_Store
-Thumbs.db
-
 # Logs
 *.log

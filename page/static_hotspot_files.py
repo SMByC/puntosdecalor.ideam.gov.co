@@ -24,12 +24,14 @@ from django.utils.http import http_date, parse_http_date
 from django.utils.translation import gettext as _, gettext_lazy
 
 
-def serve(request, path, document_root=None, show_indexes=False):
+def serve(request, path, document_root=None, show_indexes=False,
+          index_title='', index_info=''):
     """
     Serve static files below a given point in the directory structure.
 
     Provide ``document_root`` as a keyword argument. Set ``show_indexes``
-    to ``True`` to render an FTP-like directory listing.
+    to ``True`` to render an FTP-like directory listing. Optional
+    ``index_title`` and ``index_info`` customize the directory page.
     """
     document_root = Path(document_root)
     clean = _sanitize_path(path)
@@ -47,7 +49,7 @@ def serve(request, path, document_root=None, show_indexes=False):
 
     if fullpath.is_dir():
         if show_indexes:
-            return _directory_index(clean, fullpath)
+            return _directory_index(clean, fullpath, index_title, index_info)
         raise Http404(_("Directory indexes are not allowed here."))
 
     if not fullpath.exists():
@@ -103,19 +105,11 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """\
     </style>
 </head>
 <body>
-    <h1>Índice de archivos de puntos de calor por día para todo el territorio Colombiano</h1>
+    <h1>{{ title }}</h1>
 
-    <div class="info">
-        <p><strong>Formato:</strong> El formato CSV de los archivos usa "punto y coma" (;) como
-        separador de elementos y usa "coma" (,) para la separación decimal</p>
-    </div>
-    <div class="info">
-        <p><strong>Acerca de:</strong> Si hace uso de estos datos realice la respectiva referencia
-        a los datos originales de
-        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a> y
-        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a>.
-        Contacto referente a ésta página: xcorredorl@ideam.gov.co</p>
-    </div>
+    {% if info %}
+    <div class="info">{{ info }}</div>
+    {% endif %}
 
     <ul>
     {% if directory != "/" %}
@@ -130,8 +124,32 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """\
 """
 template_translatable = gettext_lazy("Index of %(directory)s")
 
+HOTSPOT_INDEX_TITLE = (
+    'Índice de archivos de puntos de calor por día para todo el territorio Colombiano'
+)
+HOTSPOT_INDEX_INFO = (
+    '<p><strong>Formato:</strong> El formato CSV de los archivos usa "punto y coma" (;) como '
+    'separador de elementos y usa "coma" (,) para la separación decimal</p>'
+    '<p><strong>Acerca de:</strong> Si hace uso de estos datos realice la respectiva referencia '
+    'a los datos originales de '
+    '<a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a> y '
+    '<a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a>. '
+    'Contacto referente a ésta página: xcorredorl@ideam.gov.co</p>'
+)
 
-def _directory_index(path, fullpath):
+BURNED_AREA_INDEX_TITLE = (
+    'Índice de archivos de área quemada mensual para Colombia'
+)
+BURNED_AREA_INDEX_INFO = (
+    '<p><strong>Formato:</strong> Archivos shapefile comprimidos en ZIP (EPSG:4326)</p>'
+    '<p><strong>Fuente:</strong> Producto '
+    '<a href="https://modis-fire.umd.edu/ba.html">MODIS MCD64A1</a> '
+    'procesado (disuelto y recortado) para el territorio Colombiano. '
+    'Contacto: xcorredorl@ideam.gov.co</p>'
+)
+
+
+def _directory_index(path, fullpath, title='', info=''):
     """Render an FTP-like directory listing, files sorted newest first."""
     try:
         t = loader.select_template([
@@ -151,6 +169,8 @@ def _directory_index(path, fullpath):
     context = Context({
         'directory': path + '/' if path else '/',
         'file_list': sorted(entries, reverse=True),
+        'title': title or _('Index of %(directory)s') % {'directory': path or '/'},
+        'info': info,
     })
     return HttpResponse(t.render(context))
 

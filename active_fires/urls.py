@@ -9,6 +9,10 @@ from django.urls import path
 from django.contrib.gis import admin
 
 from page import views, static_hotspot_files
+from page.static_hotspot_files import (
+    HOTSPOT_INDEX_TITLE, HOTSPOT_INDEX_INFO,
+    BURNED_AREA_INDEX_TITLE, BURNED_AREA_INDEX_INFO,
+)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,9 +35,28 @@ urlpatterns = [
         'path': '',
         'document_root': str(settings.BASE_DIR / 'page' / 'data' / 'ftp_files'),
         'show_indexes': True,
+        'index_title': HOTSPOT_INDEX_TITLE,
+        'index_info': HOTSPOT_INDEX_INFO,
     }, name='csv-index'),
     path('archivos-csv/<path:path>', static_hotspot_files.serve, {
         'document_root': str(settings.BASE_DIR / 'page' / 'data' / 'ftp_files'),
         'show_indexes': True,
+        'index_title': HOTSPOT_INDEX_TITLE,
+        'index_info': HOTSPOT_INDEX_INFO,
+    }),
+
+    # static ZIP files of burned area data
+    path('archivos-area-quemada/', static_hotspot_files.serve, {
+        'path': '',
+        'document_root': str(settings.BASE_DIR / 'page' / 'data' / 'ftp_ba_files'),
+        'show_indexes': True,
+        'index_title': BURNED_AREA_INDEX_TITLE,
+        'index_info': BURNED_AREA_INDEX_INFO,
+    }, name='ba-zip-index'),
+    path('archivos-area-quemada/<path:path>', static_hotspot_files.serve, {
+        'document_root': str(settings.BASE_DIR / 'page' / 'data' / 'ftp_ba_files'),
+        'show_indexes': True,
+        'index_title': BURNED_AREA_INDEX_TITLE,
+        'index_info': BURNED_AREA_INDEX_INFO,
     }),
 ]

@@ -1,7 +1,7 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  (c) Copyright SMByC-IDEAM, 2016-2026
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
 # #### How to run as script:
@@ -10,11 +10,10 @@
 # #### How to run inline:
 # python manage.py shell
 # from page.data.active_fires import import_active_fires
-# import_active_fires.modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'files', 'Global_MCD14DL_2014337.txt'))
+# import_active_fires.from_source(csv_input_file="fires/fire_nrt_J1V-C2_472917.csv")
 
 import csv
 import datetime
-import os
 
 from dateutil.relativedelta import relativedelta
 from django.conf import settings
@@ -25,30 +24,32 @@ from page.models import WorldBorder
 
 
 def save_in_csv_table(active_fire):
-    ftp_path = os.path.join(settings.BASE_DIR, 'page', 'data', 'ftp_files')
-    filename = 'Puntos_de_calor_Colombia_{0}.csv'.format(active_fire.date.strftime("%Y-%m-%d"))
-    if os.path.exists(os.path.join(ftp_path, filename)):
-        csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'a'), delimiter=';')
-    else:
-        csv_f = csv.writer(open(os.path.join(ftp_path, filename), 'w'), delimiter=';')
-        csv_f.writerow(['Fecha (UTC-5)', 'Lat', 'Lon', 'Fuente', 'Temperatura (C)', 'Temperatura Alt* (C)',
-                        'Radiación térmica (MW)', 'Confianza', 'Captura (Dia-Noche)',
-                        'Scan - real pixel size (km)', 'Track - real pixel size (km)'])
-    csv_f.writerow([
-        active_fire.date.strftime("%Y-%m-%d %H:%M"), str(active_fire.geom.y).replace(".", ","),
-        str(active_fire.geom.x).replace(".", ","), active_fire.source,
-        '' if active_fire.brightness is None else str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
-        '' if active_fire.brightness_alt is None else str(round(active_fire.brightness_alt - 273.15, 1)).replace(".", ","),
-        '' if active_fire.frp is None else str(active_fire.frp).replace(".", ","),
-        '' if active_fire.confidence is None else active_fire.confidence,
-        '' if active_fire.day_night is None else active_fire.day_night,
-        '' if active_fire.scan is None else str(active_fire.scan).replace(".", ","),
-        '' if active_fire.track is None else str(active_fire.track).replace(".", ","),
+    ftp_path = settings.BASE_DIR / 'page' / 'data' / 'ftp_files'
+    filename = f'Puntos_de_calor_Colombia_{active_fire.date.strftime("%Y-%m-%d")}.csv'
+    filepath = ftp_path / filename
+    write_header = not filepath.exists()
+    with open(filepath, 'a', newline='') as fh:
+        csv_f = csv.writer(fh, delimiter=';')
+        if write_header:
+            csv_f.writerow(['Fecha (UTC-5)', 'Lat', 'Lon', 'Fuente', 'Temperatura (C)', 'Temperatura Alt* (C)',
+                            'Radiación térmica (MW)', 'Confianza', 'Captura (Dia-Noche)',
+                            'Scan - real pixel size (km)', 'Track - real pixel size (km)'])
+        csv_f.writerow([
+            active_fire.date.strftime("%Y-%m-%d %H:%M"), str(active_fire.geom.y).replace(".", ","),
+            str(active_fire.geom.x).replace(".", ","), active_fire.source,
+            '' if active_fire.brightness is None else str(round(active_fire.brightness - 273.15, 1)).replace(".", ","),
+            '' if active_fire.brightness_alt is None else str(round(active_fire.brightness_alt - 273.15, 1)).replace(".", ","),
+            '' if active_fire.frp is None else str(active_fire.frp).replace(".", ","),
+            '' if active_fire.confidence is None else active_fire.confidence,
+            '' if active_fire.day_night is None else active_fire.day_night,
+            '' if active_fire.scan is None else str(active_fire.scan).replace(".", ","),
+            '' if active_fire.track is None else str(active_fire.track).replace(".", ","),
         ])
 
 
 def from_source(source=None, csv_input_file=None):
-    reader = csv.DictReader(open(csv_input_file, 'rt', encoding='utf8'), delimiter=",")
+    fh = open(csv_input_file, 'rt', encoding='utf8')
+    reader = csv.DictReader(fh, delimiter=",")
     colombia = WorldBorder.objects.get(name='Colombia')
     for line in reader:
         date = [int(i) for i in line['acq_date'].split('-')]
@@ -134,8 +135,3 @@ def from_source(source=None, csv_input_file=None):
                 print('  Active fire exists!')
         else:
             pass
-            # print('Active fire not inside Colombia',end='..')
-
-# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'files', 'South_America_MCD14DL_2014342.txt'))
-# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'firms1736314181687011_NRT.csv'))
-# modis(os.path.join(settings.BASE_DIR, 'page', 'data', 'active_fires', 'modis', 'firms1736314181687011_MCD14ML.csv'))

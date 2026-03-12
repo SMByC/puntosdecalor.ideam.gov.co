@@ -1,18 +1,17 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 #  (c) Copyright SMByC-IDEAM, 2020
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
 import os, sys, django
-from django.contrib.gis.utils import LayerMapping
-# setup django
-project_dir = "/home/activefires/apps/Active_Fires"
+from pathlib import Path
+
+project_dir = str(Path(__file__).resolve().parents[4])
 if project_dir not in sys.path:
     sys.path.append(project_dir)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "active_fires.settings")
 django.setup()
-
 
 from django.template.defaultfilters import slugify
 from django.contrib.gis.utils import LayerMapping

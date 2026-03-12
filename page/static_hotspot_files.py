@@ -1,167 +1,170 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  (c) Copyright SMByC-IDEAM, 2016-2018
+#  (c) Copyright SMByC-IDEAM, 2016-2026
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
 """
-Views and functions for serving static files. These are only to be used
-during development, and SHOULD NOT be used in a production setting.
+Views for serving hotspot CSV files with an FTP-like directory listing.
 """
-from __future__ import unicode_literals
 
-import mimetypes
-import os
-import posixpath
-import re
-import stat
+from pathlib import Path
 
-from urllib.parse import unquote
-from django.http import (Http404, HttpResponse, HttpResponseRedirect,
-                         HttpResponseNotModified, StreamingHttpResponse, HttpResponsePermanentRedirect)
-from django.template import loader, Template, Context, TemplateDoesNotExist
+from django.http import (
+    Http404,
+    FileResponse,
+    HttpResponse,
+    HttpResponseNotModified,
+    HttpResponsePermanentRedirect,
+    HttpResponseRedirect,
+)
+from django.template import Template, loader
+from django.template.exceptions import TemplateDoesNotExist
 from django.utils.http import http_date, parse_http_date
-from django.utils.translation import ugettext as _, gettext_lazy
+from django.utils.translation import gettext as _, gettext_lazy
 
 
 def serve(request, path, document_root=None, show_indexes=False):
     """
     Serve static files below a given point in the directory structure.
 
-    To use, put a URL pattern such as::
-
-        (r'^(?P<path>.*)$', 'django.views.static.serve', {'document_root': '/path/to/my/files/'})
-
-    in your URLconf. You must provide the ``document_root`` param. You may
-    also set ``show_indexes`` to ``True`` if you'd like to serve a basic index
-    of the directory.  This index view will use the template hardcoded below,
-    but if you'd like to override it, you can create a template called
-    ``static/directory_index.html``.
+    Provide ``document_root`` as a keyword argument. Set ``show_indexes``
+    to ``True`` to render an FTP-like directory listing.
     """
-    path = posixpath.normpath(unquote(path))
-    path = path.lstrip('/')
-    newpath = ''
-    for part in path.split('/'):
-        if not part:
-            # Strip empty path components.
-            continue
-        drive, part = os.path.splitdrive(part)
-        head, part = os.path.split(part)
-        if part in (os.curdir, os.pardir):
-            # Strip '.' and '..' in path.
-            continue
-        newpath = os.path.join(newpath, part).replace('\\', '/')
-    if newpath and path != newpath:
-        return HttpResponseRedirect(newpath)
-    fullpath = os.path.join(document_root, newpath)
-    if os.path.isdir(fullpath):
+    document_root = Path(document_root)
+    clean = _sanitize_path(path)
+
+    if clean is None:
+        raise Http404
+
+    if clean != path:
+        return HttpResponseRedirect(clean)
+
+    fullpath = (document_root / clean).resolve()
+
+    if not str(fullpath).startswith(str(document_root.resolve())):
+        raise Http404
+
+    if fullpath.is_dir():
         if show_indexes:
-            return directory_index(newpath, fullpath)
+            return _directory_index(clean, fullpath)
         raise Http404(_("Directory indexes are not allowed here."))
-    if not os.path.exists(fullpath):
+
+    if not fullpath.exists():
         raise Http404(_('"%(path)s" does not exist') % {'path': fullpath})
-    # Respect the If-Modified-Since header.
-    statobj = os.stat(fullpath)
-    if not was_modified_since(request.META.get('HTTP_IF_MODIFIED_SINCE'),
-                              statobj.st_mtime, statobj.st_size):
+
+    stat_result = fullpath.stat()
+    if_modified = request.META.get('HTTP_IF_MODIFIED_SINCE')
+    if if_modified and not _was_modified_since(if_modified, stat_result.st_mtime):
         return HttpResponseNotModified()
-    content_type, encoding = mimetypes.guess_type(fullpath)
-    content_type = content_type or 'application/octet-stream'
-    response = StreamingHttpResponse(open(fullpath, 'rb'),
-                                     content_type=content_type)
-    response["Last-Modified"] = http_date(statobj.st_mtime)
-    if stat.S_ISREG(statobj.st_mode):
-        response["Content-Length"] = statobj.st_size
-    if encoding:
-        response["Content-Encoding"] = encoding
+
+    response = FileResponse(fullpath.open('rb'))
+    response["Last-Modified"] = http_date(stat_result.st_mtime)
     return response
 
 
-DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
+def _sanitize_path(path):
+    """Normalize a URL path and reject directory traversal attempts.
+
+    Returns the cleaned path string, or None if the path is invalid.
+    """
+    from posixpath import normpath
+    from urllib.parse import unquote
+
+    path = normpath(unquote(path)).lstrip('/')
+    parts = []
+    for part in path.split('/'):
+        if not part or part in ('.', '..'):
+            continue
+        parts.append(part)
+
+    return '/'.join(parts) if parts else ''
+
+
+# -- Directory listing -------------------------------------------------------
+
+DEFAULT_DIRECTORY_INDEX_TEMPLATE = """\
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="Content-Language" content="en-us" />
-    <meta name="robots" content="NONE,NOARCHIVE" />
-    <title>{% blocktrans %}Index of {{ directory }}{% endblocktrans %}</title>
-  </head>
-  <body>
-    <h1 style="font-size: x-large;">Índice de archivos de puntos de calor por día para todo el territorio Colombiano</h1>
-    <div style="background-color:#fffadd;padding: 1px 16px;margin: 4px;width: 80%;">    
-        <p><strong>Formato:</strong> El formato CSV de los archivos usa "punto y coma" (;) como separador de elementos y usa "coma" (,) para la separación decimal</p>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="NONE,NOARCHIVE">
+    <title>{% blocktranslate %}Index of {{ directory }}{% endblocktranslate %}</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; margin: 2em; color: #333; }
+        h1 { font-size: 1.4em; }
+        .info { background-color: #fffadd; padding: 1px 16px; margin: 8px 0; max-width: 800px; }
+        ul { list-style: none; padding: 0; }
+        li { padding: 2px 0; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <h1>Índice de archivos de puntos de calor por día para todo el territorio Colombiano</h1>
+
+    <div class="info">
+        <p><strong>Formato:</strong> El formato CSV de los archivos usa "punto y coma" (;) como
+        separador de elementos y usa "coma" (,) para la separación decimal</p>
     </div>
-    <div style="background-color:#fffadd;padding: 1px 16px;margin: 4px;width: 80%;">    
-        <p><strong>Acerca de:</strong> Si hace uso de estos datos realiza la restiva referencia a los datos originales de 
-        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a> y 
-        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a>. 
+    <div class="info">
+        <p><strong>Acerca de:</strong> Si hace uso de estos datos realice la respectiva referencia
+        a los datos originales de
+        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a> y
+        <a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a>.
         Contacto referente a ésta página: xcorredorl@ideam.gov.co</p>
     </div>
+
     <ul>
-      {% ifnotequal directory "/" %}
-      <li><a href="../">../</a></li>
-      {% endifnotequal %}
-      {% for f in file_list %}
-      <li><a href="{{ f|urlencode }}">{{ f }}</a></li>
-      {% endfor %}
+    {% if directory != "/" %}
+        <li><a href="../">../</a></li>
+    {% endif %}
+    {% for f in file_list %}
+        <li><a href="{{ f|urlencode }}">{{ f }}</a></li>
+    {% endfor %}
     </ul>
-  </body>
+</body>
 </html>
 """
 template_translatable = gettext_lazy("Index of %(directory)s")
 
 
-def directory_index(path, fullpath):
+def _directory_index(path, fullpath):
+    """Render an FTP-like directory listing, files sorted newest first."""
     try:
-        t = loader.select_template(['static/directory_index.html',
-                                    'static/directory_index'])
+        t = loader.select_template([
+            'static/directory_index.html',
+            'static/directory_index',
+        ])
     except TemplateDoesNotExist:
         t = Template(DEFAULT_DIRECTORY_INDEX_TEMPLATE, name='Default directory index template')
-    files = []
-    for f in os.listdir(fullpath):
-        if not f.startswith('.'):
-            if os.path.isdir(os.path.join(fullpath, f)):
-                f += '/'
-            files.append(f)
-    files.sort()
-    files.reverse()
-    c = Context({
-        'directory': path + '/',
-        'file_list': files,
-    })
-    return HttpResponse(t.render(c))
+
+    entries = []
+    for entry in fullpath.iterdir():
+        if entry.name.startswith('.'):
+            continue
+        name = f"{entry.name}/" if entry.is_dir() else entry.name
+        entries.append(name)
+
+    context = {
+        'directory': path + '/' if path else '/',
+        'file_list': sorted(entries, reverse=True),
+    }
+    return HttpResponse(t.render(context))
 
 
-def was_modified_since(header=None, mtime=0, size=0):
-    """
-    Was something modified since the user last downloaded it?
+# -- Conditional request support ---------------------------------------------
 
-    header
-      This is the value of the If-Modified-Since header.  If this is None,
-      I'll just return True.
-
-    mtime
-      This is the modification time of the item we're talking about.
-
-    size
-      This is the size of the item we're talking about.
-    """
+def _was_modified_since(header, mtime):
+    """Check if the resource was modified since the If-Modified-Since header value."""
     try:
-        if header is None:
-            raise ValueError
-        matches = re.match(r"^([^;]+)(; length=([0-9]+))?$", header,
-                           re.IGNORECASE)
-        header_mtime = parse_http_date(matches.group(1))
-        header_len = matches.group(3)
-        if header_len and int(header_len) != size:
-            raise ValueError
-        if int(mtime) > header_mtime:
-            raise ValueError
-    except (AttributeError, ValueError, OverflowError):
+        header_mtime = parse_http_date(header.split(';')[0])
+        return int(mtime) > header_mtime
+    except (ValueError, OverflowError):
         return True
-    return False
 
 
 def ftp_2_csv_redirect(request, path):
-    return HttpResponsePermanentRedirect("/archivos-csv/" + path)
+    return HttpResponsePermanentRedirect(f"/archivos-csv/{path}")

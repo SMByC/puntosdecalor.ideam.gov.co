@@ -1,24 +1,44 @@
 #
-# Service file for Systemd for run uWsgi instance
+# Systemd service for uWSGI - Active Fires
 #
-# Location: /etc/systemd/system/uwsgi.service
-# Enable: systemctl enable uwsgi
-# Run: systemctl start uwsgi
+# Install:
+#   sudo cp active_fires/uwsgi.service /etc/systemd/system/uwsgi.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable uwsgi
+#   sudo systemctl start uwsgi
 #
-
+# Logs:
+#   journalctl -u uwsgi -f
+#
 
 [Unit]
-Description=uWSGI instance to serve Active Fires page
-After=syslog.target
+Description=uWSGI instance to serve Active Fires
+After=network.target postgresql.service
+Wants=postgresql.service
 
 [Service]
-ExecStart=/usr/bin/bash -c 'cd /home/activefires/apps/Active_Fires/active_fires; source /home/activefires/.bashrc; uwsgi --ini uwsgi.ini'
+User=activefires
+Group=nginx
+WorkingDirectory=/home/activefires/apps/Active_Fires/active_fires
+EnvironmentFile=-/home/activefires/apps/Active_Fires/.env
+
+ExecStart=/usr/bin/uwsgi --ini uwsgi.ini
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStop=/bin/kill -INT $MAINPID
+
 RuntimeDirectory=uwsgi
-Restart=always
-KillSignal=SIGQUIT
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
 Type=notify
-StandardError=syslog
+StandardOutput=journal
+StandardError=journal
 NotifyAccess=all
+
+# security hardening
+ProtectSystem=full
+PrivateTmp=true
+NoNewPrivileges=true
 
 [Install]
 WantedBy=multi-user.target

@@ -1,17 +1,13 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  (c) Copyright SMByC-IDEAM, 2016-2020
+#  (c) Copyright SMByC-IDEAM, 2016-2026
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
 from django.contrib.gis.db import models
 
-##################################################
-# WORLD BORDERS
 
 class WorldBorder(models.Model):
-    # Regular Django fields corresponding to the attributes in the
-    # world borders shapefile.
     name = models.CharField(max_length=50)
     area = models.IntegerField()
     pop2005 = models.IntegerField('Population 2005')
@@ -23,72 +19,79 @@ class WorldBorder(models.Model):
     subregion = models.IntegerField('Sub-Region Code')
     lon = models.FloatField()
     lat = models.FloatField()
-
-    # GeoDjango-specific: a geometry field (MultiPolygonField), and
-    # overriding the default manager with a GeoManager instance.
     mpoly = models.MultiPolygonField()
 
-    # Returns the string representation of the model.
-    def __str__(self):  # __unicode__ on Python 2
+    def __str__(self):
         return self.name
-
-
-# Auto-generated `LayerMapping` dictionary for WorldBorder model
-worldborder_mapping = {
-    'fips': 'FIPS',
-    'iso2': 'ISO2',
-    'iso3': 'ISO3',
-    'un': 'UN',
-    'name': 'NAME',
-    'area': 'AREA',
-    'pop2005': 'POP2005',
-    'region': 'REGION',
-    'subregion': 'SUBREGION',
-    'lon': 'LON',
-    'lat': 'LAT',
-    'geom': 'MULTIPOLYGON',
-}
-
-##################################################
-# ACTIVE FIRES
-
-SOURCE_TYPE = (('MODIS-Aqua', 'MODIS-Aqua'), ('MODIS-Terra', 'MODIS-Terra'),
-               ('VIIRS', 'VIIRS'), ('VIIRS-NOAA-20', 'VIIRS-NOAA-20'),
-               ('VIIRS-NOAA-21', 'VIIRS-NOAA-21'), ('VIIRS-Suomi-NPP', 'VIIRS-Suomi-NPP'))
 
 
 class ActiveFire(models.Model):
-    geom = models.PointField()  # Geodjango Point (longitude, latitude)
-    date = models.DateTimeField()  # datetime: acq_date + acq_time (adjusted in Colombia zone -5h)
-    source = models.CharField(choices=SOURCE_TYPE, max_length=20)  # from satellite
-    brightness = models.FloatField()  # Brightness Temperature (Kelvin) - VIIRS: band 4, MODIS: Channel 21/22
-    brightness_alt = models.FloatField(null=True, blank=True)  # Brightness Temperature (Kelvin) - VIIRS: band 5, MODIS: Channel 31
-    confidence = models.CharField(null=True, blank=True, max_length=10)  # 0–100% for MODIS or "Baja, Nominal, Alta" for VIIRS
-    frp = models.FloatField(null=True, blank=True)  # Fire Radiative Power (MW)
-    day_night = models.CharField(choices=(('D', 'Day'), ('N', 'Night')), max_length=10, null=True, blank=True)
-    scan = models.FloatField(null=True, blank=True)  # Scan and track reflect actual pixel size
-    track = models.FloatField(null=True, blank=True)  # Scan and track reflect actual pixel size
 
-    def __unicode__(self):
-        return self.name
+    class Source(models.TextChoices):
+        MODIS_AQUA = 'MODIS-Aqua'
+        MODIS_TERRA = 'MODIS-Terra'
+        VIIRS = 'VIIRS'
+        VIIRS_NOAA_20 = 'VIIRS-NOAA-20'
+        VIIRS_NOAA_21 = 'VIIRS-NOAA-21'
+        VIIRS_SUOMI_NPP = 'VIIRS-Suomi-NPP'
+
+    class DayNight(models.TextChoices):
+        DAY = 'D', 'Day'
+        NIGHT = 'N', 'Night'
+
+    geom = models.PointField()
+    date = models.DateTimeField(db_index=True)
+    source = models.CharField(choices=Source, max_length=20, db_index=True)
+    brightness = models.FloatField()  # Kelvin — VIIRS: band 4, MODIS: Channel 21/22
+    brightness_alt = models.FloatField(null=True, blank=True)  # Kelvin — VIIRS: band 5, MODIS: Channel 31
+    confidence = models.CharField(null=True, blank=True, max_length=10)  # 0–100% (MODIS) or Baja/Nominal/Alta (VIIRS)
+    frp = models.FloatField(null=True, blank=True)  # Fire Radiative Power (MW)
+    day_night = models.CharField(choices=DayNight, max_length=1, null=True, blank=True)
+    scan = models.FloatField(null=True, blank=True)  # actual pixel size (km)
+    track = models.FloatField(null=True, blank=True)  # actual pixel size (km)
+
+    def __str__(self):
+        return f"ActiveFire {self.source} {self.date}"
 
     class Meta:
         ordering = ['date', 'source']
-
-
-REGION_GROUPS = (('departamentos', 'Departamentos'), ('regiones_naturales', 'Regiones Naturales'),
-                 ('parques_nacionales', 'Parques Nacionales'), ('corporaciones', 'Corporaciones'))
+        indexes = [
+            models.Index(fields=['date', 'source'], name='activefire_date_source_idx'),
+        ]
 
 
 class Region(models.Model):
+
+    class Group(models.TextChoices):
+        DEPARTAMENTOS = 'departamentos', 'Departamentos'
+        REGIONES_NATURALES = 'regiones_naturales', 'Regiones Naturales'
+        PARQUES_NACIONALES = 'parques_nacionales', 'Parques Nacionales'
+        CORPORACIONES = 'corporaciones', 'Corporaciones'
+
     name = models.CharField(max_length=80)
     slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)
-    group = models.CharField(choices=REGION_GROUPS, max_length=30, null=True, blank=True)
+    group = models.CharField(choices=Group, max_length=30, null=True, blank=True)
     shape = models.MultiPolygonField()
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['group', 'name']
 
 
 class BurnedArea(models.Model):
-    date = models.DateField(null=True, blank=True)  # year-month (day=1)
-    slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)  # yyyy-mm
-    source = models.CharField(choices=(('MCD64A1', 'MCD64A1'),), max_length=20, null=True, blank=True)
+
+    class Source(models.TextChoices):
+        MCD64A1 = 'MCD64A1'
+
+    date = models.DateField(null=True, blank=True, db_index=True)
+    slug = models.SlugField(max_length=80, unique=True, null=True, blank=True)
+    source = models.CharField(choices=Source, max_length=20, null=True, blank=True)
     shape = models.MultiPolygonField()
+
+    def __str__(self):
+        return f"BurnedArea {self.slug or 'no-date'}"
+
+    class Meta:
+        ordering = ['-date']

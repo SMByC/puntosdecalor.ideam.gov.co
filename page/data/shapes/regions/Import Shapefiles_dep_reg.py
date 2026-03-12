@@ -1,12 +1,11 @@
 import os, sys, django
-# setup django
-project_dir = "/home/activefires/apps/Active_Fires"
+from pathlib import Path
+
+project_dir = str(Path(__file__).resolve().parents[4])
 if project_dir not in sys.path:
     sys.path.append(project_dir)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "active_fires.settings")
 django.setup()
-
-# https://docs.djangoproject.com/en/1.11/ref/contrib/gis/layermapping/
 
 ## importar desde shape con un ID un solo poligono
 

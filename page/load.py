@@ -1,4 +1,5 @@
-import os
+from pathlib import Path
+
 from django.contrib.gis.utils import LayerMapping
 
 from page.models import WorldBorder
@@ -18,11 +19,10 @@ world_mapping = {
     'mpoly': 'MULTIPOLYGON',
 }
 
-world_shp = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data/world_borders/TM_WORLD_BORDERS-0.3.shp'))
+world_shp = Path(__file__).resolve().parent / 'data' / 'world_borders' / 'TM_WORLD_BORDERS-0.3.shp'
 
 
 def run(verbose=True):
     lm = LayerMapping(WorldBorder, world_shp, world_mapping,
                       transform=False, encoding='iso-8859-1')
-
     lm.save(strict=True, verbose=verbose)

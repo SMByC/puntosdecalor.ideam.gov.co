@@ -1,0 +1,25 @@
+# Secrets / environment
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Database
+*.db
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+
+# Mercurial (legacy VCS)
+.hg/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

@@ -1,16 +1,24 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-#SOURCE=$(dirname $(dirname "${BASH_SOURCE[0]}"))
+PROJECT_DIR="/home/activefires/apps/Active_Fires"
+cd "$PROJECT_DIR"
 
-#cd $SOURCE
-
-# synchronize changes with repository, update and clean
+echo "=== Pulling latest changes ==="
 git fetch
-git pull
-git checkout -f
-git log -m -1 --name-status --pretty="format:"
+git pull --ff-only
 
-# print status
-echo -e "\nThe last commit:\n"
-git log -1
-echo -e "Update finished\n"
+echo ""
+echo "=== Last commit ==="
+git log -1 --oneline
+
+echo ""
+echo "=== Collecting static files ==="
+python manage.py collectstatic --noinput
+
+echo ""
+echo "=== Restarting uWSGI ==="
+sudo systemctl reload uwsgi || sudo systemctl restart uwsgi
+
+echo ""
+echo "Update finished"

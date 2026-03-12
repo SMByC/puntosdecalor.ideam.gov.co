@@ -1,0 +1,18 @@
+# Django 6.0 - requires Python >= 3.12
+Django>=6.0,<7.0
+
+# GeoDjango / GIS dependencies
+django-leaflet>=0.33.0
+django-geojson>=4.2.0
+
+# Database
+#psycopg2-binary>=2.9.9
+
+# Data processing
+rioxarray
+pandas
+geopandas
+shapely
+
+# Date utilities
+python-dateutil

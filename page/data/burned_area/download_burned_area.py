@@ -19,6 +19,7 @@ import os
 import shutil
 import subprocess
 import sys
+import zipfile
 from configparser import ConfigParser
 from datetime import date
 from pathlib import Path
@@ -150,6 +151,26 @@ def dissolve_and_clip(burned_area_shp, log):
     return burned_area_shp
 
 
+def package_shapefile(burned_area_shp, ba_date, log):
+    """Compress all shapefile components into a zip and store in ftp_ba_files."""
+    ftp_dir = PROJECT_DIR / 'page' / 'data' / 'ftp_ba_files'
+    ftp_dir.mkdir(parents=True, exist_ok=True)
+
+    zip_name = f"Area_quemada_Colombia_{ba_date.strftime('%Y-%m')}.zip"
+    zip_path = ftp_dir / zip_name
+
+    shp_extensions = ('.shp', '.shx', '.dbf', '.prj', '.cpg')
+    shp_files = [f for f in burned_area_shp.parent.glob(f"{burned_area_shp.stem}.*")
+                 if f.suffix.lower() in shp_extensions]
+
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zf:
+        for f in shp_files:
+            zf.write(f, f.name)
+
+    log.info(f"Packaged shapefile as: {zip_path} ({len(shp_files)} files)")
+    return zip_path
+
+
 def import_to_database(source, burned_area_shp, ba_date, log):
     """Import the processed shapefile into the database."""
     from page.data.burned_area.import_burned_area import from_source
@@ -211,6 +232,7 @@ def main():
 
     burned_area_shp = local_dir / remote_filename.replace(".shapefiles.tar.gz", ".shp")
     dissolve_and_clip(burned_area_shp, log)
+    package_shapefile(burned_area_shp, ba_date, log)
     import_to_database(args.source, burned_area_shp, ba_date, log)
 
     log.info("DONE")

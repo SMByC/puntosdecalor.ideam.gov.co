@@ -3,7 +3,7 @@ PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/local/bin:/usr/local/sbin
 
 APP_DIR=/home/activefires/apps/Active_Fires
 ENV_FILE=/home/activefires/apps/Active_Fires/.env
-SCRIPT=page/data/burned_area/download_burned_area.py
+SCRIPT_BURNED_AREA=page/data/burned_area/download_burned_area.py
 
 # download and import burned areas from MODIS MCD64A1
-45 4 5,15,28 * * set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT -s mcd64a1 -d next > /dev/null 2>&1
+45 4 5,15,28 * * set -a; source $ENV_FILE; set +a; cd $APP_DIR; python $SCRIPT_BURNED_AREA -s mcd64a1 -d next > /dev/null 2>&1

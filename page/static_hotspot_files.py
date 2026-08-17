@@ -200,11 +200,15 @@ HOTSPOT_INDEX_TITLE = (
 )
 HOTSPOT_INDEX_INFO = (
     '<p><strong>Formato:</strong> El formato CSV de los archivos usa "punto y coma" (;) como '
-    'separador de elementos y usa "coma" (,) para la separación decimal</p>'
+    'separador de elementos y usa "coma" (,) para la separación decimal. Las fechas están en '
+    'hora local de Colombia (UTC-5)</p>'
+    '<p><strong>Fuente:</strong> Detecciones de MODIS (1 km, satélites Aqua y Terra) y de VIIRS '
+    '(375 m, satélites Suomi-NPP, NOAA-20 y NOAA-21) distribuidas por '
+    '<a href="https://firms.modaps.eosdis.nasa.gov/">FIRMS</a> de la NASA, recortadas al '
+    'territorio Colombiano</p>'
     '<p><strong>Acerca de:</strong> Si hace uso de estos datos realice la respectiva referencia '
     'a los datos originales de '
-    '<a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a> y '
-    '<a href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a>. '
+    '<a href="https://firms.modaps.eosdis.nasa.gov/active_fire/">MODIS y VIIRS</a>. '
     'Contacto referente a ésta página: xcorredorl@ideam.gov.co</p>'
 )
 
@@ -212,10 +216,15 @@ BURNED_AREA_INDEX_TITLE = (
     'Índice de archivos de área quemada mensual para Colombia'
 )
 BURNED_AREA_INDEX_INFO = (
-    '<p><strong>Formato:</strong> Archivos shapefile comprimidos en ZIP (EPSG:4326)</p>'
+    '<p><strong>Formato:</strong> Archivos shapefile comprimidos en ZIP (EPSG:4326), un archivo '
+    'por mes</p>'
     '<p><strong>Fuente:</strong> Producto '
-    '<a href="https://modis-fire.umd.edu/ba.html">MODIS MCD64A1</a> '
-    'procesado (disuelto y recortado) para el territorio Colombiano. '
+    '<a href="https://lpdaac.usgs.gov/products/mcd64a1v061/">MODIS MCD64A1</a> (Colección 6.1), '
+    'área quemada mensual de 500 m derivada de Terra y Aqua, '
+    'procesado (disuelto y recortado) para el territorio Colombiano</p>'
+    '<p><strong>Tenga en cuenta:</strong> cada píxel equivale a unas 25 hectáreas, por lo que las '
+    'quemas pequeñas suelen subestimarse u omitirse, y el producto se publica algunos meses '
+    'después del periodo observado. '
     'Contacto: xcorredorl@ideam.gov.co</p>'
 )
 

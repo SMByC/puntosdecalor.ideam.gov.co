@@ -806,6 +806,37 @@ dialog.modal:not([open]) {
     margin-top: 12px;
 }
 
+.modal-subtitle {
+    margin-top: 22px;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--brand);
+    border-bottom: 1px dashed var(--border);
+}
+
+.modal-body strong {
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* links inside running text, not the standalone chips of the panel */
+.modal-body a.link {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    text-decoration-color: rgba(204, 61, 54, 0.4);
+}
+
+.modal-body a.link:hover {
+    color: var(--brand-dark);
+    background-color: transparent;
+    text-decoration-color: currentColor;
+}
+
 .modal-list {
     padding-left: 6px;
     list-style: none;

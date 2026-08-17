@@ -120,7 +120,7 @@
 						<img src="{% static "img/ideam_mini.png" %}" alt="" width="60" height="61" />
 						<div id="footer-credit">
 							<span class="text-bold">Instituto de Hidrología, Meteorología<br />y Estudios Ambientales</span>
-							<br />Sistema de Monitoreo de Bosque y Carbono
+							<br />Sistema de Monitoreo de Bosques y Carbono
 						</div>
 					</div>
 				</div>
@@ -145,18 +145,36 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<p>En los últimos años, el monitoreo forestal ha sido esencial para orientar los procesos de toma de decisiones
-					relacionados con la gestión forestal y la lucha contra la deforestación. El conocimiento y monitoreo de las
-					dinámicas de puntos de calor asociadas a ecosistemas naturales, especialmente de bosques, es un insumo
-					importante para orientar las acciones de intervención estratégica del territorio y su gestión integral y
-					para reducir los procesos de degradación ambiental, entre otros.</p>
+				<p>El monitoreo forestal es un insumo esencial para la toma de decisiones sobre la gestión de los bosques y la
+					lucha contra la deforestación. Conocer la dinámica de los puntos de calor en los ecosistemas naturales, y
+					en particular en los bosques, permite orientar las acciones de intervención estratégica del territorio,
+					apoyar su gestión integral y reducir los procesos de degradación ambiental.</p>
 				<p>Los puntos de calor detectados por sensores satelitales son una aproximación a la ocurrencia de incendios:
-					estos representan el centro de un píxel donde se ha detectado una anomalía térmica. En la mayoría de los
-					casos estos puntos identifican fuegos en áreas con algún tipo de vegetación, pero también pueden ser llamas
-					por combustión de gases, tormentas eléctricas, etc. No hay manera de saber cuál tipo de anomalía térmica es
-					detectada basada solamente en la información satelital, por lo que para la correcta identificación de los
-					incendios en vegetación se requieren insumos y análisis adicionales. No obstante, existe un vínculo entre la
-					ocurrencia de incendios y el cambio de cobertura terrestre, en especial con la deforestación.</p>
+					cada punto representa el centro del píxel donde se detectó una anomalía térmica, de 1 km de lado en el caso
+					de MODIS y de 375 m en el de VIIRS, y no la ubicación exacta ni el tamaño del fuego. En la mayoría de los
+					casos corresponden a fuegos en áreas con algún tipo de vegetación, pero también pueden originarse en otras
+					fuentes de calor, como la quema de gas en la industria petrolera, la actividad volcánica o las
+					instalaciones industriales, e incluso en falsas alarmas sobre superficies muy calientes o reflectivas. A
+					partir únicamente de la información satelital no es posible establecer qué tipo de anomalía térmica fue
+					detectada, por lo que la correcta identificación de los incendios en vegetación requiere insumos y
+					análisis adicionales. No obstante, existe un vínculo entre la ocurrencia de incendios y el cambio de
+					cobertura terrestre, en especial con la deforestación.</p>
+
+				<h3 class="modal-subtitle">Cómo interpretar la información</h3>
+				<ul class="modal-list">
+					<li>Un punto indica <strong>dónde y cuándo</strong> se detectó calor, no cuánta superficie se quemó: un
+						mismo incendio puede generar varios puntos y un punto no equivale a un área determinada.</li>
+					<li>La ausencia de puntos no significa ausencia de fuego. La nubosidad, el humo denso, el dosel del bosque
+						o los fuegos pequeños y de corta duración que se apagan entre dos pasos del satélite pueden no ser
+						detectados.</li>
+					<li>La confianza de cada detección indica qué tan probable es que la anomalía sea un fuego real, y ayuda a
+						filtrar detecciones dudosas al analizar los datos.</li>
+				</ul>
+
+				<p>Para estimar la superficie afectada existe un producto distinto y complementario: la capa de
+					<strong>área quemada</strong> de esta página, que cartografía mensualmente las superficies quemadas. Los
+					puntos de calor responden a la pregunta de dónde y cuándo está ocurriendo el fuego, casi en tiempo real,
+					mientras que el área quemada responde a cuánto terreno resultó afectado, con varios meses de rezago.</p>
 			</div>
 		</div>
 	</dialog>
@@ -172,21 +190,59 @@
 				</button>
 			</div>
 			<div class="modal-body">
-				<p>La página de monitoreo de puntos de calor es una iniciativa del Sistema de Monitoreo de Bosques y Carbono para
-					disponer de una plataforma de consulta sobre los últimos o históricos focos de calor detectados satelitalmente
-					en el territorio colombiano, que sirva de base para entes de control y vigilancia del país. La idea no es
-					ofrecer únicamente la información satelital sino enriquecerla conectándola con otros datos nacionales que
-					puedan ayudar a dar más detalles sobre estos eventos. Por lo que la plataforma sigue en constantes cambios y
-					mejoras.</p>
+				<p>Esta página es una iniciativa del Sistema de Monitoreo de Bosques y Carbono (SMByC) del IDEAM para consultar
+					en un solo lugar los puntos de calor detectados satelitalmente en el territorio colombiano, tanto los más
+					recientes como los históricos, y sirve de apoyo a las entidades de control y vigilancia del país. El
+					propósito no es ofrecer únicamente la información satelital, sino enriquecerla conectándola con otros datos
+					nacionales que aporten más detalle sobre estos eventos; por ello la plataforma continúa en desarrollo y
+					mejora permanente.</p>
+				<h3 class="modal-subtitle">Puntos de calor</h3>
 				<p>Los datos de puntos de calor provienen de dos tipos de sensores en 5 satélites en total, con diferentes
-					características:</p>
+					características, y son distribuidos casi en tiempo real por el sistema
+					<a class="link" href="https://firms.modaps.eosdis.nasa.gov/">FIRMS</a> de la NASA:</p>
 				<ul class="modal-list">
-					<li><a class="link" href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/c6-mcd14dl">MODIS</a>
-						(Aqua y Terra)</li>
-					<li><a class="link" href="https://earthdata.nasa.gov/earth-observation-data/near-real-time/firms/v1-vnp14imgt">VIIRS</a>
-						(NOAA-20, NOAA-21 y Suomi-NPP)</li>
+					<li><strong><a class="link" href="https://firms.modaps.eosdis.nasa.gov/descriptions/FIRMS_MODIS_Firehotspots.html">MODIS</a></strong>,
+						píxel de 1 km, a bordo de los satélites <strong>Aqua</strong> y <strong>Terra</strong>
+						(producto MCD14DL, Colección 6.1).</li>
+					<li><strong><a class="link" href="https://firms.modaps.eosdis.nasa.gov/descriptions/FIRMS_VIIRS_Firehotspots.html">VIIRS</a></strong>,
+						píxel de 375 m, a bordo de los satélites <strong>Suomi-NPP</strong>, <strong>NOAA-20</strong> y
+						<strong>NOAA-21</strong> (productos VNP14IMGTDL, VJ114IMGTDL y VJ214IMGTDL, Colección 2). Su mayor
+						detalle permite detectar fuegos más pequeños y mejora el desempeño nocturno.</li>
 				</ul>
-				<p>Si hace uso de estos datos realice la respectiva referencia a los datos originales.</p>
+				<p>La plataforma consulta FIRMS cada hora y conserva las detecciones que caen dentro del territorio
+					colombiano. Las fechas se presentan en hora local de Colombia (UTC-5). De cada punto se registran la fecha
+					y hora de captura, el satélite de origen, la temperatura de brillo, la potencia radiativa del fuego (FRP,
+					en megavatios), la confianza de la detección (porcentaje en MODIS; baja, nominal o alta en VIIRS), si la
+					captura fue diurna o nocturna y el tamaño real del píxel observado.</p>
+
+				<h3 class="modal-subtitle">Área quemada histórica</h3>
+				<p>La capa de área quemada corresponde al producto
+					<a class="link" href="https://lpdaac.usgs.gov/products/mcd64a1v061/">MCD64A1</a> (Colección 6.1),
+					elaborado por la Universidad de Maryland a partir de la reflectancia superficial de Terra y Aqua junto con
+					las detecciones de fuego activo. Es un producto <strong>mensual</strong>, con resolución de
+					<strong>500 m</strong>, que identifica la fecha de quema de cada píxel.</p>
+				<ul class="modal-list">
+					<li>Se publica algunos meses después del periodo observado, por lo que sirve para el análisis histórico y
+						no para el seguimiento diario. En el panel se indica el rango de meses disponible.</li>
+					<li>Cada píxel equivale a unas 25 hectáreas, de modo que las quemas pequeñas suelen subestimarse u
+						omitirse, en particular en zonas agrícolas.</li>
+					<li>Para esta página el producto se recorta al territorio colombiano y se puede superponer al mapa mes a
+						mes, o por año completo con los accesos rápidos.</li>
+				</ul>
+
+				<h3 class="modal-subtitle">Descarga de datos</h3>
+				<ul class="modal-list">
+					<li><strong>descargar</strong>: los puntos de calor de la consulta actual (periodo y región
+						seleccionados) en formato CSV.</li>
+					<li><strong>Archivos csv</strong>: los puntos de calor de cada día para todo el país.</li>
+					<li><strong>Archivos área quemada</strong>: los archivos shapefile mensuales comprimidos en ZIP
+						(EPSG:4326).</li>
+				</ul>
+
+				<h3 class="modal-subtitle">Uso y referencia</h3>
+				<p>Si hace uso de estos datos realice la respectiva referencia a los datos originales de la NASA (FIRMS para
+					los puntos de calor y MCD64A1 para el área quemada) y al Sistema de Monitoreo de Bosques y Carbono del
+					IDEAM.</p>
 				<p class="modal-signature">Sistema de Monitoreo de Bosques y Carbono<br />IDEAM, Colombia<br />
 					Contacto: <a class="link" href="mailto:xcorredorl@ideam.gov.co">xcorredorl@ideam.gov.co</a></p>
 			</div>

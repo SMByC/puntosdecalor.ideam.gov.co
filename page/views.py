@@ -5,6 +5,7 @@
 #  Authors: Xavier Corredor Ll. <xcorredorl@ideam.gov.co>
 
 import csv
+import logging
 from datetime import datetime, date, timedelta
 from urllib.parse import urlencode, urlparse, parse_qs
 
@@ -14,6 +15,8 @@ from django.shortcuts import get_object_or_404, render, redirect
 from djgeojson.views import GeoJSONLayerView
 
 from page.models import ActiveFire, Region, BurnedArea
+
+logger = logging.getLogger(__name__)
 
 
 # -- GeoJSON API views -------------------------------------------------------
@@ -80,19 +83,47 @@ def _filter_active_fires(from_date_str, to_date_str, region_slug):
 
 # -- DEM elevation lookup (lazy-loaded) --------------------------------------
 
-_dem_xarr = None
+_UNTRIED = object()
+_dem_xarr = _UNTRIED
 
 
 def _get_dem():
+    """Open the DEM once. Returns None when it is not available (the raster is
+    not part of the repository, so local/dev setups usually do not have it).
+
+    A raster that cannot be opened (missing file, rioxarray not installed --
+    RasterioIOError derives from OSError) is remembered, since retrying would
+    only repeat the same failure on every popup; any other error is retried on
+    the next request so a transient one does not disable the elevation until
+    the worker is restarted."""
     global _dem_xarr
-    if _dem_xarr is None:
-        import rioxarray
-        _dem_xarr = rioxarray.open_rasterio(settings.BASE_DIR / "static" / "dem" / "DEM_COL.img")
+    if _dem_xarr is _UNTRIED:
+        try:
+            import rioxarray
+            _dem_xarr = rioxarray.open_rasterio(settings.BASE_DIR / "static" / "dem" / "DEM_COL.img")
+        except (OSError, ImportError):
+            logger.warning(
+                "DEM not available (not retried until restart), the elevation "
+                "will not be reported in the popups",
+                exc_info=True,
+            )
+            _dem_xarr = None
+        except Exception:
+            logger.exception("the DEM could not be opened, retrying on the next request")
+            return None
     return _dem_xarr
 
 
 def _get_elevation(lon, lat):
-    return _get_dem().sel(x=lon, y=lat, method="nearest").item()
+    """Elevation in meters for a coordinate, or None if it cannot be read."""
+    dem = _get_dem()
+    if dem is None:
+        return None
+    try:
+        return dem.sel(x=lon, y=lat, method="nearest").item()
+    except Exception:
+        logger.exception("the elevation could not be read for lon=%s lat=%s", lon, lat)
+        return None
 
 
 # -- AJAX popup --------------------------------------------------------------
@@ -109,6 +140,8 @@ def get_popup(request):
 
     active_fire = get_object_or_404(ActiveFire, id=fire_id)
 
+    elevation = _get_elevation(active_fire.geom.x, active_fire.geom.y)
+
     popup_text = (
         '<span style="font-style: italic;display: block;text-align: center;">Foco de calor</span>'
         '<hr>'
@@ -120,7 +153,7 @@ def get_popup(request):
         f'Temperatura: {int(round(active_fire.brightness - 273.15))} &#8451;<br/>'
         f'Confianza: {active_fire.confidence or "--"}<br/>'
         '<hr>'
-        f'Elevación: {_get_elevation(active_fire.geom.x, active_fire.geom.y)} msnm<br/>'
+        f'Elevación: {elevation if elevation is not None else "--"} msnm<br/>'
     )
     return JsonResponse(popup_text, safe=False)
 

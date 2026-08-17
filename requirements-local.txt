@@ -1,0 +1,11 @@
+# Minimal dependencies to run the site locally against SpatiaLite (SQLite).
+#
+# The production stack (PostGIS, uwsgi, and rioxarray/pandas/geopandas for the
+# data importers) lives in requirements.txt; none of it is needed just to open
+# the page in a browser.
+#
+# Used by the Makefile:  make setup
+
+Django>=6.0,<7.0
+django-leaflet>=0.33.0
+django-geojson>=4.2.0

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Active Fires - responsive check</title>
+<style>
+  body { margin: 0; padding: 12px; display: flex; gap: 14px;
+         font: 13px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+         background: #14161a; color: #e6e6e6; }
+  iframe { flex: 0 0 auto; border: 1px solid #333; background: #fff; }
+  pre { flex: 1; margin: 0; white-space: pre-wrap; }
+  .ok { color: #7ee787; }
+  .bad { color: #ff7b72; font-weight: bold; }
+  .dim { color: #8b949e; }
+</style>
+</head>
+<body>
+
+<iframe id="frame" width="320" height="720" src="/" title="Active Fires"></iframe>
+<pre id="log">running the sweep…</pre>
+
+<script>
+// Loads the page in an iframe at a series of viewport widths and checks that
+// the layout never overflows horizontally. The result is posted back to the
+// server so `dev/responsive_check.py` can turn it into an exit code.
+
+var WIDTHS = [320, 360, 390, 414, 480, 600, 768, 834, 899, 900, 1024, 1280, 1440, 1920];
+var IFRAME_HEIGHT = 720;
+
+var frame = document.getElementById('frame');
+var log = document.getElementById('log');
+var results = [];
+var errors = [];
+var index = 0;
+
+function line(text, cls) {
+    var span = document.createElement('span');
+    if (cls) span.className = cls;
+    span.textContent = text + '\n';
+    log.appendChild(span);
+}
+
+function pad(value, size) {
+    value = String(value);
+    while (value.length < size) value = ' ' + value;
+    return value;
+}
+
+function describe(el) {
+    var name = el.tagName.toLowerCase();
+    if (el.id) name += '#' + el.id;
+    else if (typeof el.className === 'string' && el.className.trim()) {
+        name += '.' + el.className.trim().split(/\s+/).slice(0, 2).join('.');
+    }
+    return name;
+}
+
+function measure(width) {
+    var doc = frame.contentDocument;
+    var win = frame.contentWindow;
+    var root = doc.documentElement;
+
+    var overflowing = [];
+    var elements = doc.querySelectorAll('body *');
+    for (var i = 0; i < elements.length; i++) {
+        var el = elements[i];
+        var box = el.getBoundingClientRect();
+        if (box.width <= 0 || box.height <= 0) continue;
+        // map tiles legitimately extend past their (clipped) pane
+        if (el.closest && el.closest('.leaflet-container')) continue;
+        if (win.getComputedStyle(el).visibility === 'hidden') continue;
+        if (box.right > root.clientWidth + 1 || box.left < -1) {
+            overflowing.push(describe(el) + ' [' + Math.round(box.left) + '..' + Math.round(box.right) + ']');
+        }
+    }
+
+    var panel = doc.getElementById('lateral-content');
+    var map = doc.getElementById('active_fires_map');
+
+    return {
+        width: width,
+        viewport: root.clientWidth,
+        scrollWidth: root.scrollWidth,
+        horizontalScroll: Math.max(0, root.scrollWidth - root.clientWidth),
+        overflowing: overflowing,
+        panel: panel && win.getComputedStyle(panel).position === 'relative' ? 'docked' : 'drawer',
+        panelToggle: win.getComputedStyle(doc.getElementById('header-actions')).display !== 'none',
+        mapWidth: map ? Math.round(map.getBoundingClientRect().width) : 0,
+        mapHeight: map ? Math.round(map.getBoundingClientRect().height) : 0,
+        results: (doc.getElementById('number-result') || {}).textContent || '',
+        datepicker: !!(win.jQuery && win.jQuery('#period').data('dateRangePicker')),
+        dropLists: doc.querySelectorAll('.select2-container').length,
+        markers: doc.querySelectorAll('.af-marker').length,
+        clusters: doc.querySelectorAll('.marker-cluster').length,
+    };
+}
+
+function report(step) {
+    var status = (step.horizontalScroll > 0 || step.overflowing.length > 0) ? 'bad' : 'ok';
+    line(pad(step.width, 5) + 'px | panel ' + pad(step.panel, 6) +
+         ' | map ' + pad(step.mapWidth, 4) + 'x' + step.mapHeight +
+         ' | h-scroll ' + (step.horizontalScroll ? 'YES ' + step.horizontalScroll + 'px' : 'no') +
+         ' | overflowing ' + step.overflowing.length, status);
+    step.overflowing.slice(0, 6).forEach(function (item) { line('        ' + item, 'bad'); });
+}
+
+function finish() {
+    clearInterval(errorWatcher);
+    var failed = results.filter(function (r) {
+        return r.horizontalScroll > 0 || r.overflowing.length > 0;
+    });
+    line('');
+    line(failed.length
+        ? failed.length + ' of ' + results.length + ' widths overflow horizontally'
+        : 'no horizontal overflow at any of the ' + results.length + ' widths',
+        failed.length ? 'bad' : 'ok');
+    line('javascript errors: ' + (errors.length || 'none'), errors.length ? 'bad' : 'ok');
+    errors.forEach(function (e) { line('        ' + e, 'bad'); });
+
+    frame.width = 390;
+
+    var payload = JSON.stringify({results: results, errors: errors, userAgent: navigator.userAgent});
+    var url = '/_dev/responsive/report/';
+
+    if (window.fetch) {
+        fetch(url, {method: 'POST', headers: {'Content-Type': 'application/json'}, body: payload})
+            .catch(function () { postWithXhr(url, payload); });
+    } else {
+        postWithXhr(url, payload);
+    }
+}
+
+function postWithXhr(url, payload) {
+    var request = new XMLHttpRequest();
+    request.open('POST', url, true);
+    request.setRequestHeader('Content-Type', 'application/json');
+    request.send(payload);
+}
+
+function step() {
+    if (index >= WIDTHS.length) return finish();
+
+    var width = WIDTHS[index++];
+    frame.width = width;
+    setTimeout(function () {
+        try {
+            var measured = measure(width);
+            results.push(measured);
+            report(measured);
+        } catch (error) {
+            errors.push('check failed at ' + width + 'px: ' + error.message);
+            return finish();
+        }
+        step();
+    }, 420);
+}
+
+// Attach to the iframe window as soon as it exists, NOT once it has loaded:
+// the errors worth catching (select2, the date picker, load_map) are raised
+// while the page initialises, long before its load event.
+var watchedWindow = null;
+
+function watchErrors() {
+    try {
+        var win = frame.contentWindow;
+        if (!win || win === watchedWindow) return;
+        // still the initial about:blank, its window is about to be replaced
+        if (win.location.protocol.indexOf('http') !== 0) return;
+        watchedWindow = win;
+        win.addEventListener('error', function (event) {
+            errors.push(event.message + ' @ ' +
+                        (event.filename || '').split('/').pop() + ':' + event.lineno);
+        });
+        win.addEventListener('unhandledrejection', function (event) {
+            errors.push('unhandled promise rejection: ' + event.reason);
+        });
+    } catch (error) { /* cross-origin while navigating, try again on the next tick */ }
+}
+
+var errorWatcher = setInterval(watchErrors, 20);
+
+var started = false;
+
+// true only once the real page (not the initial about:blank) is fully loaded
+function frameIsReady() {
+    try {
+        var win = frame.contentWindow;
+        return !!(win && win.location.protocol.indexOf('http') === 0 &&
+                  frame.contentDocument && frame.contentDocument.readyState === 'complete');
+    } catch (error) {
+        return false;
+    }
+}
+
+function begin() {
+    if (started) return;
+    started = true;
+    watchErrors();  // last chance, in case the poll never saw the window
+    log.textContent = '';
+    try {
+        line('page: ' + frame.contentWindow.location.pathname + frame.contentWindow.location.search, 'dim');
+    } catch (error) {
+        errors.push('the page could not be read from the iframe: ' + error.message);
+    }
+    line('');
+    step();
+}
+
+// give leaflet and the ajax calls time to settle before measuring
+frame.addEventListener('load', function () {
+    if (frameIsReady()) setTimeout(begin, 2500);
+});
+
+// the iframe may already be loaded by the time this script runs
+if (frameIsReady()) setTimeout(begin, 2500);
+
+// never hang: report whatever we have if the page does not settle
+setTimeout(function () {
+    if (started) return;
+    if (!frameIsReady()) errors.push('the page did not finish loading in the iframe after 25s');
+    begin();
+}, 25000);
+
+window.addEventListener('error', function (event) {
+    errors.push('harness: ' + event.message + ':' + event.lineno);
+});
+</script>
+
+</body>
+</html>

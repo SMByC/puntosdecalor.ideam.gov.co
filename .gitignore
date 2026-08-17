@@ -10,6 +10,13 @@ __pycache__/
 *.db
 *.sqlite3
 
+# Local development (make setup / make db)
+.venv/
+
+# Data published through the "archivos" pages (generated, not versioned)
+page/data/ftp_files/
+page/data/ftp_ba_files/
+
 # IDE
 .idea/
 .vscode/

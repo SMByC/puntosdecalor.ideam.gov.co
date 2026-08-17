@@ -43,73 +43,178 @@ function getParameterByName(name, url) {
     return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
 
+//RESPONSIVE HELPERS------------------------------------------------
+// the layout has two targets: phones (lateral panel as a drawer) and
+// laptop/desktop (lateral panel docked beside the map)
+
+var AF_DESKTOP_LAYOUT = "(min-width: 900px)";
+var AF_TOUCH_POINTER = "(pointer: coarse)";
+
+function media_matches(query) {
+    return window.matchMedia && window.matchMedia(query).matches;
+}
+
+// the lateral panel is docked (not a drawer) on laptop/desktop
+function is_desktop_layout() {
+    return media_matches(AF_DESKTOP_LAYOUT);
+}
+
+// slightly bigger markers on touch screens, to keep them tappable
+function marker_icon_size() {
+    return media_matches(AF_TOUCH_POINTER) ? [18, 18] : [13, 13];
+}
+
+// keep the fitted region away from the map controls/edges
+function map_fit_padding() {
+    return is_desktop_layout() ? [24, 24] : [12, 12];
+}
+
 //==============================================================================
 //run when DOM is ready
 
 $(function () {
-    // wait cursor for request ajax
+
+    //LOADING FEEDBACK
+    // a small indicator over the map while the data is being requested
     var map_mouse;
-    $(document).ajaxStart(function() {
-        $(document.body).css({'cursor' : 'wait'});
+    $(document).ajaxStart(function () {
+        $('#map-loading').prop('hidden', false);
+        $(document.body).css({'cursor': 'wait'});
         map_mouse = $('#active_fires_map').css('cursor');
-        $('#active_fires_map').css({'cursor' : 'wait'});
-        $('.month-wrapper table .day').css({'cursor' : 'wait'});
-        $('.custom-shortcut a').css({'cursor' : 'wait'});
-    }).ajaxStop(function() {
-        $(document.body).css({'cursor' : 'default'});
-        $('#active_fires_map').css({'cursor' : map_mouse});
-        $('.month-wrapper table .day').css({'cursor' : 'pointer'});
-        $('.custom-shortcut a').css({'cursor' : 'pointer'});
+        $('#active_fires_map').css({'cursor': 'wait'});
+        $('.month-wrapper table .day').css({'cursor': 'wait'});
+        $('.custom-shortcut a').css({'cursor': 'wait'});
+    }).ajaxStop(function () {
+        $('#map-loading').prop('hidden', true);
+        $(document.body).css({'cursor': 'default'});
+        $('#active_fires_map').css({'cursor': map_mouse});
+        $('.month-wrapper table .day').css({'cursor': 'pointer'});
+        $('.custom-shortcut a').css({'cursor': 'pointer'});
     });
 
-    //MENU-HEADER
-    //activacion del submenu del menu principal de navegacion
-    var sublink_activated = false;
-    $("div#header-menu").find("li").each(function() {
-        if ( (typeof $(this).find("a").attr('href') != 'undefined') && ($(this).find("a").attr('href').replace('/','') == window.location.href.split("/").reverse()[1]) ) {
-            $(this).addClass("menuOn");
-            sublink_activated = true;
-        } else {
-            $(this).removeClass("menuOn")
-        }
-    });
-    if (sublink_activated == false) {
-        $("div#header-menu").find("li").first().addClass("menuOn")
+    //LATERAL PANEL (drawer on mobile, docked panel on desktop)
+    var $body = $('body');
+    var $panel_toggle = $('#panel-toggle');
+
+    function open_panel() {
+        $body.addClass('panel-open');
+        $panel_toggle.attr('aria-expanded', 'true');
+        // move the focus into the panel for keyboard/screen reader users
+        window.setTimeout(function () { $('#panel-close').trigger('focus'); }, 60);
     }
 
-    // set the class to select2
+    function close_panel() {
+        if (!$body.hasClass('panel-open')) return;
+        $body.removeClass('panel-open');
+        $panel_toggle.attr('aria-expanded', 'false').trigger('focus');
+    }
+
+    function toggle_panel() {
+        if ($body.hasClass('panel-open')) close_panel();
+        else open_panel();
+    }
+
+    $panel_toggle.on('click', toggle_panel);
+    $('#panel-close').on('click', close_panel);
+    $('#panel-backdrop').on('click', close_panel);
+
+    // on the docked layout the panel is always visible: reset the drawer state
+    if (window.matchMedia) {
+        var desktop_mq = window.matchMedia(AF_DESKTOP_LAYOUT);
+        var on_layout_change = function (event) {
+            if (event.matches) {
+                $body.removeClass('panel-open');
+                $panel_toggle.attr('aria-expanded', 'false');
+            }
+        };
+        if (desktop_mq.addEventListener) desktop_mq.addEventListener('change', on_layout_change);
+        else if (desktop_mq.addListener) desktop_mq.addListener(on_layout_change);
+    }
+
+    //MODAL WINDOWS (contexto / acerca de)
+    function open_modal(id) {
+        var modal = document.getElementById(id);
+        if (!modal) return;
+        if (typeof modal.showModal === 'function') {
+            if (!modal.open) modal.showModal();
+        } else {
+            // fallback for browsers without <dialog> support
+            modal.setAttribute('open', '');
+            modal.classList.add('is-open');
+        }
+    }
+
+    function close_modal(modal) {
+        if (!modal) return;
+        if (typeof modal.close === 'function' && modal.open && !modal.classList.contains('is-open')) {
+            modal.close();
+        } else {
+            modal.removeAttribute('open');
+            modal.classList.remove('is-open');
+        }
+    }
+
+    // any element with data-modal-open="<id>" opens its modal
+    $(document).on('click', '[data-modal-open]', function (event) {
+        event.preventDefault();
+        open_modal($(this).data('modal-open'));
+    });
+
+    // close buttons
+    $(document).on('click', '[data-modal-close]', function () {
+        close_modal($(this).closest('dialog')[0]);
+    });
+
+    // when the user clicks outside of the modal content, close it
+    $('dialog.modal').on('click', function (event) {
+        if (event.target === this) close_modal(this);
+    });
+
+    //KEYBOARD
+    // Escape closes the drawer, but only when it is the outermost thing open:
+    // a drop-list, the date picker or a modal must be closed first
+    function something_is_open_over_the_panel() {
+        return $('.select2-container--open').length > 0 ||
+               $('.date-picker-wrapper:visible').length > 0 ||
+               $('dialog.modal[open]').length > 0;
+    }
+
+    $(document).on('keydown', function (event) {
+        if (event.key !== 'Escape' && event.keyCode !== 27) return;
+        if (event.isDefaultPrevented() || something_is_open_over_the_panel()) return;
+        // <dialog> closes itself with Escape, only the drawer needs help
+        close_panel();
+    });
+
+    //DROP-LISTS (select2)
+    // The list is attached to the panel instead of to <body>: select2 places it
+    // once, in page coordinates, and the panel is a drawer that slides in and
+    // out. Attached to the body the list stays where the control *was* when it
+    // opened (misplaced if it is opened while the drawer is still sliding) and
+    // it survives on screen after the drawer is closed. As a child of the panel
+    // it travels with it.
+    var $panel = $('#lateral-content');
+
     $('#region').select2({
         language: "es",
-        width: '75%'
-    });
-    $('#burned_area').select2({
-        language: "es",
-        width: '85%'
+        width: '100%',
+        dropdownAutoWidth: false,
+        dropdownParent: $panel
     });
 
-    // modal window context
-    var modal_context = document.getElementById("modal_context");
-    var modal_context_link = document.getElementById("modal_context_link");
-    var modal_context_close = document.getElementsByClassName("modal_context_close")[0];
-    // When the user clicks the button, open the modal
-    modal_context_link.onclick = function() {modal_context.style.display = "block";}
-    // When the user clicks on <span> (x), close the modal
-    modal_context_close.onclick = function() {modal_context.style.display = "none";}
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-      if (event.target === modal_context) {modal_context.style.display = "none";}
-    }
-    // modal window about_us
-    var modal_about_us = document.getElementById("modal_about_us");
-    var modal_about_us_link = document.getElementById("modal_about_us_link");
-    var modal_about_us_close = document.getElementsByClassName("modal_about_us_close")[0];
-    // When the user clicks the button, open the modal
-    modal_about_us_link.onclick = function() {modal_about_us.style.display = "block";}
-    // When the user clicks on <span> (x), close the modal
-    modal_about_us_close.onclick = function() {modal_about_us.style.display = "none";}
-    // When the user clicks anywhere outside of the modal, close it
-    window.onclick = function(event) {
-      if (event.target === modal_about_us) {modal_about_us.style.display = "none";}
-    }
+    $('#burned_area').select2({
+        language: "es",
+        width: '100%',
+        dropdownAutoWidth: false,
+        // keep the list open to pick several months in a row
+        closeOnSelect: false,
+        placeholder: $('#burned_area').data('placeholder') || '',
+        dropdownParent: $panel
+    });
+
+    // a drop-list left open would be hidden with the drawer and reopen with it
+    $('#panel-close, #panel-backdrop').on('click', function () {
+        $('#region, #burned_area').select2('close');
+    });
 
 });

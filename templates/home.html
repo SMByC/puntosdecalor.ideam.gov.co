@@ -7,7 +7,7 @@
 {% block javascripts %}
 
     {#  General javascripts  #}
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    <script>
         {# apply extent #}
         function set_extent(map, options) {
             {# extent = [[lat-lng top-left], [lat-lng bottom-right]] #}
@@ -31,8 +31,9 @@
             // fill the period from the url get parameters
             var from_date = getParameterByName("from_date");
             var to_date = getParameterByName("to_date");
-            if ((from_date !== null) && (to_date !== null)) {
-                $('#period').data('dateRangePicker').setDateRange(from_date, to_date);
+            var period = $('#period').data('dateRangePicker');
+            if (period && (from_date !== null) && (to_date !== null)) {
+                period.setDateRange(from_date, to_date, true);
             }
             var get_region = getParameterByName("region");
             $('#region').val(get_region).trigger('change');
@@ -40,7 +41,7 @@
     </script>
 
     {#  Leaflet and maps javascripts  #}
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    <script>
 
         // REGIONS
 
@@ -52,8 +53,6 @@
             'interactive': false,
         };
         function region(map, new_region) {
-            // set asynchronize ajax
-            $.ajaxSetup({async: true});
             // clear all markers in the map before add the new
             if ( typeof map.region !== 'undefined') {
                 map.removeLayer(map.region);
@@ -66,9 +65,10 @@
                 region.addLayer(shape);
                 // zoom to the region
                 if ( new_region === "colombia" ) {
-                    map.fitBounds([[16.130262012034756,-94.39453125],[-6.970049417296218,-51.37207031249999]]);
+                    map.fitBounds([[16.130262012034756,-94.39453125],[-6.970049417296218,-51.37207031249999]],
+                                  {padding: map_fit_padding()});
                 } else {
-                    map.fitBounds(region.getBounds());
+                    map.fitBounds(region.getBounds(), {padding: map_fit_padding()});
                 }
             });
             // add to map
@@ -79,28 +79,14 @@
 
         // BURNED AREA
 
-        var burned_area_style = {
-            1: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            2: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            3: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            4: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            5: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            6: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            7: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            8: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            9: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            10: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            11: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-            12: {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false},
-        }
+        var burned_area_style = {'color': '#5c3eb5', 'weight': 0, 'fillOpacity': 0.35, 'interactive': false};
+
         function add_burned_area(map, ba_date) {  // ba_date: yyyy-mm
-            // set asynchronize ajax
-            $.ajaxSetup({async: true});
             var burned_area = new L.FeatureGroup();
             var data_url = "{% url 'burned-area' %}" + "?date=" + ba_date;
             // Download GeoJSON via Ajax
             $.getJSON(data_url, function (data) {
-                var shape = L.geoJson(data, {style: burned_area_style[parseInt(ba_date.toString().split('-')[1])]});
+                var shape = L.geoJson(data, {style: burned_area_style});
                 burned_area.addLayer(shape);
             });
             // add to map
@@ -112,10 +98,8 @@
             map.burned_area[ba_date] = burned_area;
         }
         function remove_burned_area(map, ba_date) {  // ba_date: yyyy-mm
-            // set asynchronize ajax
-            $.ajaxSetup({async: true});
             // clear all markers in the map before add the new
-            if (ba_date in map.burned_area) {
+            if (map.burned_area && ba_date in map.burned_area) {
                 map.removeLayer(map.burned_area[ba_date]);
                 delete map.burned_area[ba_date];
             }
@@ -123,53 +107,46 @@
 
         // ACTIVE FIRES POINTS
 
-        var fireIcon = L.icon({
-            iconUrl: "{% static "img/fire/active_fire.png" %}",
-            shadowUrl: "{% static "img/fire/active_fire_shadow.png" %}",
-
-            iconSize: [16, 28], // size of the icon
-            shadowSize: [30, 24], // size of the shadow
-
-            iconAnchor: [8, 28], // point of the icon which will correspond to marker's location
-            shadowAnchor: [4, 23],  // the same for the shadow
-            popupAnchor: [0.5, -28] // point from which the popup should open relative to the iconAnchor
-        });
-
         function active_fires(map, options) {
-            $.ajaxSetup({async: true});
             // clear all markers in the map before add the new
             if ( typeof map.markers !== 'undefined') {
                 map.removeLayer(map.markers);
             }
-            //var markers = new L.FeatureGroup();
             var markers = new L.markerClusterGroup({
                 disableClusteringAtZoom: 11,
                 spiderfyOnMaxZoom: false,
                 animate: false,
+                // only honoured by addLayers(), which is why the markers below
+                // are collected first and added to the cluster in one call
+                chunkedLoading: true,
             });
+            var marker_size = marker_icon_size();
+            var marker_list = [];
             var data_url = "{% url 'active-fires' %}" + window.location.search;
             // Download GeoJSON via Ajax
             $.getJSON(data_url, function (data) {
                 // Add GeoJSON layer
                 L.geoJson(data, {
                     pointToLayer: function (feature, latlng) {
-                        // market
-                        {# var marker = L.marker(latlng, {icon: fireIcon}); #}
+                        // marker
                         var marker = L.marker(latlng, {
                             icon: L.divIcon({
-                                html: '<svg transform="scale(1 1)" viewBox="-1 -1 2 2">  <circle cx="0" cy="0" r="0.9" fill-opacity="0.6" fill="#CC3D36" /></svg>'
-                            })
+                                className: 'af-marker',
+                                iconSize: marker_size,
+                                html: '<svg viewBox="-1 -1 2 2" aria-hidden="true"><circle cx="0" cy="0" r="0.9" fill-opacity="0.6" fill="#CC3D36" /></svg>'
+                            }),
+                            keyboard: false,
+                            title: 'Punto de calor'
                         });
 
                         // popup
-                        marker.bindPopup("");
+                        marker.bindPopup("", {maxWidth: 300, minWidth: 200, autoPanPadding: [16, 16]});
                         function onPopupClick(e) {
                             var popup = e.target.getPopup();
                             $.ajax({
                                 url: "{% url 'get-popup' %}" + window.location.search,
                                 data: {id: feature.properties.id},
                                 dataType: 'json',
-                                async: true,
                             })
                             .done(function(popup_text) {
                                 popup.setContent(popup_text);
@@ -177,11 +154,14 @@
                             });
                         }
                         marker.on('click', onPopupClick );
-                        // add this market
-                        markers.addLayer(marker);
+                        // collect this marker
+                        marker_list.push(marker);
                 }});
+                // add all the markers at once: clustering them one by one on a
+                // layer already on the map freezes the phone with many points
+                markers.addLayers(marker_list);
                 // update the number of active fires result of ajax
-                $('#number-result').text(data.features.length);
+                $('#number-result').text(data.features.length.toLocaleString('es-CO'));
             });
             // add to map
             map.addLayer(markers);
@@ -191,7 +171,7 @@
     </script>
 
     {#  Cargar mapa  #}
-    <script type="text/javascript" xmlns="http://www.w3.org/1999/html">
+    <script>
         function load_map(map, options) {
             // load map in request url with get parameter
             region(map, getParameterByName("region"));
@@ -222,6 +202,7 @@
             }).trigger('change');
             // burned area by year
             $('.burned_area_by_year').click(function(e){
+                e.preventDefault();
                 var selected_year = $(this).text();
                 var items = $('#burned_area').find("option");
                 var items_selected = $('#burned_area').select2('data');
@@ -239,6 +220,7 @@
             }).trigger('change');
             // unselect all
             $('#burned_area_unselect_all').click(function(e){
+                e.preventDefault();
                 var items = $('#burned_area').select2('data');
                 for (i of items) {remove_burned_area(map, i.text);}
                 $('#burned_area').val(null).trigger('change');
@@ -250,25 +232,34 @@
 {% block title %}
 {% endblock %}
 
-{% block menu-content %}
-{% endblock %}
-
 {% block content-map %}
     {% leaflet_map "active_fires_map" callback="window.load_map" %}
 {% endblock %}
 
 {% block lateral-content %}
-    <div id="overflow-content">
-        {# puntos de calor #}
 
-        <div id="lateral-content-title" >Puntos de calor</div>
-        <div id="lateral-content-update" >Última actualización: <span id="last-update">{{ af_last_update|date:"N j, Y, P" }}</span></div>
+    {# puntos de calor #}
+
+    <section class="panel-section">
+        <h2 class="section-title">Puntos de calor</h2>
+        <p class="section-meta">Última actualización:
+            <span class="section-meta-value">{{ af_last_update|date:"N j, Y, P" }}</span>
+        </p>
+
         {# date range input #}
         <div class="lateral-item">
-            <div class="lateral-item-title" >Periodo</div>
-            <div class="lateral-item-content" >
-                <div id="period">
-                    De: <input id="from-date" size="8" value=""> a: <input id="to-date" size="8" value="">
+            <h3 class="lateral-item-title" id="period-label">Periodo</h3>
+            <div class="lateral-item-content">
+                <div id="period" role="group" aria-labelledby="period-label"
+                     title="Seleccione el rango de fechas a consultar">
+                    <span class="period-field">
+                        <label for="from-date">De:</label>
+                        <input id="from-date" type="text" readonly value="" placeholder="aaaa-mm-dd" />
+                    </span>
+                    <span class="period-field">
+                        <label for="to-date">a:</label>
+                        <input id="to-date" type="text" readonly value="" placeholder="aaaa-mm-dd" />
+                    </span>
                 </div>
             </div>
         </div>
@@ -276,8 +267,8 @@
         {# Region #}
 
         <div class="lateral-item">
-            <div class="lateral-item-title" >Region</div>
-            <div class="lateral-item-content" >
+            <h3 class="lateral-item-title"><label for="region">Región</label></h3>
+            <div class="lateral-item-content">
                 <div id="region-div">
                     <select id="region" name="region">
 
@@ -287,25 +278,25 @@
 
                         <optgroup label="Departamentos">
                         {% for department in departments %}
-                            <option value={{ department.slug }}>{{ department.name }}</option>
+                            <option value="{{ department.slug }}">{{ department.name }}</option>
                         {% endfor %}
                         </optgroup>
 
                         <optgroup label="Regiones Naturales">
                         {% for natural_region in natural_regions %}
-                            <option value={{ natural_region.slug }}>{{ natural_region.name }}</option>
+                            <option value="{{ natural_region.slug }}">{{ natural_region.name }}</option>
                         {% endfor %}
                         </optgroup>
 
                         <optgroup label="Parques Nacionales">
                         {% for parque_nacional in parques_nacionales %}
-                            <option value={{ parque_nacional.slug }}>{{ parque_nacional.name }}</option>
+                            <option value="{{ parque_nacional.slug }}">{{ parque_nacional.name }}</option>
                         {% endfor %}
                         </optgroup>
 
                         <optgroup label="Corporaciones">
                         {% for corporacion in corporaciones %}
-                            <option value={{ corporacion.slug }}>{{ corporacion.name }}</option>
+                            <option value="{{ corporacion.slug }}">{{ corporacion.name }}</option>
                         {% endfor %}
                         </optgroup>
 
@@ -316,45 +307,59 @@
 
         {# Result #}
 
-        <div class="lateral-item">
-            <div class="lateral-item-title" >Resultado</div>
-            <div class="lateral-item-content" ><span id="number-result">...</span> puntos de calor
-                <a class="link" href="{% url 'download-result' %}">descargar</a>
+        <div class="lateral-item lateral-item-result">
+            <h3 class="lateral-item-title">Resultado</h3>
+            <div class="lateral-item-content">
+                <p class="result-count"><span id="number-result">…</span> <span class="result-label">puntos de calor</span></p>
+                <a class="btn-download" href="{% url 'download-result' %}" title="Descargar el resultado en formato CSV">
+                    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M12 3v12M7 11l5 5 5-5M5 20h14" />
+                    </svg>
+                    descargar
+                </a>
             </div>
         </div>
+    </section>
 
-        {# burned area #}
+    {# burned area #}
 
-        <div id="lateral-content-title" >Área quemada histórica</div>
-        <div id="lateral-content-update" >Disponibilidad: <span id="last-update">{{ range_burned_area }}</span>
-        </div>
+    <section class="panel-section">
+        <h2 class="section-title">Área quemada histórica</h2>
+        <p class="section-meta">Disponibilidad: <span class="section-meta-value">{{ range_burned_area }}</span></p>
 
         <div class="lateral-item">
-            <div class="lateral-item-content" >Datos mensuales de Modis-MCD64A1 (500m)
+            <div class="lateral-item-content">
+                <p class="lateral-item-note"><label for="burned_area">Datos mensuales de Modis-MCD64A1</label></p>
                 <div id="burned-area-div">
-                    <select id="burned_area" name="burned_area[]" multiple="multiple">
+                    <select id="burned_area" name="burned_area[]" multiple="multiple"
+                            data-placeholder="Seleccione uno o varios meses">
                         {% for burned_area in burned_areas %}
-                            <option value={{ burned_area.slug }}>{{ burned_area.slug }}</option>
+                            <option value="{{ burned_area.slug }}">{{ burned_area.slug }}</option>
                         {% endfor %}
                     </select>
                 </div>
+
                 {# accesos rapidos por año #}
-                <div id="lateral-content-update" style="text-align: right;width: 250px;font-size: 0.9em;">Por año:
+                <div class="year-shortcuts">
+                    <span class="year-shortcuts-label">Por año:</span>
                     {% for year_burned_area in years_burned_area %}
-                        <a class="link burned_area_by_year" href="#" style="margin: 0px;padding: 0px 2px;">{{ year_burned_area }}</a>
+                        <a class="link burned_area_by_year" href="#">{{ year_burned_area }}</a>
                     {% endfor %}
-                    <a class="link" href="#" id="burned_area_unselect_all">limpiar</a>
+                    <a class="link link-clear" href="#" id="burned_area_unselect_all">limpiar</a>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
 
-    {# footer #}
+{% endblock %}
 
+{# footer links #}
+
+{% block panel-links %}
     <div id="footer-links">
         <a class="link" href="/archivos-csv/">Archivos csv</a>
         <a class="link" href="/archivos-area-quemada/">Archivos área quemada</a>
-        <span class="link" id="modal_about_us_link">Acerca de</span>
+        <button type="button" class="link" data-modal-open="modal_context">Contexto</button>
+        <button type="button" class="link" data-modal-open="modal_about_us">Acerca de</button>
     </div>
-
 {% endblock %}

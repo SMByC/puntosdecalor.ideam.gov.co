@@ -1,52 +1,86 @@
-@CHARSET "UTF-8";
+@charset "UTF-8";
 /* styles CSS, IDEAM  */
 /* Xavier Corredor Llano xcorredorl@ideam.gov.co */
+/* Responsive (mobile-first) layout: the map is the main element and always
+   fills the available space; the query panel is docked on the right on
+   desktop/laptop and becomes a slide-in drawer on mobile. */
 
-/* colors: */
-/*  main red color: #CC3D36  #CC3D36ff */
-/*  complementary colors: http://paletton.com/#uid=3020u0knupDe1-yjesYqVlfvkgn*/
-/*  grey light: #fafafa (background) */
-/*  grey light2: #f4f5f7 (2do background) */
-/*  grey medium: #d3d3d3 (borders)  */
-/*  grey medium (primary text): #444 */
-/*  grey medium (secondary text): #666 */
-/*  grey dark: #bbb */
-/*  grey dark+: #aaa (footer) */
-/*  grey dark++: #999 (buttons image active function)
-/*  grey dark+++: #777 (submenus and lines)
-
-/* RESET CSS
+/* Design tokens
 --------------------------------------------------------------------- */
-/* http://meyerweb.com/eric/tools/css/reset/ */
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td,article,aside,canvas,details,embed,figure,figcaption,footer,header,hgroup,menu,nav,output,ruby,section,summary,time,mark,audio,video
-    {
+:root {
+    /*  main red color: #CC3D36  */
+    --brand: #CC3D36;
+    --brand-dark: #b0322c;
+    --brand-soft: rgba(204, 61, 54, 0.10);
+    --brand-soft-strong: rgba(204, 61, 54, 0.66);
+
+    /*  grey light: #fafafa (background) */
+    --bg: #fafafa;
+    /*  grey light2: #f4f5f7 (2do background) */
+    --surface: #ffffff;
+    --surface-2: #f4f5f7;
+    --surface-3: #f8f8f8;
+    /*  grey medium: #d3d3d3 (borders)  */
+    --border: #d3d3d3;
+    --border-soft: #e6e8ec;
+    /*  grey medium (primary text): #444 */
+    --text: #444;
+    /*  grey medium (secondary text): #666 */
+    --text-2: #666;
+    --text-3: #6e6e6e;
+    /*  grey dark+: #aaa (footer) */
+    --text-muted: #8a8a8a;
+
+    --radius-sm: 6px;
+    --radius: 10px;
+    --radius-lg: 14px;
+    --radius-pill: 999px;
+
+    --shadow-sm: 0 1px 2px rgba(16, 18, 22, 0.06), 0 1px 3px rgba(16, 18, 22, 0.05);
+    --shadow-md: 0 2px 8px rgba(16, 18, 22, 0.10);
+    --shadow-lg: 0 10px 30px rgba(16, 18, 22, 0.18);
+
+    --header-h: 52px;
+    --panel-w: 320px;
+
+    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+
+    /* z-index scale */
+    --z-map: 0;
+    --z-header: 1000;
+    --z-backdrop: 1150;
+    --z-panel: 1200;
+    --z-datepicker: 1300;
+    --z-select2: 1500;
+}
+
+/* RESET
+--------------------------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr,
+acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong,
+sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table,
+caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption,
+footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
     margin: 0;
     padding: 0;
     border: 0;
     font-size: 100%;
+    font: inherit;
     vertical-align: baseline;
 }
-/* HTML5 display-role reset for older browsers */
-article,aside,details,figcaption,figure,footer,header,hgroup,menu,nav,section
-    {
+
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
     display: block;
 }
 
-body {
-    line-height: 1;
-}
-
-ol,ul {
+ol, ul {
     list-style: none;
-}
-
-blockquote,q {
-    quotes: none;
-}
-
-blockquote:before,blockquote:after,q:before,q:after {
-    content: '';
-    content: none;
 }
 
 table {
@@ -54,551 +88,1347 @@ table {
     border-spacing: 0;
 }
 
+img, svg {
+    max-width: 100%;
+}
+
+button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 2px;
+    border-radius: 3px;
+}
+
 /* Global
 --------------------------------------------------------------------- */
-html,body {
-    background: none repeat scroll 0 0 #fafafa; /*#0a7182;*/
+html, body {
+    width: 100%;
+    height: 100%;
     margin: 0;
     padding: 0;
-    width: 100%;
-    /*min-width: 900px;*/
-    height:100%;
-    overflow:auto;
+    background-color: var(--bg);
+    /* the app fills the viewport: the document itself never scrolls, so no
+       floating element (drop-list, date picker) can create a scrollbar */
+    overflow: hidden;
 }
 
 body {
-    font: 9pt/12pt sans-serif;
-    color: #000;
+    font-family: var(--font);
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--text);
+    /* the app is a full-screen shell: nothing scrolls at page level,
+       which also removes any chance of unwanted horizontal scrolling */
+    overflow: hidden;
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
 }
 
-/* Wrap page
+/* App shell
 --------------------------------------------------------------------- */
-#wrapper {
-    margin: 0;
-    padding: 0;
+#app {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    min-height: 100%;
-    min-width: 900px;
-    background-color: #f8f8f8;
-    clear: both;
-    position:absolute;
-    /*position:relative;*/
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
 }
 
-/* Banner page
+#main {
+    position: relative;
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+/* Header
 --------------------------------------------------------------------- */
 #header {
-    /*width: 100%;*/
-    /*background: url("/static/img/banner.png") repeat-x left top;*/
-    background-color: #f4f5f7;
-    /*border-bottom: 1px solid #cecece;*/
-    /*  width: 353px; */
-    width: 100%;
-    margin: 0 auto;
-    /*height: 75px;*/
-    height: 40px;
     position: relative;
-    z-index: 2;
-    box-shadow: 0 -3px 5px 3px #333;
+    z-index: var(--z-header);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 0 0 auto;
+    min-height: var(--header-h);
+    padding: 6px 10px;
+    padding-right: max(10px, env(safe-area-inset-right));
+    padding-left: max(10px, env(safe-area-inset-left));
+    background-color: var(--surface-2);
+    border-bottom: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-sm);
 }
 
-#header-left {
-    float: left;
-    height: calc(100% - 4px);
-    padding: 2px;
-    padding-left: 8px;
+#header-brand {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    text-decoration: none;
 }
 
-#header-left img
-{
-    max-height: 100%;
+#header-brand img {
     width: auto;
-}
-
-#header-left a p
-{
-    display: none;
-}
-
-#header-right {
-    float: right;
-    color: #666;
+    height: 34px;
 }
 
 #header-main {
-    margin: 0 auto;
-    position: relative;
-    width: calc(100% - 140px);
+    flex: 1 1 auto;
+    min-width: 0;
     text-align: center;
-    padding-top: 1px;
 }
 
-/* Main content
---------------------------------------------------------------------- */
-#main {
-    position: relative;
-    clear: both;
-    margin: 0 auto;
-    /*padding-bottom: 20px;*/
-    /*border-top: -4px;*/
-    min-width: 900px;
-    height:100%;
+#header-actions {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 6px;
 }
 
-/* modal window to show more information*/
-
-.modal {
-  display: none; /* Hidden by default */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
-  left: 0;
-  top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0,0,0); /* Fallback color */
-  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+#title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    line-height: 1.2;
 }
 
-/* Modal Content */
-.modal-content {
-  background-color: #f8f8f8;
-  margin: auto;
-  padding: 30px;
-  border: 1px solid #888;
-  width: 50%;
+#title a {
+    color: var(--brand);
+    text-decoration: none;
 }
 
-/* The Close Button */
-.modal_context_close, .modal_about_us_close {
-  color: #aaaaaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
+#title a:hover {
+    color: var(--brand-dark);
 }
 
-.modal_context_close:hover, .modal_context_close:focus,
-.modal_about_us_close:hover, .modal_about_us_close:focus{
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
+#subtitle {
+    display: none;
+    margin: 2px 0 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text-2);
 }
 
-/* #div-border-l { */
-/*  background:  url("img/div-border-l.png") repeat-y left top #fff; */
-/* } */
-/* #div-border-r { */
-/*  background:  url("img/div-border-r.png") repeat-y right top; */
-/* } */
-#wrap-content {
-    margin: 0 auto;
-    /*min-height: 400px;*/
-    /*height: calc(100vh - 40px);*/
-    min-width: 800px;
-    width: 100%;
-    background-color: #f8f8f8;
-    /*  max-width: 100%
-    background-color: #fff;
-    /*padding-top: 5px;*/
-
-    /*box-shadow: 0px 0px 2px 1px #8F8F8F;*/
-    /*box-shadow: 0 0 5px #333;*/
-    /*border-bottom: 2px solid #d0d0d0;*/
-    clear: both;
+/* panel toggle (mobile) */
+.btn-panel-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 38px;
+    padding: 0 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #fff;
+    background-color: var(--brand);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-sm);
+    transition: background-color 0.15s var(--ease);
 }
 
-#divisor {
-    border-right: 1px solid #d3d3d3;
-    padding-left: 10px;
-    margin-right: 14px;
+.btn-panel-toggle:hover {
+    background-color: var(--brand-dark);
 }
 
-/* Main content
+.btn-panel-toggle svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    color: var(--text-2);
+    border-radius: var(--radius-pill);
+    transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.icon-btn:hover {
+    color: var(--brand);
+    background-color: var(--brand-soft);
+}
+
+.icon-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+/* Map
 --------------------------------------------------------------------- */
 #content-map {
-    /*padding: 10px;*/
-    position: absolute;
-    display: block;
-    float: left;
-    /*margin-top: -2px;*/
+    position: relative;
+    /* z-index: 0 keeps every leaflet pane inside its own stacking context,
+       so the panel, the date picker and the drop-lists stay on top */
+    z-index: var(--z-map);
+    flex: 1 1 auto;
+    min-width: 0;
+    min-height: 0;
     overflow: hidden;
-    width: calc(100% - 300px);
-    min-width: 550px;
-    min-height: 300px;
-    z-index: 0;
 }
 
-/* Lateral content
+#active_fires_map,
+#content-map .leaflet-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* django-leaflet forces a 300px minimum, which breaks small screens */
+.leaflet-container-default {
+    min-height: 0;
+}
+
+/* loading indicator over the map */
+#map-loading {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    /* above the leaflet controls (1000), still inside the map stacking context */
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-2);
+    background-color: rgba(255, 255, 255, 0.94);
+    border-radius: var(--radius-pill);
+    box-shadow: var(--shadow-md);
+    transform: translateX(-50%);
+    pointer-events: none;
+}
+
+#map-loading[hidden] {
+    display: none;
+}
+
+.spinner {
+    display: inline-block;
+    width: 13px;
+    height: 13px;
+    border: 2px solid var(--brand-soft);
+    border-top-color: var(--brand);
+    border-radius: 50%;
+    animation: af-spin 0.7s linear infinite;
+}
+
+@keyframes af-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* active fire markers */
+.af-marker svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.leaflet-div-icon {
+    background: initial;
+    border: initial;
+}
+
+/* Lateral content: drawer on mobile, docked panel on desktop
 --------------------------------------------------------------------- */
+#panel-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-backdrop);
+    background-color: rgba(0, 0, 0, 0.38);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s var(--ease);
+}
+
+body.panel-open #panel-backdrop {
+    opacity: 1;
+    pointer-events: auto;
+}
 
 #lateral-content {
-    position: relative;
-    display: block;
-    float: right;
-    padding: 2px;
-    padding-bottom: 1px;
-    /*margin-top: -2px;*/
-    overflow: hidden;
-    height: calc(100vh - 46px);
-    width: calc(300px - 4px);
-    min-height: 300px;
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-panel);
+    display: flex;
+    flex-direction: column;
+    width: min(88vw, 380px);
+    padding-right: env(safe-area-inset-right);
+    background-color: var(--surface-3);
+    border-left: 1px solid var(--border-soft);
+    box-shadow: var(--shadow-lg);
+    visibility: hidden;
+    transform: translateX(100%);
+    transition: transform 0.28s var(--ease), visibility 0s linear 0.28s;
+}
+
+body.panel-open #lateral-content {
+    visibility: visible;
+    transform: translateX(0);
+    transition: transform 0.28s var(--ease), visibility 0s;
+}
+
+#panel-topbar {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 8px 8px 16px;
+    background-color: var(--surface-2);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.panel-topbar-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-3);
 }
 
 #overflow-content {
-    overflow: hidden;
+    flex: 1 1 auto;
+    min-height: 0;
+    padding: 4px 14px 14px;
+    overflow-x: hidden;
     overflow-y: auto;
-    height: calc(100vh - 122px);
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
-#lateral-content-title {
-    display: inline-block;
-    width: calc(300px - 4px);
-    font-size: 1.4em;
-    font-weight: bold;
-    color: #6e6e6e;
-    text-align: center;
-    margin-top: 26px;
-    padding-bottom: 4px;
-    margin-bottom: 2px;
-    border-bottom: 1px dashed #d3d3d3;
+/* Panel sections
+--------------------------------------------------------------------- */
+.panel-section + .panel-section {
+    margin-top: 18px;
 }
 
-#lateral-content-update {
-    display: inline-block;
-    width: calc(300px - 4px);
-    font-size: 0.95em;
-    font-weight: normal;
-    color: #6e6e6e;
+.section-title {
+    margin-top: 16px;
+    padding-bottom: 5px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-3);
     text-align: center;
+    border-bottom: 1px dashed var(--border);
+}
+
+.section-meta {
+    margin-top: 5px;
+    font-size: 0.75rem;
     font-style: italic;
+    color: var(--text-3);
+    text-align: center;
+}
+
+.section-meta-value {
+    white-space: nowrap;
 }
 
 .lateral-item {
-    display: inline-block;
-    margin: 2px 0px 0px;
-    padding: 5px;
-    width: calc(300px - 15px);
+    margin-top: 10px;
+    padding: 10px 12px;
+    background-color: var(--surface);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
 }
 
 .lateral-item-title {
-    display: inline-block;
-    font-size: 1.2em;
-    font-weight: bold;
-    color: #6e6e6e;
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-3);
     text-align: left;
-    padding: 5px;
-    padding-bottom: 1px;
-    padding-left: 10px;
+}
+
+.lateral-item-title label {
+    cursor: pointer;
 }
 
 .lateral-item-subtitle {
     display: inline-block;
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #6e6e6e;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-3);
 }
 
 .lateral-item-content {
-    margin-top: 4px;
-    color: #666;
+    color: var(--text-2);
     text-align: center;
-    font-size: 1.1em;
+}
+
+.lateral-item-note {
+    margin-bottom: 8px;
+    font-size: 0.8rem;
+    color: var(--text-2);
+    text-align: left;
 }
 
 .lateral-item-disable {
     display: none;
 }
 
-/* period range dates */
-
+/* period range dates
+--------------------------------------------------------------------- */
 #period {
-    padding: 5px 8px;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 8px;
+    padding: 4px 0;
+    cursor: pointer;
 }
 
-div#period input#from-date, div#period input#to-date {
-    font-size: 1em;
-    color: #CC3D36;
-    font-weight: bold;
+/* label and input always travel together when the row wraps */
+.period-field {
+    display: flex;
+    flex: 1 1 106px;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+#period label {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    color: var(--text-2);
+    cursor: pointer;
+}
+
+#period input {
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    padding: 8px 4px;
+    font-family: inherit;
+    /* readonly fields: they never open a keyboard, so they do not need
+       the 16px that the editable search fields below use */
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--brand);
     text-align: center;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+
+#period input:hover,
+#period input:focus {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-soft);
+    outline: none;
+}
+
+#period input::placeholder {
+    font-weight: 400;
+    color: var(--text-muted);
+}
+
+.period-sep {
+    color: var(--text-muted);
+}
+
+/* result
+--------------------------------------------------------------------- */
+.lateral-item-result .lateral-item-content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.result-count {
+    font-size: 0.85rem;
+    text-align: left;
 }
 
 #number-result {
-    color: #CC3D36;
-    font-weight: bold;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--brand);
 }
 
-/* region list */
+.result-label {
+    color: var(--text-2);
+}
 
-div.lateral-item #region-div {
-    margin: 8px 0px;
+.btn-download {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--brand);
+    text-decoration: none;
+    background-color: var(--surface);
+    border: 1px solid var(--brand);
+    border-radius: var(--radius-pill);
+    transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+}
+
+.btn-download:hover {
+    color: #fff;
+    background-color: var(--brand);
+}
+
+.btn-download svg {
+    width: 15px;
+    height: 15px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* burned area: quick access by year
+--------------------------------------------------------------------- */
+#region-div,
+#burned-area-div {
+    margin: 4px 0;
     text-align: center;
 }
 
-div.lateral-item #burned-area-div {
-    margin: 8px 0px;
-    text-align: center;
-    font-family: monospace;
-    font-size: 0.9em;
+/* plain drop-lists, shown for the instant before select2 upgrades them */
+#region-div select,
+#burned-area-div select {
+    width: 100%;
+    height: 38px;
+    padding: 0 8px;
+    font: inherit;
+    color: var(--text);
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
 }
 
+.year-shortcuts {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    margin-top: 10px;
+    font-size: 0.8rem;
+}
+
+.year-shortcuts-label {
+    margin-right: 2px;
+    font-style: italic;
+    color: var(--text-3);
+}
+
+.year-shortcuts .link {
+    min-width: 40px;
+    padding: 5px 8px;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-pill);
+    background-color: var(--surface);
+}
+
+.year-shortcuts .link-clear {
+    font-style: italic;
+    border-style: dashed;
+}
+
+/* Links and text buttons
+--------------------------------------------------------------------- */
+a.link, span.link, button.link {
+    display: inline-block;
+    margin: 2px;
+    padding: 2px 4px;
+    font: inherit;
+    color: var(--brand);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: color 0.12s var(--ease), background-color 0.12s var(--ease);
+}
+
+a.link:hover, span.link:hover, button.link:hover {
+    color: #fff;
+    background-color: var(--brand);
+    border-color: var(--brand);
+    text-decoration: none;
+}
+
+#subtitle .link {
+    padding: 0 3px;
+    font-size: inherit;
+    font-weight: 700;
+}
+
+.text-bold {
+    font-weight: 700;
+}
+
+hr {
+    height: 0;
+    background: none;
+    border: 0 none;
+    border-top: 1px dashed var(--border);
+}
+
+/* Panel footer
+--------------------------------------------------------------------- */
+#panel-footer {
+    flex: 0 0 auto;
+    padding: 8px 12px max(8px, env(safe-area-inset-bottom));
+    background-color: var(--surface-3);
+    border-top: 1px solid var(--border-soft);
+}
+
+#footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    margin-bottom: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* the logo sits against the left edge, the credit fills the rest and stays
+   aligned with the right edge of the panel */
+#footer {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.72rem;
+    font-style: italic;
+    line-height: 1.25;
+    color: var(--text-2);
+    text-align: right;
+}
+
+#footer img {
+    flex: 0 0 auto;
+    width: 34px;
+    height: auto;
+}
+
+#footer-credit {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Modal windows
+--------------------------------------------------------------------- */
+.modal {
+    width: min(720px, 92vw);
+    max-height: 86dvh;
+    padding: 0;
+    color: var(--text);
+    background-color: var(--surface-3);
+    border: 0;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.45);
+}
+
+/* old browsers without <dialog> support */
+dialog.modal:not([open]) {
+    display: none;
+}
+
+.modal-content {
+    display: flex;
+    flex-direction: column;
+    max-height: 86dvh;
+}
+
+.modal-head {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 12px 12px 20px;
+    background-color: var(--surface-2);
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-3);
+}
+
+.modal-body {
+    flex: 1 1 auto;
+    padding: 18px 20px max(18px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    font-size: 0.9rem;
+    color: var(--text-2);
+    text-align: left;
+}
+
+.modal-body p + p,
+.modal-body ul + p,
+.modal-body p + ul {
+    margin-top: 12px;
+}
+
+.modal-list {
+    padding-left: 6px;
+    list-style: none;
+}
+
+.modal-list li {
+    padding: 3px 0 3px 16px;
+    position: relative;
+}
+
+.modal-list li::before {
+    content: "";
+    position: absolute;
+    top: 11px;
+    left: 2px;
+    width: 6px;
+    height: 6px;
+    background-color: var(--brand);
+    border-radius: 50%;
+}
+
+.modal-signature {
+    font-size: 0.85rem;
+    color: var(--text-3);
+}
+
+/* fallback for browsers without dialog support (JS adds .is-open) */
+dialog.modal.is-open {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    z-index: 2000;
+    transform: translate(-50%, -50%);
+}
+
+/* Drop-lists (select2)
+--------------------------------------------------------------------- */
+/* only the drop-list itself is full width: the dropdown is appended to the
+   body and must keep the width computed by select2 */
+#region-div .select2-container,
+#burned-area-div .select2-container {
+    width: 100% !important;
+    max-width: 100%;
+}
+
+/* the drop-list panel must float above the lateral drawer */
+.select2-container--open {
+    z-index: var(--z-select2);
+}
+
+.select2-container--default .select2-selection--single,
+.select2-container--default .select2-selection--multiple {
+    min-height: 38px;
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0px 0px 0px 0px;
+    transition: border-color 0.15s var(--ease), box-shadow 0.15s var(--ease);
+}
+
+.select2-container--default .select2-selection--single:hover,
+.select2-container--default .select2-selection--multiple:hover,
+.select2-container--default.select2-container--focus .select2-selection--single,
+.select2-container--default.select2-container--focus .select2-selection--multiple,
+.select2-container--default.select2-container--open .select2-selection--single,
+.select2-container--default.select2-container--open .select2-selection--multiple {
+    border-color: var(--brand);
+    box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    padding-left: 12px;
+    line-height: 36px;
+    color: var(--text);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 36px;
+    right: 6px;
+}
+
+/* the selected region keeps the brand color */
 span#select2-region-container.select2-selection__rendered {
-    color: #CC3D36;
-    font-weight: bold;
+    font-weight: 700;
+    color: var(--brand);
 }
 
-.select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: rgba(204, 61, 54, 0.66);
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    padding: 4px 4px;
+}
+
+/* select2 places the remove button absolutely in the top-left corner of the
+   chip and reserves room for it with a left padding; laying the chip out as a
+   flex row instead keeps the button centred whatever its size, and the text
+   can never end up underneath it */
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 1px;
+    margin: 0;
+    padding: 2px 9px 2px 2px;
+    font-family: monospace;
+    font-size: 0.76rem;
+    line-height: 1.4;
+    color: var(--brand);
+    background-color: var(--brand-soft);
+    border: 1px solid rgba(204, 61, 54, 0.28);
+    border-radius: var(--radius-pill);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+    padding: 0;  /* the flex gap already separates it from the remove button */
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    position: static;
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    font-weight: 400;
+    line-height: 1;
+    color: var(--brand);
+    background-color: transparent;
+    border: 0;
+    border-radius: 50%;
+    transition: color 0.12s var(--ease), background-color 0.12s var(--ease);
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover,
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove:focus-visible {
+    color: #fff;
+    background-color: var(--brand);
+}
+
+.select2-container--default .select2-search--inline .select2-search__field {
+    margin-top: 4px;
+    font-family: inherit;
+}
+
+.select2-dropdown {
+    border-color: var(--brand);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    padding: 8px 10px;
+    /* 16px avoids the automatic zoom-in of mobile browsers on focus */
+    font-size: 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--brand);
+    outline: none;
+}
+
+.select2-container--default .select2-results > .select2-results__options {
+    max-height: 46vh;
+    overscroll-behavior: contain;
+}
+
+.select2-container--default .select2-results__option {
+    padding: 9px 12px;
+}
+
+.select2-container--default .select2-results__group {
+    padding: 8px 10px 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text-3);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    background-color: var(--surface-2);
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected],
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+.select2-container--default .select2-results__option--highlighted {
+    color: #fff;
+    background-color: var(--brand-soft-strong);
+}
+
+.select2-container--default .select2-results__option[aria-selected="true"],
+.select2-container--default .select2-results__option--selected {
+    font-weight: 700;
+    color: var(--brand);
+    background-color: var(--brand-soft);
+}
+
+/* Date range picker (overwrite daterangepicker.css)
+--------------------------------------------------------------------- */
+.date-picker-wrapper {
+    z-index: var(--z-datepicker);
+    /* the plugin ships box-sizing:initial, which breaks any width we set */
+    box-sizing: border-box;
+    padding: 10px;
+    font-family: var(--font);
+    color: var(--text-2);
+    background-color: var(--surface-3);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+}
+
+.date-picker-wrapper .month-wrapper {
+    background-color: var(--surface);
+    border: 0;
+    border-radius: var(--radius-sm);
+}
+
+/* Equal day columns. Without a fixed layout the columns are sized by their
+   content; with it, the first row decides, and that row is the caption
+   (< | month name spanning 5 | >), which leaves the two arrow columns narrow.
+   Sizing the caption cells to 1/7 and 5/7 makes the seven days equal. */
+.date-picker-wrapper .month-wrapper table {
+    table-layout: fixed;
+}
+
+.date-picker-wrapper .month-wrapper table .caption th:first-child,
+.date-picker-wrapper .month-wrapper table .caption th:last-child {
+    width: 14.2857%;
+}
+
+.date-picker-wrapper .month-wrapper table .caption .month-name {
+    width: 71.4286%;
+}
+
+.date-picker-wrapper .month-wrapper table .day {
+    padding: 6px 0;
+    border-radius: var(--radius-sm);
+}
+
+.date-picker-wrapper .first-date-selected,
+.date-picker-wrapper .last-date-selected {
+    color: #fff !important;
+    background-color: var(--brand) !important;
+}
+
+.date-picker-wrapper .month-wrapper table .day.checked {
+    background-color: #ffe1e4;
+}
+
+.date-picker-wrapper .month-wrapper table .day.real-today {
+    color: var(--brand);
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1px var(--brand);
+}
+
+.date-picker-wrapper .week-number.week-number-selected {
+    font-weight: 700;
+    color: var(--brand);
+}
+
+.date-picker-wrapper .drp_top-bar .apply-btn {
+    padding: 5px 12px;
+    background: var(--brand);
+    border: none;
+    border-radius: var(--radius-pill);
+}
+
+.date-picker-wrapper .footer {
+    padding-top: 6px;
+}
+
+.date-picker-wrapper .shortcuts,
+.date-picker-wrapper .custom-shortcuts {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.date-picker-wrapper a {
+    padding: 3px 6px;
+    color: var(--brand);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+}
+
+.date-picker-wrapper a:hover {
+    color: #fff;
+    text-decoration: none;
+    background-color: var(--brand);
+}
+
+.date-picker-wrapper .month-element select,
+.date-picker-wrapper .select-wrapper select {
+    font-family: inherit;
+}
+
+/* Leaflet maps
+--------------------------------------------------------------------- */
+.leaflet-container {
+    font-family: var(--font);
+}
+
+.leaflet-container .leaflet-control-attribution {
+    font-size: 10px;
+    max-width: 100%;
+}
+
+.leaflet-bar a,
+.leaflet-touch .leaflet-bar a {
+    border-radius: 0;
+}
+
+.leaflet-touch .leaflet-bar a:first-child {
+    border-top-left-radius: var(--radius-sm);
+    border-top-right-radius: var(--radius-sm);
+}
+
+.leaflet-touch .leaflet-bar a:last-child {
+    border-bottom-left-radius: var(--radius-sm);
+    border-bottom-right-radius: var(--radius-sm);
+}
+
+.leaflet-popup-content {
+    margin: 12px 16px;
+    font-size: 0.82rem;
+    line-height: 1.5;
+    color: var(--text-2);
+}
+
+.leaflet-popup-content hr {
+    margin: 6px 0;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: var(--radius);
+}
+
+.marker-cluster-small div,
+.marker-cluster-medium div,
+.marker-cluster-large div {
+    font-family: var(--font);
+    font-weight: 700;
 }
 
 /* table
 --------------------------------------------------------------------- */
 .table {
+    width: 100%;
     border: 1px;
-    align: center;
-/*     background: #f6f6f6; */
 }
 
 .table th {
-    font-size: 10pt;
-    font-weight: bold;
-    color: #CC3D36;
-    border: 1px solid #d3d3d3;
-    text-align: center;
     padding: 4px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--brand);
+    text-align: center;
+    border: 1px solid var(--border);
 }
 
 .table td {
-    color: #444;
-    border: 1px solid #d3d3d3;
+    padding: 2px;
+    color: var(--text);
     text-align: center;
     vertical-align: middle;
-    padding: 2px;
-}
-
-/* attached-files
---------------------------------------------------------------------- */
-#footer-links {
-    text-align: center;
-    margin-top: 10px;
-    font-size: 12px;
-    clear: both;
-    position: absolute;
-    bottom: 56px;
-    width: calc(300px - 4px);
-    font-size: 0.85em;
-    font-weight: bold;
-}
-
-a.link, span.link  {
-    color: #CC3D36;
-    text-decoration: none;
-    margin: 2px;
-    padding: 1px 3px;
-}
-a.link:hover, span.link:hover {
-    color: white;
-    background-color: #CC3D36;
-    text-decoration: none;
-    padding: 1px 3px;
-    border-radius: 3px;
-    cursor: pointer;
+    border: 1px solid var(--border);
 }
 
 /* text code
 --------------------------------------------------------------------- */
-
 #render-text {
-
     font-family: monospace;
 }
 
-/* Footer
+/* =====================================================================
+   RESPONSIVE BREAKPOINTS
+   ===================================================================== */
+
+/* Small phones: keep the drawer nearly full width
 --------------------------------------------------------------------- */
-#footer {
-    clear: both;
-    position:absolute;
-    bottom: 0;
-    right:0;
-/*     max-width: 430px; */
-    text-align: center;
-    color: #666;
-    padding: 1px;
-    font-size: 12px;
-    border-top: 1.2px dashed #d3d3d3;
-    font-style: italic;
-    /*font-weight: lighter;*/
-    vertical-align: bottom;
-    width: 290px;
-    margin-top: 10px;
+@media (max-width: 380px) {
+    #lateral-content {
+        width: 100%;
+    }
+
+    /* stack the two dates, one per row */
+    .period-field {
+        flex: 1 1 100%;
+    }
+
+    .period-sep {
+        display: none;
+    }
+
+    #title {
+        font-size: 0.88rem;
+    }
+
+    .btn-panel-toggle span {
+        display: none;
+    }
+
+    .btn-panel-toggle {
+        width: 38px;
+        padding: 0;
+        justify-content: center;
+    }
 }
 
-#footer-left-wrap {
-    float: left;
-    width: 50%;
-    height: 100%;
-}
-
-#footer-colombia {
-    float: left;
-    vertical-align: middle;
-    height: 50px;
-    width: 133px;
-    text-align: left;
-    margin-left: 12px;
-    background: url("/static/img/footer_colombia.png") no-repeat left center;
-}
-
-#footer-left-ideam {
-    float: right;
-    height: 42px;
-    font-size: 0.9em;
-    line-height: 1.1em;
-    text-align: right;
-    margin-right: 8px;
-    padding-right: 48px;
-    padding-top: 6px;
-    background: url("/static/img/ideam_mini.png") no-repeat right center;
-    background-size: 40px auto;
-}
-
-#footer-right-wrap {
-    float: right;
-    width: 50%;
-    height: 100%;
-
-}
-
-#footer-right-ideam {
-    float: left;
-    height: 40px;
-    font-size: 0.9em;
-    line-height: 1.1em;
-    text-align: left;
-    padding-left: 8px;
-    padding-top: 6px;
-    border-left: 1px solid #d3d3d3;
-}
-
-/* Text
+/* Phones (portrait and landscape): the date picker becomes a bottom sheet
 --------------------------------------------------------------------- */
-#title {
-    padding-top: 2px;
-    padding-bottom: 1px;
-}
-
-#title a {
-    text-decoration: none;
-    font-size: 1.32em;
-    font-weight: bold;
-    color: #CC3D36;
-}
-
-#subtitle {
-
-    text-decoration: none;
-    font-size: 1em;
-    font-weight: bold;
-    color: #666;
-    margin: 0;
-}
-
-.text-bold {
-    font-weight: bold;
-}
-
-/*
+/* Below the docked-panel breakpoint the lateral panel is a drawer on the right,
+   and the plugin would anchor the picker to an input that sits near the right
+   edge: it ends up half outside the window. Show it as a centred sheet instead,
+   over the whole drawer range (the same range where date.range.js switches to a
+   single month).
 --------------------------------------------------------------------- */
+@media (max-width: 899px) {
+    .date-picker-wrapper {
+        position: fixed !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: 0 !important;
+        left: 50% !important;
+        width: min(100vw, 420px) !important;
+        max-height: 86dvh;
+        margin: 0 !important;
+        overflow-x: hidden;
+        overflow-y: auto;
+        border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+        transform: translateX(-50%);
+        padding-bottom: max(10px, env(safe-area-inset-bottom));
+    }
 
-hr {
-    border: 0 none;
-    border-top: 1px dashed #828282;
-    background: none;
-    height:0;
+    .date-picker-wrapper .month-wrapper {
+        width: 100% !important;
+    }
+
+    .date-picker-wrapper .month-wrapper table {
+        width: 100%;
+        float: none;
+    }
+
+    .date-picker-wrapper .month-wrapper table .day {
+        padding: 9px 0;
+    }
 }
 
-
-/* date range picker
+/* Phones
 --------------------------------------------------------------------- */
+@media (max-width: 719px) {
+    /* the mini map is too small to be useful on a phone */
+    .leaflet-control-minimap {
+        display: none !important;
+    }
 
-/* overwrite daterangepicker.css*/
-.date-picker-wrapper {
-    background-color: #f8f8f8;
-    /*color: #f8f8f8;*/
-}
-.date-picker-wrapper .first-date-selected, .date-picker-wrapper .last-date-selected {
-    background-color: #CC3D36 !important;
-    color: white !important;
-}
-.date-picker-wrapper .month-wrapper table .day.checked {
-    background-color: #ffe1e4;
-}
-.date-picker-wrapper .week-number.week-number-selected {
-    color: #CC3D36;
-    font-weight: bold;
-}
-.date-picker-wrapper .drp_top-bar .apply-btn {
-    border: none;
-    background: #CC3D36;
-}
-.date-picker-wrapper a {
-    color: #CC3D36;
-    text-decoration: none;
-    padding: 1px 3px;
-}
-.date-picker-wrapper a:hover {
-    color: white;
-    background-color: #CC3D36;
-    text-decoration: none;
-    padding: 1px 3px;
-    border-radius: 2px;
+    /* bigger touch targets for the map controls */
+    .leaflet-touch .leaflet-bar a {
+        width: 36px;
+        height: 36px;
+        line-height: 36px;
+    }
 }
 
-/* Buttons
+/* Touch screens: a finger needs a bigger target than a mouse pointer to
+   remove a month from the burned area list
 --------------------------------------------------------------------- */
+@media (pointer: coarse) {
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        padding: 3px 10px 3px 6px;
+    }
 
-input[name="date_range"] {
-    background: #fff;
-    border: 0px;
-    width: 90%;
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        width: 22px;
+        height: 22px;
+        font-size: 1.45rem;
+    }
 }
 
-input[type=submit] {
-    color: #fff;
-    margin-top: 10px;
-    padding: 4px 8px;
-    background: #CC3D36;
-    border: 0 none;
-    cursor: pointer;
-    font-weight: bold;
-    -webkit-border-radius: 4px;
-    border-radius: 4px;
-    float: right;
-    display: inline-block;
-}
-/* Leaflet maps
+/* Drawer layout: keep every text field at 16px so mobile browsers
+   do not zoom in when the field gets the focus
 --------------------------------------------------------------------- */
-
-#active_fires_map {
-    /* all maps */
-    /*width: calc(100% - 300px);*/
-    height: calc(100vh - 42px);
-    border-right: 1px solid #d0d0d0;
+@media (max-width: 899px) {
+    .select2-container--default .select2-search--inline .select2-search__field {
+        font-size: 16px;
+    }
 }
 
-.leaflet-tile-pane {
-    /*-webkit-filter: grayscale(100%);*/
-    /*filter: grayscale(100%);*/
+/* Landscape phones: shorter header
+--------------------------------------------------------------------- */
+@media (max-height: 460px) and (max-width: 899px) {
+    :root {
+        --header-h: 44px;
+    }
+
+    #header-brand img {
+        height: 28px;
+    }
+
+    .section-title {
+        margin-top: 10px;
+    }
 }
 
-.leaflet-div-icon {
-     background: initial;
-     border: initial;
+/* Tablets and up
+--------------------------------------------------------------------- */
+@media (min-width: 600px) {
+    .modal-body {
+        font-size: 0.92rem;
+    }
 }
 
-.leaflet-container .leaflet-control-attribution {
-	font-size: 10px;
+/* Two-month picker: the plugin gives the month wrapper an inline width equal
+   to its own content (month + gap + month), which leaves it narrower than the
+   dialog, whose width comes from the shortcuts row. Let the wrapper fill the
+   dialog and the two months share that width.
+--------------------------------------------------------------------- */
+@media (min-width: 900px) {
+    /* An explicit width is what makes this work: the dialog is absolutely
+       positioned, so it would otherwise shrink to fit its content, and the
+       plugin keeps writing the measured month widths back into the wrapper --
+       a percentage inside that loop grows on every redraw. With the dialog
+       fixed, the wrapper fills it and the two months split what is left. */
+    .date-picker-wrapper {
+        width: 500px;
+    }
+
+    .date-picker-wrapper .month-wrapper {
+        width: 100% !important;
+    }
+
+    /* the two months share the row, minus the 35px spacer between them */
+    .date-picker-wrapper .month-wrapper table.month1,
+    .date-picker-wrapper .month-wrapper table.month2 {
+        width: calc((100% - 38px) / 2);
+    }
+}
+
+/* Laptop / desktop: the panel is docked next to the map
+--------------------------------------------------------------------- */
+@media (min-width: 900px) {
+    :root {
+        --header-h: 56px;
+    }
+
+    #header {
+        padding: 4px 14px;
+    }
+
+    #header-brand img {
+        height: 40px;
+    }
+
+    #title {
+        font-size: 1.2rem;
+    }
+
+    #subtitle {
+        display: block;
+    }
+
+    #header-actions {
+        display: none;
+    }
+
+    #panel-topbar {
+        display: none;
+    }
+
+    #lateral-content {
+        position: relative;
+        top: auto;
+        right: auto;
+        bottom: auto;
+        z-index: 1;
+        flex: 0 0 var(--panel-w);
+        width: var(--panel-w);
+        visibility: visible;
+        box-shadow: none;
+        border-left: 1px solid var(--border);
+        transform: none;
+        transition: none;
+    }
+
+    #panel-backdrop {
+        display: none !important;
+    }
+
+    #overflow-content {
+        padding: 0 12px 12px;
+    }
+
+    .section-title:first-child,
+    .panel-section:first-child .section-title {
+        margin-top: 12px;
+    }
+}
+
+/* Large screens: a slightly wider panel
+--------------------------------------------------------------------- */
+@media (min-width: 1400px) {
+    :root {
+        --panel-w: 360px;
+    }
+
+    #overflow-content {
+        padding: 0 16px 16px;
+    }
+}
+
+/* Accessibility: honour the reduced motion preference
+--------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }

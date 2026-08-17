@@ -92,33 +92,104 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """\
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#CC3D36">
     <meta name="robots" content="NONE,NOARCHIVE">
     <title>{% blocktranslate %}Index of {{ directory }}{% endblocktranslate %}</title>
     <style>
-        body { font-family: system-ui, -apple-system, sans-serif; margin: 2em; color: #333; }
-        h1 { font-size: 1.4em; }
-        .info { background-color: #fffadd; padding: 1px 16px; margin: 8px 0; max-width: 800px; }
-        ul { list-style: none; padding: 0; }
-        li { padding: 2px 0; }
-        a { color: #0066cc; text-decoration: none; }
-        a:hover { text-decoration: underline; }
+        :root {
+            --brand: #CC3D36;
+            --brand-soft: rgba(204, 61, 54, .10);
+            --bg: #fafafa;
+            --surface: #fff;
+            --border: #e6e8ec;
+            --text: #444;
+            --text-2: #666;
+            --text-3: #6e6e6e;
+        }
+        *, *::before, *::after { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 20px 16px 40px;
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 15px;
+            line-height: 1.5;
+            color: var(--text);
+            background-color: var(--bg);
+            overflow-wrap: anywhere;
+        }
+        .wrap { max-width: 900px; margin: 0 auto; }
+        .back {
+            display: inline-block;
+            margin-bottom: 14px;
+            padding: 6px 12px;
+            font-size: .85rem;
+            font-weight: 700;
+            color: var(--brand);
+            text-decoration: none;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 999px;
+        }
+        .back:hover { color: #fff; background-color: var(--brand); border-color: var(--brand); }
+        h1 { margin: 0 0 4px; font-size: 1.25rem; line-height: 1.3; color: var(--brand); }
+        .dir { margin: 0 0 16px; font-size: .85rem; font-style: italic; color: var(--text-3); }
+        .info {
+            margin: 0 0 20px;
+            padding: 4px 18px;
+            font-size: .9rem;
+            color: var(--text-2);
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--brand);
+            border-radius: 8px;
+        }
+        .info a { color: var(--brand); }
+        ul {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        li + li { border-top: 1px solid var(--border); }
+        li a {
+            display: block;
+            padding: 12px 16px;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: .9rem;
+            color: var(--brand);
+            text-decoration: none;
+        }
+        li a:hover, li a:focus { background-color: var(--brand-soft); }
+        li.up a { font-weight: 700; }
+        @media (min-width: 700px) {
+            body { padding: 32px 24px 48px; }
+            h1 { font-size: 1.5rem; }
+        }
     </style>
 </head>
 <body>
-    <h1>{{ title }}</h1>
+    <div class="wrap">
+        <a class="back" href="/">&larr; Volver al mapa</a>
 
-    {% if info %}
-    <div class="info">{{ info|safe }}</div>
-    {% endif %}
+        <h1>{{ title }}</h1>
+        <p class="dir">{{ directory }}</p>
 
-    <ul>
-    {% if directory != "/" %}
-        <li><a href="../">../</a></li>
-    {% endif %}
-    {% for f in file_list %}
-        <li><a href="{{ f|urlencode }}">{{ f }}</a></li>
-    {% endfor %}
-    </ul>
+        {% if info %}
+        <div class="info">{{ info|safe }}</div>
+        {% endif %}
+
+        <ul>
+        {% if directory != "/" %}
+            <li class="up"><a href="../">../</a></li>
+        {% endif %}
+        {% for f in file_list %}
+            <li><a href="{{ f|urlencode }}">{{ f }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
 </body>
 </html>
 """

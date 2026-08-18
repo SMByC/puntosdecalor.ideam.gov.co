@@ -1299,6 +1299,47 @@ span#select2-region-container.select2-selection__rendered {
     background-color: var(--surface-2);
 }
 
+/* The burned area list is laid out as a grid instead of as one item per row:
+   the year shortcuts first, then the months of each year under the heading of
+   that year. auto-fill measures the list itself, so the number of columns
+   follows the width the list is given (narrow drawer, docked panel, phone) */
+#select2-burned_area-results .select2-results__option--group {
+    padding: 0;  /* the heading and the grid below it set their own */
+}
+
+/* "Por meses" is an empty group: it only heads the years that follow it */
+#select2-burned_area-results .select2-results__options--nested:empty {
+    display: none;
+}
+
+/* each year heads one grid of months inside "Por meses", one step below the
+   two headings of the list: smaller, and without a bar of its own */
+#select2-burned_area-results .burned-area-year-heading {
+    padding: 9px 12px 1px;
+    font-size: 0.7rem;
+    background-color: transparent;
+}
+
+#select2-burned_area-results .select2-results__options--nested {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+    gap: 3px;
+    padding: 6px 8px 8px;
+}
+
+#select2-burned_area-results .select2-results__options--nested .select2-results__option {
+    padding: 4px 2px;
+    font-family: monospace;
+    font-size: 0.8rem;
+    text-align: center;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+}
+
+#select2-burned_area-results .select2-results__options--nested .select2-results__option--selected {
+    border-color: rgba(204, 61, 54, 0.28);
+}
+
 /* Date range picker (overwrite daterangepicker.css)
 --------------------------------------------------------------------- */
 .date-picker-wrapper {

@@ -198,6 +198,9 @@ $(function () {
         dropdownParent: $panel
     });
 
+    var BURNED_AREA_MONTHS = ['ene', 'feb', 'mar', 'abr', 'may', 'jun',
+                              'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+
     $('#burned_area').select2({
         language: "es",
         width: '100%',
@@ -211,6 +214,22 @@ $(function () {
                 $(container).addClass('burned-area-year-shortcut-choice');
             }
             return text;
+        },
+        // every month already hangs under the heading of its year, so the row
+        // only shows the name of the month. The text of the option stays the
+        // yyyy-mm slug: it is the value the map layers and the chips are
+        // named by, and it is what the search field matches against
+        templateResult: function (data, container) {
+            // select2 calls this for the headings too, with their <strong>
+            if (data.children) {
+                if (/^\d{4}$/.test(data.text)) {
+                    $(container).addClass('burned-area-year-heading');
+                }
+                return data.text;
+            }
+            var month = /^\d{4}-(\d{2})$/.exec(data.text || '');
+            if (!month) return data.text;  // the year shortcuts
+            return BURNED_AREA_MONTHS[parseInt(month[1], 10) - 1] || data.text;
         },
         dropdownParent: $panel
     });

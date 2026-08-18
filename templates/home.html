@@ -431,16 +431,23 @@
                     <select id="burned_area" name="burned_area[]" multiple="multiple"
                             data-placeholder="Seleccione uno o varios meses">
                         {# acceso rapido: elegir un año selecciona todos sus meses #}
-                        <optgroup label="Por año">
+                        <optgroup label="Por años">
                             {% for year_burned_area in years_burned_area %}
                                 <option value="{{ year_burned_area }}">{{ year_burned_area }}</option>
                             {% endfor %}
                         </optgroup>
-                        <optgroup label="Por mes">
-                            {% for burned_area in burned_areas %}
-                                <option value="{{ burned_area.slug }}">{{ burned_area.slug }}</option>
-                            {% endfor %}
-                        </optgroup>
+                        {# los meses van bajo el encabezado de su año, en orden de calendario;
+                           el texto de la opcion sigue siendo el slug yyyy-mm, la lista solo lo
+                           muestra como el nombre del mes (ver templateResult en active_fires.js) #}
+                        <optgroup label="Por meses"></optgroup>
+                        {% regroup burned_areas by date.year as burned_areas_by_year %}
+                        {% for year_group in burned_areas_by_year %}
+                            <optgroup label="{{ year_group.grouper }}">
+                                {% for burned_area in year_group.list reversed %}
+                                    <option value="{{ burned_area.slug }}">{{ burned_area.slug }}</option>
+                                {% endfor %}
+                            </optgroup>
+                        {% endfor %}
                     </select>
                 </div>
 

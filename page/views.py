@@ -13,6 +13,7 @@ from django.conf import settings
 from django.db.models import FloatField, Func
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from django.views.decorators.cache import never_cache
 from django.views.decorators.gzip import gzip_page
 from djgeojson.views import GeoJSONLayerView
 
@@ -67,6 +68,9 @@ class _ST_Y(Func):
 COORD_DECIMALS = 4
 
 
+# the hotspots are re-imported from FIRMS every hour, so a browser must not
+# answer this from its own cache: the query is the same URL an hour later
+@never_cache
 @gzip_page
 def active_fires_data(request):
     """Hotspots of the current query as parallel arrays, ordered by date.
@@ -298,6 +302,9 @@ def download_result(request):
 DEFAULT_EXTENT = "(16.130262012034756_-94.39453125_-6.970049417296218_-51.37207031249999)"
 
 
+# the page names every static file by its content hash, so a cached copy of
+# this HTML would go on asking for the file names of the previous deploy
+@never_cache
 def home(request):
     required_params = ('from_date', 'to_date', 'extent', 'region')
     if not all(p in request.GET for p in required_params):

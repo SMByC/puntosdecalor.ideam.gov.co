@@ -98,6 +98,23 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
 
+# Every static file is served under a name carrying a hash of its content
+# (active_fires.2e3e70a06658.css), so a deployed change reaches every visitor
+# on their next page load instead of waiting for whatever the browser decided
+# to cache, and unchanged files keep being served from the cache.
+#
+# This needs `manage.py collectstatic` on every deploy: the names come from the
+# manifest it writes, and a file missing from it raises instead of being served
+# under its plain name.
+STORAGES = {
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
+    },
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage',
+    },
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

@@ -33,6 +33,16 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1']
 
+# The hashed names of the production storage come from the manifest that
+# collectstatic writes, which does not exist here: development serves the files
+# straight out of STATICFILES_DIRS, under their own names.
+STORAGES = {
+    **STORAGES,  # noqa: F405
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
+    },
+}
+
 # SQLite + SpatiaLite instead of PostGIS
 DATABASES = {
     'default': {

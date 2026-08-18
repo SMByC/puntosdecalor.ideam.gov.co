@@ -32,11 +32,11 @@
 	{% leaflet_js %}
 	{% leaflet_css %}
 
-	{# leaflet cluster #}
-	{#  https://github.com/Leaflet/Leaflet.markercluster #}
-	<link rel="stylesheet" href="{% static "css/MarkerCluster.css" %}" />
-	<link rel="stylesheet" href="{% static "css/MarkerCluster.Default.css" %}" />
-	<script src="{% static 'scripts/leaflet.markercluster.js' %}"></script>
+	{# hotspots on a canvas, coloured by date, and the time window over the map #}
+	{#  the marker cluster plugin is no longer loaded: the points are drawn on #}
+	{#  a canvas, which scales further and keeps the date of every point visible #}
+	<script src="{% static 'scripts/hotspot_layer.js' %}"></script>
+	<script src="{% static 'scripts/time_slider.js' %}"></script>
 
 	{# custom jQuery #}
 	<script src="{% static "scripts/active_fires.js" %}"></script>
@@ -159,6 +159,16 @@
 					detectada, por lo que la correcta identificación de los incendios en vegetación requiere insumos y
 					análisis adicionales. No obstante, existe un vínculo entre la ocurrencia de incendios y el cambio de
 					cobertura terrestre, en especial con la deforestación.</p>
+
+				<h3 class="modal-subtitle">Los colores y la línea de tiempo</h3>
+				<p>Los puntos del mapa se colorean según su fecha dentro del periodo consultado: los más antiguos
+					en tonos ámbar claros y los más recientes en rojos intensos, con la misma escala que muestra la
+					barra de la línea de tiempo sobre el mapa. Así se ve de un vistazo hacia dónde se desplaza el
+					fuego a lo largo del periodo.</p>
+				<p>Sobre esa barra hay una ventana que se puede mover y ensanchar desde cualquiera de sus dos
+					extremos: los puntos detectados dentro de ella se resaltan y el resto se atenúa, de modo que es
+					posible recorrer el periodo día a día (u hora a hora en periodos cortos). El botón de reproducción
+					hace ese recorrido automáticamente y <em>todo</em> vuelve a mostrar el periodo completo.</p>
 
 				<h3 class="modal-subtitle">Cómo interpretar la información</h3>
 				<ul class="modal-list">

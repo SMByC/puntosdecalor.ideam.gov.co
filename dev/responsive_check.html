@@ -31,6 +31,7 @@ var frame = document.getElementById('frame');
 var log = document.getElementById('log');
 var results = [];
 var errors = [];
+var checks = [];
 var index = 0;
 
 function line(text, cls) {
@@ -55,6 +56,22 @@ function describe(el) {
     return name;
 }
 
+// True when a canvas has anything drawn on it. The canvas is scaled down into
+// a small one first: reading the pixels of a full screen canvas at every width
+// would dominate the sweep.
+function canvasHasInk(canvas) {
+    if (!canvas || !canvas.width || !canvas.height) return false;
+    var probe = document.createElement('canvas');
+    probe.width = probe.height = 48;
+    var ctx = probe.getContext('2d');
+    ctx.drawImage(canvas, 0, 0, 48, 48);
+    var data = ctx.getImageData(0, 0, 48, 48).data;
+    for (var i = 3; i < data.length; i += 4) {
+        if (data[i] > 8) return true;
+    }
+    return false;
+}
+
 function measure(width) {
     var doc = frame.contentDocument;
     var win = frame.contentWindow;
@@ -76,6 +93,10 @@ function measure(width) {
 
     var panel = doc.getElementById('lateral-content');
     var map = doc.getElementById('active_fires_map');
+    var canvases = doc.querySelectorAll('.af-hotspots canvas');
+    var slider = doc.querySelector('.time-slider');
+    var mapBox = map ? map.getBoundingClientRect() : null;
+    var sliderBox = (slider && !slider.hidden) ? slider.getBoundingClientRect() : null;
 
     return {
         width: width,
@@ -85,14 +106,235 @@ function measure(width) {
         overflowing: overflowing,
         panel: panel && win.getComputedStyle(panel).position === 'relative' ? 'docked' : 'drawer',
         panelToggle: win.getComputedStyle(doc.getElementById('header-actions')).display !== 'none',
-        mapWidth: map ? Math.round(map.getBoundingClientRect().width) : 0,
-        mapHeight: map ? Math.round(map.getBoundingClientRect().height) : 0,
+        mapWidth: mapBox ? Math.round(mapBox.width) : 0,
+        mapHeight: mapBox ? Math.round(mapBox.height) : 0,
         results: (doc.getElementById('number-result') || {}).textContent || '',
         datepicker: !!(win.jQuery && win.jQuery('#period').data('dateRangePicker')),
         dropLists: doc.querySelectorAll('.select2-container').length,
-        markers: doc.querySelectorAll('.af-marker').length,
-        clusters: doc.querySelectorAll('.marker-cluster').length,
+        hotspotCanvases: canvases.length,
+        hotspotsPainted: canvasHasInk(canvases[0]),
+        slider: !!sliderBox,
+        // the slider goes to the bottom of the map on phones, to the top on
+        // the docked layout
+        sliderAt: sliderBox && mapBox
+            ? (sliderBox.top + sliderBox.height / 2 < mapBox.top + mapBox.height / 2 ? 'top' : 'bottom')
+            : '-',
+        sliderWidth: sliderBox ? Math.round(sliderBox.width) : 0,
     };
+}
+
+// True when the canvas has something drawn within `radius` css pixels of a
+// point of the *map container*. Used to check that the points stay where the
+// map says they are after zooming and panning: the position is taken from the
+// public leaflet API and compared against the pixels the layer actually wrote.
+function inkNearContainerPoint(canvas, mapElement, containerPoint, radius) {
+    var rect = canvas.getBoundingClientRect(),
+        mapRect = mapElement.getBoundingClientRect(),
+        scale = canvas.width / (rect.width || 1),
+        x = Math.round(((mapRect.left + containerPoint.x) - rect.left) * scale),
+        y = Math.round(((mapRect.top + containerPoint.y) - rect.top) * scale),
+        size = Math.max(2, Math.round(radius * 2 * scale)),
+        left = Math.max(0, x - size / 2),
+        top = Math.max(0, y - size / 2);
+
+    if (x < 0 || y < 0 || x >= canvas.width || y >= canvas.height) {
+        return null;   // outside the canvas, nothing to say
+    }
+    size = Math.min(size, canvas.width - left, canvas.height - top);
+    if (size < 1) return null;
+
+    var data = canvas.getContext('2d').getImageData(left, top, size, size).data;
+    for (var i = 3; i < data.length; i += 4) {
+        if (data[i] > 8) return true;
+    }
+    return false;
+}
+
+// Drive the time slider the way a user would and check what it does to the
+// map. Runs once, on the widest viewport of the sweep.
+function exerciseSlider() {
+    var doc = frame.contentDocument;
+    var win = frame.contentWindow;
+    var checks = [];
+    var hotspots = win.hotspots;
+    var slider = win.time_slider;
+
+    function check(name, ok, detail) {
+        checks.push({name: name, ok: !!ok, detail: detail || ''});
+    }
+
+    if (!hotspots || !slider) {
+        check('hotspot layer and time slider exist', false);
+        return checks;
+    }
+
+    var total = hotspots.count();
+    check('hotspots loaded', total > 0, total + ' points');
+    check('every point coloured by date',
+          hotspots._colors && hotspots._colors[0] !== hotspots._colors[total - 1],
+          'oldest ramp step ' + (hotspots._colors && hotspots._colors[0]) +
+          ', newest ' + (hotspots._colors && hotspots._colors[total - 1]));
+    check('window covers the whole period at first',
+          slider.isFull() && hotspots.windowCount() === total);
+
+    var popFrom = doc.querySelector('.ts-pop-from');
+    var popTo = doc.querySelector('.ts-pop-to');
+    var popCount = doc.querySelector('.ts-pop-count');
+    var fullLabel = popFrom.textContent + ' → ' + popTo.textContent;
+    check('the whole period reads as its dates on the two panels',
+          /^\d{4}-\d{2}-\d{2}/.test(popFrom.textContent) &&
+          /^\d{4}-\d{2}-\d{2}/.test(popTo.textContent), fullLabel);
+    check('the slider itself is a single row',
+          !doc.querySelector('.ts-bar') && !doc.querySelector('.ts-ends') &&
+          doc.querySelector('.time-slider').getBoundingClientRect().height < 48,
+          Math.round(doc.querySelector('.time-slider').getBoundingClientRect().height) + 'px tall');
+    check('the count panel sits under the window',
+          /puntos? de calor/.test(popCount.textContent), popCount.textContent);
+
+    var canvases = doc.querySelectorAll('.af-hotspots canvas');
+    check('two stacked canvases', canvases.length === 2);
+    check('all the points are drawn', canvasHasInk(canvases[0]));
+    check('nothing is highlighted yet', !canvasHasInk(canvases[1]));
+
+    // narrow the window to the first fifth of the period
+    slider._set(0, Math.max(1, Math.round(slider._steps / 5)));
+    var inside = hotspots.windowCount();
+    check('narrowing the window highlights a subset',
+          inside > 0 && inside < total, inside + ' of ' + total + ' points');
+    check('the highlighted points are drawn', canvasHasInk(canvases[1]));
+    var windowLabel = popFrom.textContent + ' → ' + popTo.textContent;
+    check('the date panels follow the window', windowLabel !== fullLabel, windowLabel);
+
+    // the two date panels are placed by measurement, so check the geometry:
+    // they must stay inside the slider and never sit on top of each other
+    function boxes() {
+        return {
+            root: doc.querySelector('.time-slider').getBoundingClientRect(),
+            from: popFrom.getBoundingClientRect(),
+            to: popTo.getBoundingClientRect(),
+            count: popCount.getBoundingClientRect()
+        };
+    }
+
+    // the panels tuck into the slider, so the one thing they must never touch
+    // is a button
+    function intersects(a, b) {
+        return a.left < b.right - 0.5 && a.right > b.left + 0.5 &&
+               a.top < b.bottom - 0.5 && a.bottom > b.top + 0.5;
+    }
+
+    function geometry(name) {
+        var b = boxes();
+        var buttons = [doc.querySelector('.ts-play').getBoundingClientRect(),
+                       doc.querySelector('.ts-all').getBoundingClientRect()];
+        var panels = [b.from, b.to, b.count];
+        var hits = 0, i, j;
+        for (i = 0; i < panels.length; i++) {
+            for (j = 0; j < buttons.length; j++) {
+                if (intersects(panels[i], buttons[j])) hits++;
+            }
+        }
+        var apart = b.from.right <= b.to.left + 0.5;
+        var inside = b.from.left >= b.root.left - 0.5 && b.to.right <= b.root.right + 0.5 &&
+                     b.count.left >= b.root.left - 0.5 && b.count.right <= b.root.right + 0.5;
+        check(name, apart && inside && hits === 0,
+              (apart ? '' : 'panels overlap each other; ') +
+              (inside ? 'inside the slider' : 'outside the slider') +
+              (hits ? '; ' + hits + ' overlap a button' : '; clear of the buttons'));
+    }
+
+    geometry('the date panels do not overlap, even squeezed together');
+
+    // the rule: a panel sits on its grip unless the other panel or an edge of
+    // the slider is in the way. A wide window in the middle has neither.
+    var third = Math.max(1, Math.round(slider._steps / 3));
+    slider._set(third, third * 2);
+    function offCentre(pop, grip) {
+        var p = pop.getBoundingClientRect(), g = grip.getBoundingClientRect();
+        return Math.abs((p.left + p.width / 2) - (g.left + g.width / 2));
+    }
+    var offFrom = offCentre(popFrom, doc.querySelector('.ts-grip-left'));
+    var offTo = offCentre(popTo, doc.querySelector('.ts-grip-right'));
+    check('a date panel is centred on its grip when nothing is in the way',
+          offFrom <= 1 && offTo <= 1,
+          offFrom.toFixed(1) + 'px / ' + offTo.toFixed(1) + 'px off centre');
+
+    // the window collapsed at each end is where a panel would escape
+    slider._set(0, 1);
+    geometry('still apart and inside with the window at the start');
+    slider._set(slider._steps - 1, slider._steps);
+    geometry('still apart and inside with the window at the end');
+    slider._set(0, Math.max(1, Math.round(slider._steps / 5)));
+
+    // move it to the end of the period: a different set of points
+    var last = hotspots.windowCount();
+    slider._set(slider._steps - Math.max(1, Math.round(slider._steps / 5)), slider._steps);
+    check('moving the window changes the selection',
+          hotspots.windowCount() !== last || last === 0,
+          hotspots.windowCount() + ' points at the end of the period');
+
+    // play walks the window on its own
+    slider.play();
+    var playing = slider._playing;
+    slider.stop();
+    check('play starts and stops', playing && !slider._playing);
+
+    slider.reset();
+    check('"todo" restores the whole period',
+          slider.isFull() && hotspots.windowCount() === total);
+    check('nothing is dimmed again', !canvasHasInk(canvases[1]));
+
+    // -- the canvas has to follow the map ---------------------------------
+    var map = hotspots._map;
+    var mapElement = doc.getElementById('active_fires_map');
+
+    // a handful of points spread over the data, in map coordinates
+    function sampleLatLngs(howMany) {
+        var out = [], i;
+        for (i = 0; i < howMany; i++) {
+            out.push(hotspots.latLngAt(Math.floor((i + 0.5) * total / howMany)));
+        }
+        return out;
+    }
+
+    function alignment(name) {
+        var samples = sampleLatLngs(6), hits = 0, tested = 0, i, ink;
+        for (i = 0; i < samples.length; i++) {
+            if (!map.getBounds().contains(samples[i])) continue;
+            ink = inkNearContainerPoint(canvases[0], mapElement,
+                                        map.latLngToContainerPoint(samples[i]), 4);
+            if (ink === null) continue;   // outside the padded canvas
+            tested++;
+            if (ink) hits++;
+        }
+        check(name, tested > 0 && hits === tested, hits + ' of ' + tested + ' points found');
+    }
+
+    alignment('points are drawn where the map says they are');
+
+    var center = map.getCenter();
+    map.setZoom(map.getZoom() + 2, {animate: false});
+    alignment('still aligned after zooming in');
+
+    map.panBy([180, 120], {animate: false});
+    alignment('still aligned after panning');
+
+    // -- clicking a point opens its popup ---------------------------------
+    var inView = sampleLatLngs(6).filter(function (ll) { return map.getBounds().contains(ll); });
+    if (inView.length) {
+        var found = hotspots.hitTest(inView[0], 10);
+        check('a point can be picked at its own position', !!found,
+              found ? 'id ' + found.id : 'nothing under the pointer');
+        map.fire('click', {latlng: inView[0]});
+        check('clicking a point opens a popup', !!map._popup && map._popup.isOpen());
+        map.closePopup();
+    } else {
+        check('a point is visible to click', false);
+    }
+
+    map.setView(center, map.getZoom() - 2, {animate: false});
+
+    return checks;
 }
 
 function report(step) {
@@ -106,8 +348,20 @@ function report(step) {
 
 function finish() {
     clearInterval(errorWatcher);
+
+    try {
+        checks = exerciseSlider();
+    } catch (error) {
+        errors.push('the time slider check failed: ' + error.message);
+    }
+
     var failed = results.filter(function (r) {
         return r.horizontalScroll > 0 || r.overflowing.length > 0;
+    });
+    line('');
+    checks.forEach(function (item) {
+        line((item.ok ? '  ok   ' : '  FAIL ') + item.name +
+             (item.detail ? '  (' + item.detail + ')' : ''), item.ok ? 'ok' : 'bad');
     });
     line('');
     line(failed.length
@@ -119,7 +373,8 @@ function finish() {
 
     frame.width = 390;
 
-    var payload = JSON.stringify({results: results, errors: errors, userAgent: navigator.userAgent});
+    var payload = JSON.stringify({results: results, errors: errors, checks: checks,
+                                  userAgent: navigator.userAgent});
     var url = '/_dev/responsive/report/';
 
     if (window.fetch) {

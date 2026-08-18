@@ -158,9 +158,10 @@ def print_report(report):
     """Print the measurements, return True when everything passed."""
     results = report.get("results", [])
     errors = report.get("errors", [])
+    checks = report.get("checks", [])
 
-    print(f"\n{'width':>7}  {'panel':<7} {'map':>11}  {'h-scroll':<12} overflowing")
-    print("-" * 60)
+    print(f"\n{'width':>7}  {'panel':<7} {'map':>11}  {'slider':<11} {'h-scroll':<12} overflowing")
+    print("-" * 76)
 
     failed = []
     for step in results:
@@ -169,28 +170,42 @@ def print_report(report):
         ok = not overflow and not crossing
         if not ok:
             failed.append(step)
+        slider = (f"{step.get('sliderAt', '-')} {step.get('sliderWidth', 0)}px"
+                  if step.get('slider') else "hidden")
         print(f"{step['width']:>5}px  {step['panel']:<7} "
               f"{step['mapWidth']:>5}x{step['mapHeight']:<5} "
+              f"{slider:<11} "
               f"{('YES ' + str(overflow) + 'px') if overflow else 'no':<12} "
               f"{len(crossing)}{'' if ok else '  <-- ' + '; '.join(crossing[:3])}")
 
     reference = results[0] if results else {}
-    drawn = max((step.get('markers', 0) + step.get('clusters', 0)) for step in results) if results else 0
+    painted = sum(1 for step in results if step.get('hotspotsPainted'))
     print(f"\nplugins: date picker {'ok' if reference.get('datepicker') else 'MISSING'}, "
           f"drop-lists {reference.get('dropLists', 0)}, "
           f"hotspots found: {reference.get('results') or '?'}, "
-          f"drawn on the map: {drawn}")
+          f"canvases: {reference.get('hotspotCanvases', 0)}, "
+          f"painted at {painted}/{len(results)} widths")
+
+    failed_checks = [check for check in checks if not check.get('ok')]
+    if checks:
+        print("\ntime slider:")
+        for check in checks:
+            detail = f"  ({check['detail']})" if check.get('detail') else ""
+            print(f"  {'ok  ' if check['ok'] else 'FAIL'}  {check['name']}{detail}")
 
     if errors:
         print(f"\njavascript errors ({len(errors)}):")
         for error in errors:
             print(f"  - {error}")
 
-    if failed or errors:
-        print(f"\nFAILED: {len(failed)} width(s) overflow, {len(errors)} javascript error(s)")
+    if failed or errors or failed_checks or not checks:
+        print(f"\nFAILED: {len(failed)} width(s) overflow, {len(errors)} javascript error(s), "
+              + (f"{len(failed_checks)} time slider check(s) failed" if checks
+                 else "and the time slider checks did not run at all"))
         return False
 
-    print(f"\nOK: no horizontal overflow at any of the {len(results)} widths, no javascript errors")
+    print(f"\nOK: no horizontal overflow at any of the {len(results)} widths, "
+          f"no javascript errors, {len(checks)} time slider checks passed")
     return True
 
 

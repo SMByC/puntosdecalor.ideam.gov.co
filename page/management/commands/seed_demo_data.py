@@ -197,14 +197,24 @@ class Command(BaseCommand):
 
         for _ in range(count):
             lon, lat = random.choice(centers)
-            lon += random.gauss(0, 0.35)
-            lat += random.gauss(0, 0.35)
 
             source = random.choices(sources, weights=weights)[0]
             is_modis = source.startswith('MODIS')
             when = now - timedelta(
                 days=random.uniform(0, days), hours=random.uniform(0, 24)
             )
+
+            # the demo fires drift east and north as the period advances, so
+            # the colours by date and the time slider have something to show.
+            # `when` reaches back days+1 (the extra hours), so without the cap
+            # a short --days would push the drift well past its intended band
+            # and drop the points outside every region.
+            age = min(1.0, (now - when).total_seconds() / max(1.0, days * 86400.0))
+            lon += 1.6 * (0.5 - age)
+            lat += 1.1 * (0.5 - age)
+
+            lon += random.gauss(0, 0.35)
+            lat += random.gauss(0, 0.35)
             day_night = ActiveFire.DayNight.DAY if 6 <= when.hour <= 18 else ActiveFire.DayNight.NIGHT
 
             fires.append(ActiveFire(

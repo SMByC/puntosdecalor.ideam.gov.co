@@ -48,7 +48,6 @@ function getParameterByName(name, url) {
 // laptop/desktop (lateral panel docked beside the map)
 
 var AF_DESKTOP_LAYOUT = "(min-width: 900px)";
-var AF_TOUCH_POINTER = "(pointer: coarse)";
 
 function media_matches(query) {
     return window.matchMedia && window.matchMedia(query).matches;
@@ -57,11 +56,6 @@ function media_matches(query) {
 // the lateral panel is docked (not a drawer) on laptop/desktop
 function is_desktop_layout() {
     return media_matches(AF_DESKTOP_LAYOUT);
-}
-
-// slightly bigger markers on touch screens, to keep them tappable
-function marker_icon_size() {
-    return media_matches(AF_TOUCH_POINTER) ? [18, 18] : [13, 13];
 }
 
 // keep the fitted region away from the map controls/edges
@@ -76,18 +70,20 @@ $(function () {
 
     //LOADING FEEDBACK
     // a small indicator over the map while the data is being requested
-    var map_mouse;
     $(document).ajaxStart(function () {
         $('#map-loading').prop('hidden', false);
         $(document.body).css({'cursor': 'wait'});
-        map_mouse = $('#active_fires_map').css('cursor');
-        $('#active_fires_map').css({'cursor': 'wait'});
+        // a class, not an inline cursor: reading the computed cursor here and
+        // writing it back on ajaxStop pinned whatever leaflet (or the hotspot
+        // hover) happened to have set, and the map kept it for good -- which
+        // also killed the grabbing cursor while dragging
+        $('#active_fires_map').addClass('af-busy');
         $('.month-wrapper table .day').css({'cursor': 'wait'});
         $('.custom-shortcut a').css({'cursor': 'wait'});
     }).ajaxStop(function () {
         $('#map-loading').prop('hidden', true);
         $(document.body).css({'cursor': 'default'});
-        $('#active_fires_map').css({'cursor': map_mouse});
+        $('#active_fires_map').removeClass('af-busy');
         $('.month-wrapper table .day').css({'cursor': 'pointer'});
         $('.custom-shortcut a').css({'cursor': 'pointer'});
     });

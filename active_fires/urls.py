@@ -22,7 +22,7 @@ urlpatterns = [
     # GeoJSON API endpoints
     path('region.geojson/', views.RegionMapLayer.as_view(), name='region'),
     path('burned_area.geojson/', views.BurnedAreaMapLayer.as_view(), name='burned-area'),
-    path('active_fires.geojson/', views.ActiveFiresMapLayer.as_view(), name='active-fires'),
+    path('active_fires.json/', views.active_fires_data, name='active-fires-data'),
     path('get_popup.geojson/', views.get_popup, name='get-popup'),
 
     # CSV download

@@ -10,8 +10,10 @@ from datetime import datetime, date, timedelta
 from urllib.parse import urlencode, urlparse, parse_qs
 
 from django.conf import settings
+from django.db.models import FloatField, Func
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from django.views.decorators.gzip import gzip_page
 from djgeojson.views import GeoJSONLayerView
 
 from page.models import ActiveFire, Region, BurnedArea
@@ -47,19 +49,82 @@ class BurnedAreaMapLayer(GeoJSONLayerView):
         return BurnedArea.objects.none()
 
 
-class ActiveFiresMapLayer(GeoJSONLayerView):
-    model = ActiveFire
-    properties = ('id',)
+# -- Hotspot data for the map ------------------------------------------------
 
-    def get_queryset(self):
-        from_date = self.request.GET.get('from_date')
-        to_date = self.request.GET.get('to_date')
-        region_slug = self.request.GET.get('region')
+class _ST_X(Func):
+    """Longitude of a point, read by the database (both PostGIS and SpatiaLite
+    provide it), so the rows do not have to be turned into geometry objects."""
+    function = 'ST_X'
+    output_field = FloatField()
 
-        if not all([from_date, to_date, region_slug]):
-            return ActiveFire.objects.none()
 
-        return _filter_active_fires(from_date, to_date, region_slug)
+class _ST_Y(Func):
+    function = 'ST_Y'
+    output_field = FloatField()
+
+
+# 4 decimals is about 11 m, far below the 375 m (VIIRS) and 1 km (MODIS) pixel
+COORD_DECIMALS = 4
+
+
+@gzip_page
+def active_fires_data(request):
+    """Hotspots of the current query as parallel arrays, ordered by date.
+
+    This replaces the GeoJSON layer the page used to load. GeoJSON repeats the
+    same keys for every point, so a country-wide query over a long period was
+    tens of megabytes for the browser to download and parse (a year of Colombia
+    measured 32 MB, and 92 s to serialize). The same points as arrays of numbers
+    are about a fifth of that, 2 MB once compressed, and the order lets the page
+    take a time window as a plain slice of the arrays:
+
+        t0    start of the period, the origin of the ``m`` offsets
+        span  length of the period in minutes
+        n     number of hotspots
+        lon   longitude
+        lat   latitude
+        m     minutes elapsed since ``t0``, ascending
+        id    database id of each point, delta encoded: id[i] = id[i-1] + d[i]
+    """
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+    region_slug = request.GET.get('region')
+
+    lon, lat, minutes, ids = [], [], [], []
+    from_dt = to_dt = None
+
+    if all([from_date, to_date, region_slug]):
+        try:
+            from_dt, to_dt = _parse_date_range(from_date, to_date)
+            rows = (
+                _filter_active_fires(from_dt, to_dt, region_slug)
+                .annotate(lon=_ST_X('geom'), lat=_ST_Y('geom'))
+                .order_by('date', 'id')
+                .values_list('id', 'date', 'lon', 'lat')
+            )
+            previous_id = 0
+            for fire_id, when, x, y in rows.iterator(chunk_size=5000):
+                lon.append(round(x, COORD_DECIMALS))
+                lat.append(round(y, COORD_DECIMALS))
+                minutes.append(int((when - from_dt).total_seconds()) // 60)
+                ids.append(fire_id - previous_id)
+                previous_id = fire_id
+        except (ValueError, Region.DoesNotExist):
+            # a malformed date or an unknown region: no points, no error page
+            logger.warning("invalid hotspot query: %s", request.GET.urlencode())
+            lon, lat, minutes, ids = [], [], [], []
+            from_dt = to_dt = None
+
+    payload = {
+        't0': from_dt.isoformat() if from_dt else None,
+        'span': int((to_dt - from_dt).total_seconds()) // 60 + 1 if from_dt else 0,
+        'n': len(lon),
+        'lon': lon,
+        'lat': lat,
+        'm': minutes,
+        'id': ids,
+    }
+    return JsonResponse(payload, json_dumps_params={'separators': (',', ':')})
 
 
 # -- Shared query helpers ----------------------------------------------------
@@ -71,9 +136,12 @@ def _parse_date_range(from_date_str, to_date_str):
     return from_dt, to_dt
 
 
-def _filter_active_fires(from_date_str, to_date_str, region_slug):
-    """Return an ActiveFire queryset filtered by date range and optional region."""
-    from_dt, to_dt = _parse_date_range(from_date_str, to_date_str)
+def _filter_active_fires(from_dt, to_dt, region_slug):
+    """Return an ActiveFire queryset filtered by date range and optional region.
+
+    Takes the range already parsed: the caller needs the same two datetimes to
+    build its own answer, and parsing them in both places is how the meaning of
+    the end of the period drifts between the filter and what is reported."""
     qs = ActiveFire.objects.filter(date__gte=from_dt, date__lte=to_dt)
     if region_slug != "colombia":
         region = Region.objects.get(slug=region_slug)
@@ -187,8 +255,9 @@ def download_result(request):
         return HttpResponse(status=204)
 
     try:
-        active_fires = _filter_active_fires(from_date, to_date, region_slug)
-    except Region.DoesNotExist:
+        active_fires = _filter_active_fires(
+            *_parse_date_range(from_date, to_date), region_slug)
+    except (ValueError, Region.DoesNotExist):
         return HttpResponse(status=204)
 
     header = [

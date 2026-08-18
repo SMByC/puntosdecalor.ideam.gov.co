@@ -163,7 +163,7 @@ body {
     padding: 6px 10px;
     padding-right: max(10px, env(safe-area-inset-right));
     padding-left: max(10px, env(safe-area-inset-left));
-    background-color: var(--surface-2);
+    background-color: rgba(255, 255, 255, 0.95);
     border-bottom: 1px solid var(--border-soft);
     box-shadow: var(--shadow-sm);
 }
@@ -337,17 +337,271 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* active fire markers */
-.af-marker svg {
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
+/* Cursors over the map are classes, never inline styles, so leaflet keeps
+   control of its own grab/grabbing cursors */
+.leaflet-container.af-busy {
+    cursor: wait;
 }
 
-.leaflet-div-icon {
-    background: initial;
-    border: initial;
+.leaflet-container.af-over-hotspot {
+    cursor: pointer;
+}
+
+/* hotspots: two stacked canvases, all the points and the highlighted window */
+.af-hotspots canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+/* Time slider over the map
+   ---------------------------------------------------------------------
+   One row -- play, track, "todo" -- with three small panels floating around
+   it: the date of each edge above its grip and the number of hotspots of the
+   window below its middle. They are placed by time_slider.js, which keeps
+   them inside the slider and stops the two dates from overlapping.
+
+   Bottom centre on phones (the top is taken by the header and the map
+   controls, and the thumb reaches the bottom of the screen more easily), top
+   centre from the docked layout on; either way there is room left over the
+   map for the panels above and below. */
+.time-slider {
+    position: absolute;
+    left: 50%;
+    bottom: calc(44px + env(safe-area-inset-bottom));
+    /* above the leaflet controls (1000), inside the map stacking context */
+    z-index: 1100;
+    width: min(560px, calc(100% - 20px));
+    padding: 6px 10px;
+    color: var(--text-2);
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-md);
+    transform: translateX(-50%);
+}
+
+.time-slider[hidden] {
+    display: none;
+}
+
+.ts-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ts-btn {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
+    height: 22px;
+    color: var(--text-2);
+    background-color: var(--surface-2);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+}
+
+.ts-btn:hover {
+    color: var(--brand);
+    border-color: var(--brand);
+}
+
+.ts-play {
+    width: 24px;
+    padding: 0;
+}
+
+.ts-play svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+}
+
+.ts-play.is-playing {
+    color: #fff;
+    background-color: var(--brand);
+    border-color: var(--brand);
+}
+
+.ts-play.is-playing:hover {
+    color: #fff;
+    background-color: var(--brand-dark);
+}
+
+.ts-all {
+    padding: 0 8px;
+    font-size: 0.68rem;
+    font-weight: 600;
+}
+
+/* nothing to reset while the window already covers the whole period */
+.time-slider.is-full .ts-all {
+    opacity: 0.45;
+    pointer-events: none;
+}
+
+/* the panels: same surface as the slider itself, so they read as part of it */
+.ts-pop {
+    position: absolute;
+    left: 0;
+    padding: 2px 8px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-md);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+}
+
+.ts-pop-from,
+.ts-pop-to {
+    bottom: calc(100% - 5px);
+}
+
+.ts-pop-count {
+    top: calc(100% - 5px);
+    color: var(--text-2);
+    font-weight: 400;
+}
+
+.ts-pop-count strong {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.ts-track {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 8px;
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    /* the pointer must drive the window, not scroll or zoom the page */
+    touch-action: none;
+}
+
+/* the ramp is the legend: the same colours the points are painted with */
+.ts-ramp {
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--border-soft);
+    border-radius: var(--radius-sm);
+}
+
+.ts-mask {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.72);
+    border-radius: var(--radius-sm);
+    pointer-events: none;
+}
+
+.ts-mask-left {
+    left: 0;
+}
+
+.ts-mask-right {
+    right: 0;
+}
+
+.ts-window {
+    position: absolute;
+    top: 0px;
+    bottom: 0px;
+    min-width: 10px;
+    cursor: grab;
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--text);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 1px 4px rgba(16, 18, 22, 0.28);
+    touch-action: none;
+}
+
+.time-slider.is-dragging .ts-window {
+    cursor: grabbing;
+}
+
+.ts-grip {
+    position: absolute;
+    top: 50%;
+    width: 12px;
+    height: 16px;
+    cursor: ew-resize;
+    background-color: var(--text);
+    border-radius: 3px;
+    transform: translateY(-50%);
+    touch-action: none;
+}
+
+/* the two lines that say "this edge can be dragged" */
+.ts-grip::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 8px;
+    content: "";
+    border-right: 1px solid rgba(255, 255, 255, 0.85);
+    border-left: 1px solid rgba(255, 255, 255, 0.85);
+    transform: translate(-50%, -50%);
+}
+
+.ts-grip-left {
+    left: -8px;
+}
+
+.ts-grip-right {
+    right: -8px;
+}
+
+@media (min-width: 900px) {
+    .time-slider {
+        top: 30px;
+        bottom: auto;
+    }
+
+    /* the loading pill also lives at the top centre of the map, below the
+       slider and the panel hanging under it */
+    body.has-time-slider #map-loading {
+        top: 112px;
+    }
+}
+
+@media (max-width: 380px) {
+    .ts-all {
+        padding: 0 8px;
+    }
+
+    .ts-pop {
+        font-size: 0.66rem;
+    }
+}
+
+/* fingers need a bigger grip than a pointer */
+@media (pointer: coarse) {
+    .ts-track {
+        height: 16px;
+    }
+
+    .ts-grip {
+        width: 16px;
+        height: 22px;
+    }
+
+    .ts-grip-left {
+        left: -10px;
+    }
+
+    .ts-grip-right {
+        right: -10px;
+    }
 }
 
 /* Lateral content: drawer on mobile, docked panel on desktop
@@ -468,13 +722,6 @@ body.panel-open #lateral-content {
     cursor: pointer;
 }
 
-.lateral-item-subtitle {
-    display: inline-block;
-    font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--text-3);
-}
-
 .lateral-item-content {
     color: var(--text-2);
     text-align: center;
@@ -485,10 +732,6 @@ body.panel-open #lateral-content {
     font-size: 0.8rem;
     color: var(--text-2);
     text-align: left;
-}
-
-.lateral-item-disable {
-    display: none;
 }
 
 /* period range dates
@@ -550,10 +793,6 @@ body.panel-open #lateral-content {
     color: var(--text-muted);
 }
 
-.period-sep {
-    color: var(--text-muted);
-}
-
 /* result
 --------------------------------------------------------------------- */
 .lateral-item-result .lateral-item-content {
@@ -570,7 +809,7 @@ body.panel-open #lateral-content {
 }
 
 #number-result {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--brand);
 }
@@ -1181,41 +1420,10 @@ span#select2-region-container.select2-selection__rendered {
     border-radius: var(--radius);
 }
 
-.marker-cluster-small div,
-.marker-cluster-medium div,
-.marker-cluster-large div {
-    font-family: var(--font);
-    font-weight: 700;
-}
-
-/* table
---------------------------------------------------------------------- */
-.table {
-    width: 100%;
-    border: 1px;
-}
-
-.table th {
-    padding: 4px;
-    font-size: 0.82rem;
-    font-weight: 700;
-    color: var(--brand);
+.popup-loading {
+    display: block;
     text-align: center;
-    border: 1px solid var(--border);
-}
-
-.table td {
-    padding: 2px;
-    color: var(--text);
-    text-align: center;
-    vertical-align: middle;
-    border: 1px solid var(--border);
-}
-
-/* text code
---------------------------------------------------------------------- */
-#render-text {
-    font-family: monospace;
+    color: var(--text-muted);
 }
 
 /* =====================================================================
@@ -1232,10 +1440,6 @@ span#select2-region-container.select2-selection__rendered {
     /* stack the two dates, one per row */
     .period-field {
         flex: 1 1 100%;
-    }
-
-    .period-sep {
-        display: none;
     }
 
     #title {

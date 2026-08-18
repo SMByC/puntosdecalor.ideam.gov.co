@@ -106,67 +106,95 @@
         }
 
         // ACTIVE FIRES POINTS
+        //
+        // The points are painted on a canvas and coloured by date (see
+        // hotspot_layer.js), and the time slider over the map highlights the
+        // ones detected inside a window of that period (see time_slider.js).
+        // They are not clustered any more: a cluster hides exactly the thing
+        // the colours and the slider are there to show.
+
+        var hotspots = null;       // the canvas layer with all the points
+        var time_slider = null;    // the window over the period
+
+        function setup_hotspots(map) {
+            hotspots = AF.hotspotLayer().addTo(map);
+
+            time_slider = new AF.TimeSlider(document.getElementById('content-map'), {
+                map: map,
+                onchange: function (from_minutes, to_minutes, is_full) {
+                    if (!hotspots) return;
+                    if (is_full) {
+                        hotspots.clearTimeWindow();
+                    } else {
+                        hotspots.setTimeWindow(from_minutes, to_minutes);
+                    }
+                    time_slider.setCount(hotspots.windowCount());
+                }
+            });
+
+            // POPUP: the canvas does not receive events, the map does
+            map.on('click', function (event) {
+                var hit = hotspots.hitTest(event.latlng);
+                if (!hit) return;
+                var popup = L.popup({maxWidth: 300, minWidth: 200, autoPanPadding: [16, 16]})
+                    .setLatLng(hit.latlng)
+                    .setContent('<span class="popup-loading">Cargando…</span>')
+                    .openOn(map);
+                $.ajax({
+                    url: "{% url 'get-popup' %}",
+                    data: {id: hit.id},
+                    dataType: 'json',
+                })
+                .done(function (popup_text) {
+                    popup.setContent(popup_text);
+                });
+            });
+
+            // the pointer tells that there is something to click under it. A
+            // class, not an inline cursor: an inline one outranks the grab and
+            // grabbing cursors leaflet sets on the same element
+            var hover_pending = false;
+            var hover_latlng = null;
+            function set_hover(on) {
+                map.getContainer().classList.toggle('af-over-hotspot', !!on);
+            }
+            map.on('mousemove', function (event) {
+                if (event.originalEvent && event.originalEvent.buttons) return;  // panning
+                hover_latlng = event.latlng;
+                if (hover_pending) return;
+                hover_pending = true;
+                window.requestAnimationFrame(function () {
+                    hover_pending = false;
+                    set_hover(hotspots.hitTest(hover_latlng, 8));
+                });
+            });
+            // the mousemove handler stands down while a button is held, so the
+            // class has to be dropped here or it would last the whole drag
+            map.on('movestart', function () { set_hover(false); });
+        }
 
         function active_fires(map, options) {
-            // clear all markers in the map before add the new
-            if ( typeof map.markers !== 'undefined') {
-                map.removeLayer(map.markers);
-            }
-            var markers = new L.markerClusterGroup({
-                disableClusteringAtZoom: 11,
-                spiderfyOnMaxZoom: false,
-                animate: false,
-                // only honoured by addLayers(), which is why the markers below
-                // are collected first and added to the cluster in one call
-                chunkedLoading: true,
-            });
-            var marker_size = marker_icon_size();
-            var marker_list = [];
-            var data_url = "{% url 'active-fires' %}" + window.location.search;
-            // Download GeoJSON via Ajax
+            var data_url = "{% url 'active-fires-data' %}" + window.location.search;
             $.getJSON(data_url, function (data) {
-                // Add GeoJSON layer
-                L.geoJson(data, {
-                    pointToLayer: function (feature, latlng) {
-                        // marker
-                        var marker = L.marker(latlng, {
-                            icon: L.divIcon({
-                                className: 'af-marker',
-                                iconSize: marker_size,
-                                html: '<svg viewBox="-1 -1 2 2" aria-hidden="true"><circle cx="0" cy="0" r="0.9" fill-opacity="0.6" fill="#CC3D36" /></svg>'
-                            }),
-                            keyboard: false,
-                            title: 'Punto de calor'
-                        });
+                hotspots.setData(data);
+                $('#number-result').text(data.n.toLocaleString('es-CO'));
 
-                        // popup
-                        marker.bindPopup("", {maxWidth: 300, minWidth: 200, autoPanPadding: [16, 16]});
-                        function onPopupClick(e) {
-                            var popup = e.target.getPopup();
-                            $.ajax({
-                                url: "{% url 'get-popup' %}" + window.location.search,
-                                data: {id: feature.properties.id},
-                                dataType: 'json',
-                            })
-                            .done(function(popup_text) {
-                                popup.setContent(popup_text);
-                                popup.update();
-                            });
-                        }
-                        marker.on('click', onPopupClick );
-                        // collect this marker
-                        marker_list.push(marker);
-                }});
-                // add all the markers at once: clustering them one by one on a
-                // layer already on the map freezes the phone with many points
-                markers.addLayers(marker_list);
-                // update the number of active fires result of ajax
-                $('#number-result').text(data.features.length.toLocaleString('es-CO'));
+                if (data.n > 0) {
+                    // setPeriod reapplies the window, which updates the count
+                    time_slider.setPeriod(data.t0, data.span);
+                    time_slider.show();
+                } else {
+                    time_slider.hide();
+                }
+            })
+            .fail(function () {
+                // leaving the previous points on the map would show them under
+                // the outline of whatever region was just selected, with a
+                // count and a period that belong to the query before this one
+                hotspots.clearData();
+                $('#number-result').text('--');
+                time_slider.hide();
             });
-            // add to map
-            map.addLayer(markers);
-            // save markers in map variable
-            map.markers = markers;
         }
     </script>
 
@@ -174,6 +202,7 @@
     <script>
         function load_map(map, options) {
             // load map in request url with get parameter
+            setup_hotspots(map);
             region(map, getParameterByName("region"));
             active_fires(map, options);
             set_extent(map, options);

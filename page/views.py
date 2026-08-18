@@ -324,7 +324,7 @@ def home(request):
         range_burned_area = f"de {ba_first.date.strftime('%Y-%m')} hasta {ba_last.date.strftime('%Y-%m')}"
         years_burned_area = list(
             BurnedArea.objects.values_list('date__year', flat=True)
-            .distinct().order_by('date__year')
+            .distinct().order_by('-date__year')
         )
 
     context = {

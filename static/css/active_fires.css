@@ -867,7 +867,7 @@ body.panel-open #lateral-content {
     stroke-linejoin: round;
 }
 
-/* burned area: quick access by year
+/* region and burned area drop-lists
 --------------------------------------------------------------------- */
 #region-div,
 #burned-area-div {
@@ -888,35 +888,13 @@ body.panel-open #lateral-content {
     border-radius: var(--radius-sm);
 }
 
-.year-shortcuts {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    margin-top: 10px;
-    font-size: 0.8rem;
-}
-
-.year-shortcuts-label {
-    margin-right: 2px;
-    font-style: italic;
-    color: var(--text-3);
-}
-
-.year-shortcuts .link {
-    min-width: 40px;
-    padding: 5px 8px;
-    font-variant-numeric: tabular-nums;
+.burned-area-clear {
+    margin: 6px 0 0;
     text-align: center;
-    border: 1px solid var(--border-soft);
-    border-radius: var(--radius-pill);
-    background-color: var(--surface);
 }
 
-.year-shortcuts .link-clear {
-    font-style: italic;
-    border-style: dashed;
+#burned-area-div .burned-area-year-shortcut-choice {
+    display: none;
 }
 
 /* Links and text buttons
@@ -1310,11 +1288,15 @@ span#select2-region-container.select2-selection__rendered {
     background-color: var(--brand-soft-strong);
 }
 
-.select2-container--default .select2-results__option[aria-selected="true"],
 .select2-container--default .select2-results__option--selected {
     font-weight: 700;
     color: var(--brand);
     background-color: var(--brand-soft);
+}
+
+#select2-burned_area-results .select2-results__option--highlighted:not(.select2-results__option--selected) {
+    color: var(--text);
+    background-color: var(--surface-2);
 }
 
 /* Date range picker (overwrite daterangepicker.css)

@@ -224,35 +224,103 @@
             });
 
             // load burned areas when changed the drop-list
+            function update_burned_area_selection(values) {
+                var unique_values = values.filter(function (value, index) {
+                    return values.indexOf(value) === index;
+                });
+                var burned_area_select = $('#burned_area');
+                burned_area_select.val(unique_values).trigger('change');
+                window.setTimeout(function () {
+                    burned_area_select.trigger('change.select2');
+                    // Select2 4.1 does not repaint open result rows after a
+                    // programmatic value change.
+                    var select2 = burned_area_select.data('select2');
+                    if (select2 && select2.results) select2.results.setClasses();
+                }, 0);
+            }
+
+            function burned_area_months(year) {
+                var months = [];
+                $('#burned_area').find('option').each(function () {
+                    var slug = $(this).text();
+                    if (slug.indexOf(year + '-') === 0) months.push(slug);
+                });
+                return months;
+            }
+
+            function same_burned_area_values(left, right) {
+                return left.length === right.length && left.every(function (value) {
+                    return right.indexOf(value) !== -1;
+                });
+            }
+
+            function synchronize_burned_area_years() {
+                var current = $('#burned_area').val() || [];
+                var synchronized = current.filter(function (value) {
+                    return !/^\d{4}$/.test(value);
+                });
+                $('#burned_area').find('option').each(function () {
+                    var year = $(this).val();
+                    if (!/^\d{4}$/.test(year)) return;
+                    var months = burned_area_months(year);
+                    if (months.length > 0 && months.every(function (slug) {
+                        return synchronized.indexOf(slug) !== -1;
+                    })) {
+                        synchronized.push(year);
+                    }
+                });
+                if (!same_burned_area_values(current, synchronized)) {
+                    update_burned_area_selection(synchronized);
+                }
+            }
+
+            function unselect_burned_area_year(map, year) {
+                var months = burned_area_months(year);
+                var values = ($('#burned_area').val() || []).filter(function (value) {
+                    return value !== year && months.indexOf(value) === -1;
+                });
+                update_burned_area_selection(values);
+                months.forEach(function (slug) { remove_burned_area(map, slug); });
+            }
+
             // select
             $('#burned_area').on("select2:select", function(e){
                 var selected_value = e.params.data['text'];
-                add_burned_area(map, selected_value);
-            }).trigger('change');
-            // burned area by year
-            $('.burned_area_by_year').click(function(e){
-                e.preventDefault();
-                var selected_year = $(this).text();
-                var items = $('#burned_area').find("option");
-                var items_selected = $('#burned_area').select2('data');
-                for (i of items) {
-                    if (i.text.startsWith(selected_year) && !items_selected.some(items_selected => items_selected.text === i.text)) {
-                        $('#burned_area').val($('#burned_area').val().concat([i.text])).trigger('change');
-                        add_burned_area(map, i.text);
+                // A year is a shortcut, not a map layer. It stays selected in
+                // the list while all of its months are selected.
+                if (/^\d{4}$/.test(selected_value)) {
+                    var year_months = burned_area_months(selected_value);
+                    var current = $('#burned_area').val() || [];
+                    var missing = year_months.filter(function (slug) {
+                        return current.indexOf(slug) === -1;
+                    });
+                    if (missing.length > 0) {
+                        update_burned_area_selection(current.concat(missing));
+                        missing.forEach(function (slug) { add_burned_area(map, slug); });
+                    } else {
+                        unselect_burned_area_year(map, selected_value);
                     }
+                    return;
                 }
-            });
+                add_burned_area(map, selected_value);
+                synchronize_burned_area_years();
+            }).trigger('change');
             // unselect
             $('#burned_area').on("select2:unselect", function(e){
                 var unselected_value = e.params.data['text'];
+                if (/^\d{4}$/.test(unselected_value)) {
+                    unselect_burned_area_year(map, unselected_value);
+                    return;
+                }
                 remove_burned_area(map, unselected_value);
+                synchronize_burned_area_years();
             }).trigger('change');
             // unselect all
             $('#burned_area_unselect_all').click(function(e){
                 e.preventDefault();
                 var items = $('#burned_area').select2('data');
-                for (i of items) {remove_burned_area(map, i.text);}
-                $('#burned_area').val(null).trigger('change');
+                for (var item of items) {remove_burned_area(map, item.text);}
+                update_burned_area_selection([]);
             });
         }
     </script>
@@ -362,20 +430,23 @@
                 <div id="burned-area-div">
                     <select id="burned_area" name="burned_area[]" multiple="multiple"
                             data-placeholder="Seleccione uno o varios meses">
-                        {% for burned_area in burned_areas %}
-                            <option value="{{ burned_area.slug }}">{{ burned_area.slug }}</option>
-                        {% endfor %}
+                        {# acceso rapido: elegir un año selecciona todos sus meses #}
+                        <optgroup label="Por año">
+                            {% for year_burned_area in years_burned_area %}
+                                <option value="{{ year_burned_area }}">{{ year_burned_area }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        <optgroup label="Por mes">
+                            {% for burned_area in burned_areas %}
+                                <option value="{{ burned_area.slug }}">{{ burned_area.slug }}</option>
+                            {% endfor %}
+                        </optgroup>
                     </select>
                 </div>
 
-                {# accesos rapidos por año #}
-                <div class="year-shortcuts">
-                    <span class="year-shortcuts-label">Por año:</span>
-                    {% for year_burned_area in years_burned_area %}
-                        <a class="link burned_area_by_year" href="#">{{ year_burned_area }}</a>
-                    {% endfor %}
-                    <a class="link link-clear" href="#" id="burned_area_unselect_all">limpiar</a>
-                </div>
+                <p class="lateral-item-note burned-area-clear">
+                    <a class="link" href="#" id="burned_area_unselect_all">limpiar selección</a>
+                </p>
             </div>
         </div>
     </section>

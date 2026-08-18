@@ -205,7 +205,31 @@ $(function () {
         // keep the list open to pick several months in a row
         closeOnSelect: false,
         placeholder: $('#burned_area').data('placeholder') || '',
+        templateSelection: function (data, container) {
+            var text = data.text || '';
+            if (/^\d{4}$/.test(text)) {
+                $(container).addClass('burned-area-year-shortcut-choice');
+            }
+            return text;
+        },
         dropdownParent: $panel
+    });
+
+    // removing a choice with its x focuses the search field, and select2 4.1
+    // answers that focus by opening the drop-list; swallow that one opening.
+    // Removals from the open list are unaffected: the list is already open,
+    // so no "opening" event follows and the flag is reset on close
+    var skip_open_after_unselect = false;
+    $('#burned_area').on('select2:unselecting', function () {
+        skip_open_after_unselect = true;
+    });
+    $('#burned_area').on('select2:opening', function (event) {
+        if (!skip_open_after_unselect) return;
+        skip_open_after_unselect = false;
+        event.preventDefault();
+    });
+    $('#burned_area').on('select2:close', function () {
+        skip_open_after_unselect = false;
     });
 
     // a drop-list left open would be hidden with the drawer and reopen with it

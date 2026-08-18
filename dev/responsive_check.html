@@ -56,17 +56,20 @@ function describe(el) {
     return name;
 }
 
-// True when a canvas has anything drawn on it. The canvas is scaled down into
-// a small one first: reading the pixels of a full screen canvas at every width
-// would dominate the sweep.
+// True when a canvas has anything drawn on it. The pixels are read at their
+// own size and sampled every fourth one, which the dots (nine pixels across)
+// cannot slip through. Scaling the canvas down into a small one first is much
+// cheaper, but browsers sample the source rather than average it, so a handful
+// of dots on a full screen canvas disappears and reads as an empty canvas.
 function canvasHasInk(canvas) {
     if (!canvas || !canvas.width || !canvas.height) return false;
-    var probe = document.createElement('canvas');
-    probe.width = probe.height = 48;
-    var ctx = probe.getContext('2d');
-    ctx.drawImage(canvas, 0, 0, 48, 48);
-    var data = ctx.getImageData(0, 0, 48, 48).data;
-    for (var i = 3; i < data.length; i += 4) {
+    var data;
+    try {
+        data = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+    } catch (error) {
+        return false;
+    }
+    for (var i = 3; i < data.length; i += 16) {
         if (data[i] > 8) return true;
     }
     return false;

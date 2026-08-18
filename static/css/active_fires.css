@@ -632,11 +632,29 @@ body.panel-open #panel-backdrop {
     width: min(88vw, 380px);
     padding-right: env(safe-area-inset-right);
     background-color: var(--surface-3);
-    border-left: 1px solid var(--border-soft);
     box-shadow: var(--shadow-lg);
     visibility: hidden;
     transform: translateX(100%);
     transition: transform 0.28s var(--ease), visibility 0s linear 0.28s;
+}
+
+/* The edge of the panel is painted, not a border: the open drop-lists are
+   children of this panel, and select2 places them at the offset it measures
+   from its *border* box while the browser lays them out from its *padding*
+   box, so any left border pushes every list sideways. The shift is the used
+   border width, which is only 1px when a css pixel is a device pixel: at 125%
+   it is 0.8px, at 150% 0.667px, so no fixed margin can take it back. Without
+   a border the two boxes are the same and the lists land exactly on their
+   control at any zoom. */
+#lateral-content::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    background-color: var(--border-soft);
+    pointer-events: none;
 }
 
 body.panel-open #lateral-content {
@@ -1225,11 +1243,32 @@ span#select2-region-container.select2-selection__rendered {
     font-family: inherit;
 }
 
+/* select2 squares the two corners where the list meets its control and drops
+   the border along that edge, so the list reads as an extension of the box it
+   belongs to; the other three sides keep the radius of the control */
 .select2-dropdown {
+    background-color: var(--surface);
     border-color: var(--brand);
     border-radius: var(--radius-sm);
-    box-shadow: var(--shadow-md);
     overflow: hidden;
+}
+
+/* The list is lifted off the panel by a shadow thrown away from the control:
+   downwards for a list that opens below, upwards for one that opens above.
+   Nothing of it reaches back over the control -- the open control already
+   paints its own translucent halo there, and a second translucent layer on
+   top of it shows up as a darker band along the joint. (The halo used to be
+   imitated around the list with three chained drop-shadows, which is where
+   the uneven, doubled tint came from: every drop-shadow in a filter chain
+   also casts a shadow of the shadows before it.) */
+.select2-dropdown--below {
+    box-shadow: 0 12px 24px -8px rgba(16, 18, 22, 0.30),
+                0 4px 8px -4px rgba(16, 18, 22, 0.14);
+}
+
+.select2-dropdown--above {
+    box-shadow: 0 -12px 24px -8px rgba(16, 18, 22, 0.30),
+                0 -4px 8px -4px rgba(16, 18, 22, 0.14);
 }
 
 .select2-container--default .select2-search--dropdown .select2-search__field {
@@ -1627,9 +1666,12 @@ span#select2-region-container.select2-selection__rendered {
         width: var(--panel-w);
         visibility: visible;
         box-shadow: none;
-        border-left: 1px solid var(--border);
         transform: none;
         transition: none;
+    }
+
+    #lateral-content::before {
+        background-color: var(--border);
     }
 
     #panel-backdrop {

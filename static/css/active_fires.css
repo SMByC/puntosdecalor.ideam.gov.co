@@ -1467,6 +1467,13 @@ span#select2-region-container.select2-selection__rendered {
     border-bottom-right-radius: var(--radius-sm);
 }
 
+/* django-leaflet #390: the reset-view control assigns its icon path to
+   style.backgroundImage without url(...); browsers drop it as invalid and
+   the button paints blank. :only-child separates it from the zoom-out. */
+.leaflet-control-zoom a.leaflet-control-zoom-out:only-child {
+    background-image: url('../leaflet/images/reset-view.png');
+}
+
 .leaflet-popup-content {
     margin: 12px 16px;
     font-size: 0.82rem;

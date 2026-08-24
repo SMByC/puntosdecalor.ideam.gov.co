@@ -36,6 +36,12 @@ NGINX_MAIN_CONF := /etc/nginx/nginx.conf
 SITE_URL        ?= https://puntosdecalor.ideam.gov.co
 WWW_URL         := $(subst https://,https://www.,$(SITE_URL))
 
+# Empty when make already runs as root, so `sudo make verify` does not nest a
+# second sudo inside the recipes. The nested call re-authenticates, and on an
+# account whose password has expired it fails outright — reporting a perfectly
+# good nginx config as "FAIL nginx -t".
+SUDO            := $(shell [ "$$(id -u)" = 0 ] || echo sudo)
+
 # Run ON the server the public name often does not route back to it (no hairpin
 # NAT, or an upstream proxy owns that address), and every curl below reports
 # http 000. RESOLVE=1 points the name at the local listener while keeping the
@@ -57,6 +63,7 @@ NGINX_USER_OK = [ ! -f $(NGINX_MAIN_CONF) ] || grep -qE '^[[:space:]]*user[[:spa
 # summary in `check`. Named .log so the existing *.log rule in .gitignore covers
 # it; check-reset clears it at the start of every preflight run.
 CHECK_FLAG      := $(SELF_DIR)/.check-failed.log
+VERIFY_FLAG     := $(SELF_DIR)/.verify-failed.log
 
 # WorkingDirectory declared by the unit: uwsgi resolves `--ini uwsgi.ini` against
 # it, so only the checkout living there is the one the running service reads.
@@ -311,10 +318,21 @@ require-uwsgi-workdir:
 
 # -- verify (mostly read-only) ------------------------------------------------
 
-verify: verify-tmpfiles verify-nginx verify-uwsgi ## verify all three after install
+verify: ## verify all three after install
+# Run as recipe lines rather than prerequisites so that one failing section
+# still leaves the other two reported: a broken nginx config says nothing about
+# whether uwsgi is up, and that is exactly when you want to know.
+	@rm -f $(VERIFY_FLAG)
+	@$(MAKE) --no-print-directory verify-tmpfiles || echo "verify-tmpfiles" >> $(VERIFY_FLAG)
+	@$(MAKE) --no-print-directory verify-nginx    || echo "verify-nginx"    >> $(VERIFY_FLAG)
+	@$(MAKE) --no-print-directory verify-uwsgi    || echo "verify-uwsgi"    >> $(VERIFY_FLAG)
 	@echo
-	@echo "Verify done. If verify-tmpfiles shows 13: Permission denied is gone and"
-	@echo "verify-nginx shows 429 with Retry-After, the setup is correct."
+	@if [ -s $(VERIFY_FLAG) ]; then \
+		echo "VERIFY FAILED in:"; sed 's/^/  /' $(VERIFY_FLAG); rm -f $(VERIFY_FLAG); exit 1; \
+	else \
+		rm -f $(VERIFY_FLAG); \
+		echo "Verify done. If verify-tmpfiles shows 13: Permission denied is gone and"; \
+		echo "verify-nginx shows 429 with Retry-After, the setup is correct."; fi
 
 verify-tmpfiles: ## ownership + large-response spill check
 	@echo "== ownership =="
@@ -334,10 +352,18 @@ verify-tmpfiles: ## ownership + large-response spill check
 	@echo "== spill test (large query, should not log 13:) =="
 	@echo "   $(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-12-31&region=colombia"
 	@if command -v curl >/dev/null 2>&1; then \
-		curl -s $(CURL_RESOLVE) --connect-timeout 10 -m 60 "$(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-12-31&region=colombia" -o /dev/null -w "   http %{http_code} (%{size_download} bytes)\n" \
-			|| echo "   (curl failed — check SITE_URL or network)"; \
+		set -- $$(curl -s $(CURL_RESOLVE) --connect-timeout 10 -m 60 "$(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-12-31&region=colombia" -o /dev/null -w "%{http_code} %{size_download}"); \
+		echo "   http $${1:-000} ($${2:-0} bytes)"; \
+		if [ "$${1:-000}" = "000" ]; then \
+			echo "   000 is curl never connecting at all. Run on the server, the public"; \
+			echo "   name often does not route back to it: retry with RESOLVE=1."; fi; \
 	else \
 		echo "   (curl not found — skipping the spill request)"; fi
+# The FAIL lines above are printed by separate recipe lines, each its own
+# shell, so the blocking conditions are re-tested here to give the target an
+# exit status the `verify` summary can rely on.
+	@if ls -ld /var/lib/nginx 2>/dev/null | grep -q activefires && [ -f $(DST_TMPFILES) ]; then :; else \
+		echo "   -> ownership or the tmpfiles override is wrong (see FAIL above)"; exit 1; fi
 	@echo "   permission errors in nginx error.log (CHECK TIMESTAMPS: lines older"
 	@echo "   than the fix are historical and do not mean it failed):"
 # A pipeline reports the exit status of its last command, so `|| echo` after
@@ -356,7 +382,7 @@ verify-nginx: ## nginx -t, then the HTTP checks (see verify-http)
 # perfectly good config as "FAIL nginx -t". mktemp keeps it in the caller's tmp.
 	@if command -v nginx >/dev/null 2>&1 || [ -x /usr/sbin/nginx ]; then \
 		log=$$(mktemp); \
-		sudo nginx -t > $$log 2>&1; rc=$$?; \
+		$(SUDO) nginx -t > $$log 2>&1; rc=$$?; \
 		sed 's/^/  /' $$log; rm -f $$log; \
 		if [ $$rc -ne 0 ]; then echo "  FAIL nginx -t"; exit $$rc; fi; \
 	else \
@@ -406,11 +432,11 @@ verify-reboot: ## checks to run immediately after a reboot (tmpfiles must stick)
 	@$(MAKE) --no-print-directory verify-tmpfiles
 
 reload: ## reload nginx + uwsgi without copying configs
-	sudo nginx -t && sudo systemctl reload nginx
+	$(SUDO) nginx -t && $(SUDO) systemctl reload nginx
 # Graceful on purpose: ExecReload sends SIGHUP to the uwsgi master, so workers
 # finish in-flight requests (a multi-minute /download-result/ export) instead of
 # being torn down. Same order as update_Active_Fires.sh; restart only as fallback.
-	sudo systemctl reload uwsgi || sudo systemctl restart uwsgi
+	$(SUDO) systemctl reload uwsgi || $(SUDO) systemctl restart uwsgi
 	@echo "reloaded"
 
 clean-cache: ## drop the cached hotspot answers (use when you need fresh data NOW)
@@ -418,23 +444,23 @@ clean-cache: ## drop the cached hotspot answers (use when you need fresh data NO
 # is for the moment an import has just landed and the answer has to change now.
 # Same reason as clean-tmp for letting root expand the path: the directory is
 # 0770 activefires:root and a maintenance user's shell cannot read it.
-	@if sudo test -d /var/lib/nginx/cache; then \
-		sudo find /var/lib/nginx/cache -mindepth 1 -delete; \
+	@if $(SUDO) test -d /var/lib/nginx/cache; then \
+		$(SUDO) find /var/lib/nginx/cache -mindepth 1 -delete; \
 		echo "ok  emptied /var/lib/nginx/cache"; \
 	else \
 		echo "(/var/lib/nginx/cache not present — nothing to clean)"; fi
-	sudo systemctl reload nginx
+	$(SUDO) systemctl reload nginx
 	@echo "ok  reloaded nginx — the next hotspot query goes straight to uWSGI"
 
 clean-tmp: ## remove stale uwsgi temp files (reloads nginx: workers recreate the hash tree)
 # The glob has to be expanded by root: /var/lib/nginx is 0770 activefires:root,
 # so a maintenance user's own shell cannot read it and the unexpanded pattern
 # makes `rm -rf` a silent no-op that still reports success.
-	@if sudo test -d /var/lib/nginx/tmp/uwsgi; then \
-		sudo find /var/lib/nginx/tmp/uwsgi -mindepth 1 -delete; \
+	@if $(SUDO) test -d /var/lib/nginx/tmp/uwsgi; then \
+		$(SUDO) find /var/lib/nginx/tmp/uwsgi -mindepth 1 -delete; \
 		echo "ok  emptied /var/lib/nginx/tmp/uwsgi"; \
 	else \
 		echo "(/var/lib/nginx/tmp/uwsgi not present — nothing to clean)"; fi
-	sudo systemctl reload nginx
+	$(SUDO) systemctl reload nginx
 	@echo "ok  reloaded nginx — fresh workers recreated the uwsgi temp tree"
-	@sudo ls -ld /var/lib/nginx/tmp/uwsgi 2>/dev/null || echo "(recreated on the first spill)"
+	@$(SUDO) ls -ld /var/lib/nginx/tmp/uwsgi 2>/dev/null || echo "(recreated on the first spill)"

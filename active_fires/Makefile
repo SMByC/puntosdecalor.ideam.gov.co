@@ -10,19 +10,23 @@
 #
 # Plus: ensures /etc/nginx/nginx.conf has `user activefires;`
 #
-# Usage (on the AlmaLinux 9 host, from repo root or this dir):
-#   make -C active_fires help          # list targets
-#   make -C active_fires check         # preflight: show drift vs installed files
-#   sudo make -C active_fires install  # copy configs + reload daemons
-#   make -C active_fires verify        # post-install checks (no sudo needed for most)
+# Usage on the AlmaLinux 9 host — either from the repo root:
+#   sudo make -C active_fires install
+# or from inside this directory:
+#   cd active_fires && sudo make install
+# Source files are resolved from this Makefile's own location, so any other
+# cwd works too (e.g. make -f .../Active_Fires/active_fires/Makefile check)
 #
 # All install targets are idempotent and print a diff before overwriting.
 # See active_fires_nginx.conf and nginx.tmpfiles.conf headers for full rationale.
 
-SRC_NGINX_CONF  := active_fires_nginx.conf
-SRC_TMPFILES    := nginx.tmpfiles.conf
-SRC_UWSGI_SVC   := uwsgi.service
-SRC_UWSGI_INI   := uwsgi.ini
+# resolve sources relative to this Makefile, independent of the invocation cwd
+SELF_DIR        := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
+SRC_NGINX_CONF  := $(SELF_DIR)/active_fires_nginx.conf
+SRC_TMPFILES    := $(SELF_DIR)/nginx.tmpfiles.conf
+SRC_UWSGI_SVC   := $(SELF_DIR)/uwsgi.service
+SRC_UWSGI_INI   := $(SELF_DIR)/uwsgi.ini
+TEST_CERTS_DIR  := $(SELF_DIR)/.nginx-test
 
 DST_NGINX_CONF  := /etc/nginx/conf.d/active_fires_nginx.conf
 DST_TMPFILES    := /etc/tmpfiles.d/nginx.conf
@@ -71,15 +75,15 @@ check-nginx: ## diff nginx conf (repo vs /etc/nginx/conf.d/)
 	@if ! command -v docker >/dev/null 2>&1; then \
 		echo "  skipped (no docker on this host)"; \
 	else \
-		mkdir -p .nginx-test && \
-		openssl req -x509 -newkey rsa:2048 -keyout .nginx-test/tls.key \
-			-out .nginx-test/tls.crt -days 2 -nodes -subj "/CN=check" 2>/dev/null; \
+		mkdir -p $(TEST_CERTS_DIR) && \
+		openssl req -x509 -newkey rsa:2048 -keyout $(TEST_CERTS_DIR)/tls.key \
+			-out $(TEST_CERTS_DIR)/tls.crt -days 2 -nodes -subj "/CN=check" 2>/dev/null; \
 		docker run --rm \
-			-v $$PWD/$(SRC_NGINX_CONF):/etc/nginx/conf.d/default.conf:ro \
-			-v $$PWD/.nginx-test/tls.crt:/etc/ssl/certs/wildcard_ideam_gov_co.crt:ro \
-			-v $$PWD/.nginx-test/tls.key:/etc/ssl/private/wildcard_ideam_gov_co.key:ro \
+			-v $(SRC_NGINX_CONF):/etc/nginx/conf.d/default.conf:ro \
+			-v $(TEST_CERTS_DIR)/tls.crt:/etc/ssl/certs/wildcard_ideam_gov_co.crt:ro \
+			-v $(TEST_CERTS_DIR)/tls.key:/etc/ssl/private/wildcard_ideam_gov_co.key:ro \
 			nginx:alpine nginx -t 2>&1 | grep -E "syntax is ok|test is successful|\[emerg\]" | sed 's/^/  /'; \
-		rm -rf .nginx-test; \
+		rm -rf $(TEST_CERTS_DIR); \
 	fi
 
 check-tmpfiles: ## diff tmpfiles (repo vs /etc/tmpfiles.d/ + vendor) and ownership
@@ -172,8 +176,11 @@ verify-tmpfiles: ## ownership + large-response spill check
 	@curl -s "$(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-12-31&region=colombia" -o /dev/null -w "   http %{http_code} (%{size_download} bytes)\n" || echo "   (curl failed — check SITE_URL or network)"
 	@echo "   permission errors in nginx error.log (CHECK TIMESTAMPS: lines older"
 	@echo "   than the fix are historical and do not mean it failed):"
-	@grep -i "open().*Permission denied" /var/log/nginx/error.log 2>/dev/null | tail -n 5 | sed 's/^/   /' \
-		|| echo "   (none in the log at all — good)"
+	@if [ -r /var/log/nginx/error.log ]; then \
+		grep -i "open().*Permission denied" /var/log/nginx/error.log | tail -n 5 | sed 's/^/   /' \
+			|| echo "   (none in the log at all — good)"; \
+	else \
+		echo "   (error.log not readable as $$(id -un) — rerun with sudo to inspect it)"; fi
 
 verify-nginx: ## rate-limit 429 + Retry-After, scanner 404, bad UA 403, www redirect
 	@echo "== nginx -t =="

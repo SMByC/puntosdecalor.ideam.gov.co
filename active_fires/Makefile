@@ -49,7 +49,12 @@ CHECK_FLAG      := $(SELF_DIR)/.check-failed.log
 
 # WorkingDirectory declared by the unit: uwsgi resolves `--ini uwsgi.ini` against
 # it, so only the checkout living there is the one the running service reads.
-UWSGI_WORKDIR = $$(sed -n 's/^WorkingDirectory=//p' $(SRC_UWSGI_SVC) | tail -n 1)
+# Both sides are compared canonicalised: abspath keeps whatever symlink the
+# invocation used (`make -f /symlinked/path/Makefile` leaves it in SELF_DIR),
+# and a deploy reached through a symlink is still the same checkout.
+SELF_DIR_REAL   := $(realpath $(SELF_DIR))
+UWSGI_WORKDIR    = $$(sed -n 's/^WorkingDirectory=//p' $(SRC_UWSGI_SVC) | tail -n 1)
+UWSGI_WORKDIR_REAL = $$(readlink -f "$$wd" 2>/dev/null || echo "$$wd")
 
 .DEFAULT_GOAL := help
 # Prerequisite order carries meaning here: check-reset must clear the flag
@@ -204,11 +209,11 @@ check-uwsgi: ## diff uwsgi service + ini
 	@echo
 	@echo "== $(SRC_UWSGI_INI) (used in place) =="
 	@if [ -f $(SRC_UWSGI_INI) ]; then ls -l $(SRC_UWSGI_INI); else echo "missing $(SRC_UWSGI_INI)"; fi
-	@wd=$(UWSGI_WORKDIR); \
-	if [ "$$wd" = "$(SELF_DIR)" ]; then \
+	@wd=$(UWSGI_WORKDIR); wdr=$(UWSGI_WORKDIR_REAL); \
+	if [ "$$wdr" = "$(SELF_DIR_REAL)" ]; then \
 		echo "ok  this checkout is the one uwsgi runs from"; \
 	else \
-		echo "WARN uwsgi.service sets WorkingDirectory=$$wd, this checkout is $(SELF_DIR)"; \
+		echo "WARN uwsgi.service sets WorkingDirectory=$$wd, this checkout is $(SELF_DIR_REAL)"; \
 		echo "     the running service never reads the uwsgi.ini listed above"; fi
 	@systemctl is-active --quiet uwsgi 2>/dev/null && echo "uwsgi active" || echo "uwsgi not active (ok before install)"
 
@@ -278,12 +283,20 @@ install-uwsgi: require-uwsgi-workdir ## copy uwsgi.service -> /etc/systemd/syste
 # a service that keeps reading someone else's uwsgi.ini — every process-model or
 # harakiri edit made here would be invisible while check-uwsgi still lists it.
 require-uwsgi-workdir:
-	@wd=$(UWSGI_WORKDIR); \
-	if [ "$$wd" = "$(SELF_DIR)" ]; then :; else \
-		echo "FAIL this checkout is $(SELF_DIR)"; \
+	@wd=$(UWSGI_WORKDIR); wdr=$(UWSGI_WORKDIR_REAL); \
+	if [ "$$wdr" = "$(SELF_DIR_REAL)" ]; then :; else \
+		echo "FAIL this checkout is $(SELF_DIR_REAL)"; \
 		echo "     but $(SRC_UWSGI_SVC) sets WorkingDirectory=$$wd"; \
-		echo "     uwsgi would keep reading $$wd/uwsgi.ini, not the file here."; \
-		echo "     Run make from $$wd, or change WorkingDirectory first."; exit 1; fi
+		echo "     uwsgi resolves --ini uwsgi.ini there, so restarting it from here"; \
+		echo "     would reload $$wd/uwsgi.ini and ignore every edit made in this tree."; \
+		echo; \
+		echo "     Either run make from $$wd, or move the deploy to this checkout —"; \
+		echo "     the path is pinned in more than this unit:"; \
+		echo "       uwsgi.service            WorkingDirectory, ExecStart, EnvironmentFile"; \
+		echo "       uwsgi.ini                set-placeholder base"; \
+		echo "       active_fires_nginx.conf  alias for /static/"; \
+		echo "       update_Active_Fires.sh   PROJECT_DIR"; \
+		echo "       page/data/*/crontab.crt  APP_DIR and ENV_FILE"; exit 1; fi
 
 # -- verify (mostly read-only) ------------------------------------------------
 

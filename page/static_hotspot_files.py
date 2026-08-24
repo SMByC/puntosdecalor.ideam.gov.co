@@ -93,7 +93,8 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """\
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#CC3D36">
-    <meta name="robots" content="NONE,NOARCHIVE">
+    {# the listings hold the public downloadable data, they are meant to be found #}
+    <meta name="robots" content="index, follow">
     <title>{% blocktranslate %}Index of {{ directory }}{% endblocktranslate %}</title>
     <style>
         :root {

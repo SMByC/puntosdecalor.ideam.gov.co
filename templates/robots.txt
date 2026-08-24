@@ -1,0 +1,23 @@
+# Puntos de calor en Colombia - IDEAM, Sistema de Monitoreo de Bosques y Carbono
+# Datos abiertos: el rastreo y la indexación son bienvenidos, tanto para
+# buscadores como para rastreadores de IA (GPTBot, OAI-SearchBot,
+# ChatGPT-User, ClaudeBot, Claude-User, Claude-SearchBot, PerplexityBot,
+# Perplexity-User, Google-Extended, Applebot, Applebot-Extended, Amazonbot,
+# meta-externalagent, CCBot): no necesitan reglas propias y quedan permitidos
+# por el grupo general. Se solicita referenciar los datos originales de la
+# NASA (FIRMS / MCD64A1) y al SMByC-IDEAM.
+#
+# Si más adelante se decide excluir a los rastreadores de entrenamiento de IA,
+# basta con descomentar el siguiente bloque:
+#
+# User-agent: GPTBot
+# User-agent: ClaudeBot
+# User-agent: CCBot
+# User-agent: Google-Extended
+# User-agent: Applebot-Extended
+# Disallow: /
+
+User-agent: *
+Disallow: /admin/
+
+Sitemap: https://puntosdecalor.ideam.gov.co/sitemap.xml

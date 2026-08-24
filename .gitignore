@@ -23,3 +23,10 @@ page/data/ftp_ba_files/
 
 # Logs
 *.log
+.omo/
+.playwright-mcp/
+
+# Local ingestion / generated data (not versioned)
+page/data/active_fires/modis/
+page/data/burned_area/mcd64a1/
+page/data/burned_area/download_log.txt

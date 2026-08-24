@@ -1,0 +1,52 @@
+# Puntos de calor en Colombia — IDEAM, SMByC
+
+> Plataforma del Sistema de Monitoreo de Bosques y Carbono (SMByC) del IDEAM
+> para consultar en un solo lugar los puntos de calor detectados satelitalmente
+> sobre el territorio colombiano (MODIS y VIIRS, distribuidos por el sistema
+> FIRMS de la NASA) y el área quemada mensual (producto MODIS MCD64A1).
+> Datos abiertos y gratuitos; al usarlos se solicita referenciar los datos
+> originales de la NASA y al SMByC-IDEAM.
+
+Los puntos de calor se actualizan cada hora (consulta a FIRMS) y se conservan
+históricamente; el área quemada es un producto mensual publicado con algunos
+meses de rezago. Las fechas están en hora local de Colombia (UTC-5) y las
+coordenadas se redondean a 4 decimales (~11 m).
+
+## Recursos
+
+- [Mapa interactivo](https://puntosdecalor.ideam.gov.co/): consulta por periodo
+  y región (departamentos, regiones naturales, parques nacionales,
+  corporaciones), con línea de tiempo y descarga CSV de la consulta actual.
+- [Índice de archivos CSV diarios](https://puntosdecalor.ideam.gov.co/archivos-csv/):
+  un archivo CSV por día para todo el país. Formato: separador ";" y coma ","
+  decimal.
+- [Índice de área quemada mensual](https://puntosdecalor.ideam.gov.co/archivos-area-quemada/):
+  un shapefile comprimido en ZIP por mes (EPSG:4326).
+
+## API JSON de puntos de calor
+
+[https://puntosdecalor.ideam.gov.co/active_fires.json/](https://puntosdecalor.ideam.gov.co/active_fires.json/)
+
+Parámetros (GET): `from_date=YYYY-MM-DD`, `to_date=YYYY-MM-DD` (rango
+incluyente) y `region=<slug>` (`colombia` o el slug de una región). Devuelve
+los puntos como arreglos paralelos para minimizar el peso:
+
+- `t0`: inicio del periodo (ISO 8601)
+- `span`: duración del periodo en minutos
+- `n`: número de puntos
+- `lon[]`, `lat[]`: coordenadas
+- `m[]`: minutos transcurridos desde `t0` (ascendente)
+- `id[]`: id en base de datos de cada punto, codificado en deltas:
+  `id[i] = id[i-1] + d[i]`
+
+## Cómo interpretar los datos
+
+- Un punto marca dónde y cuándo se detectó una anomalía térmica (centro del
+  píxel: 1 km en MODIS, 375 m en VIIRS), no la ubicación exacta ni el tamaño
+  del fuego.
+- La ausencia de puntos no significa ausencia de fuego (nubosidad, humo,
+  fuegos breves).
+- El área quemada responde cuánta superficie resultó afectada; complementa,
+  no sustituye, a los puntos de calor.
+
+Contacto: xcorredorl@ideam.gov.co

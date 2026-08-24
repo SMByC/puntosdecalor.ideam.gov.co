@@ -29,7 +29,13 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'insecure-dev-key-change-in-pro
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
+# the production domains served by nginx (`active_fires_nginx.conf`); anything
+# else answers with a 400 before touching the views. The leading dot matches
+# the apex and any subdomain (including www) to stay aligned with nginx's
+# wildcard server_name. Local development overrides this in
+# `active_fires.settings_local`. If prod health-checks ping by IP, ensure
+# they send Host: puntosdecalor.ideam.gov.co.
+ALLOWED_HOSTS = ['.puntosdecalor.ideam.gov.co']
 
 # Preserve existing primary key type (AutoField) for models created
 # before Django 3.2. Without this, Django 6.0 defaults to BigAutoField
@@ -45,6 +51,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'django.contrib.gis',
     'leaflet',
     'djgeojson',

@@ -8,6 +8,17 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 	<meta name="theme-color" content="#CC3D36" />
 	<meta name="description" content="Monitoreo de puntos de calor detectados satelitalmente sobre el territorio colombiano - IDEAM, Sistema de Monitoreo de Bosques y Carbono" />
+
+	{# canonical identity of the site: query parameters are view state, not pages #}
+	<link rel="canonical" href="https://puntosdecalor.ideam.gov.co/" />
+	<meta property="og:type" content="website" />
+	<meta property="og:site_name" content="IDEAM - SMByC" />
+	<meta property="og:title" content="Monitoreo de puntos de calor en Colombia - IDEAM" />
+	<meta property="og:description" content="Monitoreo de puntos de calor detectados satelitalmente sobre el territorio colombiano - IDEAM, Sistema de Monitoreo de Bosques y Carbono" />
+	<meta property="og:url" content="https://puntosdecalor.ideam.gov.co/" />
+	<meta property="og:image" content="https://puntosdecalor.ideam.gov.co{% static 'img/ideam.png' %}" />
+	<meta property="og:locale" content="es_CO" />
+
 	<title>Monitoreo de puntos de calor en Colombia - IDEAM {% block title %}{% endblock %}</title>
 
 	<!-- jQuery/JavaScripts -->
@@ -48,6 +59,68 @@
 	{% endblock %}
 
 	<link rel="shortcut icon" href="{% static "img/favicon.png" %}" />
+
+	{# machine-readable description of the published datasets (schema.org), #}
+	{# the same markup used by government open-data portals #}
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@graph": [
+			{
+				"@type": "GovernmentOrganization",
+				"@id": "https://puntosdecalor.ideam.gov.co/#ideam",
+				"name": "Instituto de Hidrología, Meteorología y Estudios Ambientales (IDEAM)",
+				"url": "https://www.ideam.gov.co"
+			},
+			{
+				"@type": "Dataset",
+				"@id": "https://puntosdecalor.ideam.gov.co/#hotspots",
+				"name": "Puntos de calor detectados satelitalmente en Colombia",
+				"description": "Detecciones casi en tiempo real de anomalías térmicas (fuegos activos) sobre el territorio colombiano, provenientes de los sensores MODIS (satélites Aqua y Terra) y VIIRS (Suomi-NPP, NOAA-20 y NOAA-21) distribuidas por el sistema FIRMS de la NASA, recortadas al territorio colombiano y consultables por periodo y región.",
+				"url": "https://puntosdecalor.ideam.gov.co/",
+				"inLanguage": "es-CO",
+				"isAccessibleForFree": true,
+				"keywords": ["puntos de calor", "focos de calor", "incendios forestales", "Colombia", "MODIS", "VIIRS", "FIRMS"],
+				"spatialCoverage": {"@type": "Place", "name": "Colombia"},
+				"creator": {"@id": "https://puntosdecalor.ideam.gov.co/#ideam"},
+				"distribution": [
+					{
+						"@type": "DataDownload",
+						"name": "Consulta de puntos de calor (JSON)",
+						"encodingFormat": "application/json",
+						"contentUrl": "https://puntosdecalor.ideam.gov.co/active_fires.json/"
+					},
+					{
+						"@type": "DataDownload",
+						"name": "Archivos CSV diarios de puntos de calor para todo el país",
+						"encodingFormat": "text/csv",
+						"contentUrl": "https://puntosdecalor.ideam.gov.co/archivos-csv/"
+					}
+				]
+			},
+			{
+				"@type": "Dataset",
+				"@id": "https://puntosdecalor.ideam.gov.co/#burned-area",
+				"name": "Área quemada mensual en Colombia (MCD64A1)",
+				"description": "Superficies quemadas cartografiadas mensualmente a 500 m sobre el territorio colombiano, derivadas del producto MODIS MCD64A1 (Colección 6.1) elaborado por la Universidad de Maryland, procesadas (disueltas y recortadas) y distribuidas como shapefiles comprimidos en ZIP (EPSG:4326).",
+				"url": "https://puntosdecalor.ideam.gov.co/",
+				"inLanguage": "es-CO",
+				"isAccessibleForFree": true,
+				"keywords": ["área quemada", "superficie quemada", "incendios forestales", "Colombia", "MCD64A1"],
+				"spatialCoverage": {"@type": "Place", "name": "Colombia"},
+				"creator": {"@id": "https://puntosdecalor.ideam.gov.co/#ideam"},
+				"distribution": [
+					{
+						"@type": "DataDownload",
+						"name": "Shapefiles mensuales de área quemada (ZIP, EPSG:4326)",
+						"encodingFormat": "application/zip",
+						"contentUrl": "https://puntosdecalor.ideam.gov.co/archivos-area-quemada/"
+					}
+				]
+			}
+		]
+	}
+	</script>
 </head>
 
 <body>

@@ -7,8 +7,10 @@
 from django.conf import settings
 from django.urls import path
 from django.contrib.gis import admin
+from django.contrib.sitemaps.views import sitemap
+from django.views.generic import TemplateView
 
-from page import views, static_hotspot_files
+from page import views, static_hotspot_files, sitemaps
 from page.static_hotspot_files import (
     HOTSPOT_INDEX_TITLE, HOTSPOT_INDEX_INFO,
     BURNED_AREA_INDEX_TITLE, BURNED_AREA_INDEX_INFO,
@@ -16,6 +18,15 @@ from page.static_hotspot_files import (
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # discovery files for search engines and AI agents (no trailing slash:
+    # crawlers request these paths verbatim)
+    path('robots.txt', TemplateView.as_view(
+        template_name='robots.txt', content_type='text/plain'), name='robots-txt'),
+    path('sitemap.xml', sitemap, {'sitemaps': {'static': sitemaps.StaticSitemap}},
+         name='sitemap'),
+    path('llms.txt', TemplateView.as_view(
+        template_name='llms.txt', content_type='text/markdown'), name='llms-txt'),
 
     path('', views.home, name='home'),
 

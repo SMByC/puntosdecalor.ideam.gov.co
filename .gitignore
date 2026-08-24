@@ -30,3 +30,6 @@ page/data/ftp_ba_files/
 page/data/active_fires/modis/
 page/data/burned_area/mcd64a1/
 page/data/burned_area/download_log.txt
+
+# throwaway certs from `make -C active_fires check`
+active_fires/.nginx-test/

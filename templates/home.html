@@ -6,6 +6,15 @@
 
 {% block javascripts %}
 
+    {% if canonical_query %}
+    {#  Set only when the server filled in a missing parameter. It runs ahead  #}
+    {#  of everything below, which reads its state from window.location.search. #}
+    {#  replaceState, not pushState: no reload and no extra history entry.      #}
+    <script>
+        history.replaceState(null, '', '/{{ canonical_query|escapejs }}');
+    </script>
+    {% endif %}
+
     {#  General javascripts  #}
     <script>
         {# apply extent #}
@@ -173,8 +182,23 @@
             map.on('movestart', function () { set_hover(false); });
         }
 
+        // The endpoint reads these three and nothing else. `extent` is left out
+        // on purpose: it changes on every pan and would give each viewport its
+        // own nginx cache entry. Fixed order, so one question is one cache key.
+        function hotspot_query() {
+            var keys = ['from_date', 'to_date', 'region'];
+            var parts = [];
+            for (var i = 0; i < keys.length; i++) {
+                var value = getParameterByName(keys[i]);
+                if (value !== null) {
+                    parts.push(keys[i] + "=" + encodeURIComponent(value));
+                }
+            }
+            return parts.length ? "?" + parts.join("&") : "";
+        }
+
         function active_fires(map, options) {
-            var data_url = "{% url 'active-fires-data' %}" + window.location.search;
+            var data_url = "{% url 'active-fires-data' %}" + hotspot_query();
             $.getJSON(data_url, function (data) {
                 hotspots.setData(data);
                 $('#number-result').text(data.n.toLocaleString('es-CO'));
@@ -408,7 +432,7 @@
             <h3 class="lateral-item-title">Resultado</h3>
             <div class="lateral-item-content">
                 <p class="result-count"><span id="number-result">…</span> <span class="result-label">puntos de calor</span></p>
-                <a class="btn-download" href="{% url 'download-result' %}" title="Descargar el resultado en formato CSV">
+                <a class="btn-download" rel="nofollow" href="{% url 'download-result' %}" title="Descargar el resultado en formato CSV">
                     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                         <path d="M12 3v12M7 11l5 5 5-5M5 20h14" />
                     </svg>

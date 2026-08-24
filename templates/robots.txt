@@ -19,5 +19,8 @@
 
 User-agent: *
 Disallow: /admin/
+# not a page: it streams a CSV of whatever query the Referer carried. The same
+# data is published as ready-made files under /archivos-csv/.
+Disallow: /download-result/
 
 Sitemap: https://puntosdecalor.ideam.gov.co/sitemap.xml

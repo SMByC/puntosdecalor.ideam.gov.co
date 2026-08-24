@@ -23,8 +23,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 import os
 
+from django.core.exceptions import ImproperlyConfigured
+
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'insecure-dev-key-change-in-production')
+# No fallback on purpose: a default here is public in this repo, and it would
+# sign real sessions, CSRF tokens and signed cookies from the moment the key
+# failed to reach the process, with nothing in the logs to say so.
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    raise ImproperlyConfigured(
+        "DJANGO_SECRET_KEY is not set. In production it comes from "
+        "/home/activefires/apps/Active_Fires/.env; for local development run "
+        "with DJANGO_SETTINGS_MODULE=active_fires.settings_local."
+    )
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False

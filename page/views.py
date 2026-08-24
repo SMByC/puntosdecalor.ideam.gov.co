@@ -12,7 +12,7 @@ from urllib.parse import urlencode, urlparse, parse_qs
 from django.conf import settings
 from django.db.models import FloatField, Func
 from django.http import HttpResponse, JsonResponse, StreamingHttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render
 from django.views.decorators.cache import never_cache
 from django.views.decorators.gzip import gzip_page
 from djgeojson.views import GeoJSONLayerView
@@ -306,12 +306,15 @@ DEFAULT_EXTENT = "(16.130262012034756_-94.39453125_-6.970049417296218_-51.372070
 # this HTML would go on asking for the file names of the previous deploy
 @never_cache
 def home(request):
-    required_params = ('from_date', 'to_date', 'extent', 'region')
-    if not all(p in request.GET for p in required_params):
-        return _redirect_with_defaults(request)
+    # The view state lives in the query string: the period inputs, the region
+    # select and the hotspot request are all seeded from it client-side. Filling
+    # the gaps here rather than redirecting keeps `/` a 200, which is what
+    # rel=canonical, og:url and the sitemap entry name. The template puts the
+    # completed query into the address bar with history.replaceState.
+    params = _query_defaults(request)
+    needs_normalising = not all(p in request.GET for p in params)
 
-    extent_str = request.GET['extent']
-    coords = [float(x) for x in extent_str.strip('()').split('_')]
+    coords = [float(x) for x in params['extent'].strip('()').split('_')]
     extent = [[coords[0], coords[1]], [coords[2], coords[3]]]
 
     last_active_fire = ActiveFire.objects.order_by('date').last()
@@ -329,6 +332,7 @@ def home(request):
 
     context = {
         "extent": extent,
+        "canonical_query": '?' + urlencode(params) if needs_normalising else '',
         "af_last_update": last_active_fire.date if last_active_fire else None,
         "range_burned_area": range_burned_area,
         "years_burned_area": years_burned_area,
@@ -342,13 +346,15 @@ def home(request):
     return render(request, 'home.html', context)
 
 
-def _redirect_with_defaults(request):
-    """Redirect to home with default query parameters for missing values."""
+def _query_defaults(request):
+    """The view state of a request, with the site defaults for what is missing.
+
+    Insertion order is the order the page writes back into the address bar.
+    """
     yesterday = (date.today() - timedelta(days=1)).isoformat()
-    params = {
+    return {
         'from_date': request.GET.get('from_date', yesterday),
         'to_date': request.GET.get('to_date', date.today().isoformat()),
         'region': request.GET.get('region', 'colombia'),
         'extent': request.GET.get('extent', DEFAULT_EXTENT),
     }
-    return redirect(f"/?{urlencode(params)}")

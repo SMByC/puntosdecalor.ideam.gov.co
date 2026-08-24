@@ -26,8 +26,21 @@ NEVER use this module in production.
 
 import os
 
-from .settings import *  # noqa: F401,F403
-from .settings import BASE_DIR
+# settings.py refuses to start without DJANGO_SECRET_KEY. Development has no
+# .env, so seed the value the star import below reads, then take it back out:
+# left in the environment it is inherited by every subprocess (dev/
+# responsive_check.py passes dict(os.environ, ...)), and one of those running
+# under active_fires.settings would silently start on this key.
+_DEV_SECRET_KEY = 'local-development-only-not-a-secret'
+_seeded_secret_key = 'DJANGO_SECRET_KEY' not in os.environ
+if _seeded_secret_key:
+    os.environ['DJANGO_SECRET_KEY'] = _DEV_SECRET_KEY
+
+from .settings import *  # noqa: E402,F401,F403
+from .settings import BASE_DIR  # noqa: E402
+
+if _seeded_secret_key:
+    del os.environ['DJANGO_SECRET_KEY']
 
 DEBUG = True
 
@@ -66,5 +79,6 @@ ROOT_URLCONF = 'active_fires.urls_local'
 # django defaults to DENY, which blocks framing even from the same origin
 X_FRAME_OPTIONS = 'SAMEORIGIN'
 
-# a fixed key is fine locally, it is never used to protect anything
-SECRET_KEY = 'local-development-only-not-a-secret'
+# a fixed key is fine locally, it protects nothing. This also wins over a real
+# DJANGO_SECRET_KEY that happens to be exported in the developer's environment
+SECRET_KEY = _DEV_SECRET_KEY

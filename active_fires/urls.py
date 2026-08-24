@@ -21,12 +21,14 @@ urlpatterns = [
 
     # discovery files for search engines and AI agents (no trailing slash:
     # crawlers request these paths verbatim)
+    # explicit charset: Django appends one only when content_type is omitted,
+    # and both templates carry accented Spanish
     path('robots.txt', TemplateView.as_view(
-        template_name='robots.txt', content_type='text/plain'), name='robots-txt'),
+        template_name='robots.txt', content_type='text/plain; charset=utf-8'), name='robots-txt'),
     path('sitemap.xml', sitemap, {'sitemaps': {'static': sitemaps.StaticSitemap}},
          name='sitemap'),
     path('llms.txt', TemplateView.as_view(
-        template_name='llms.txt', content_type='text/markdown'), name='llms-txt'),
+        template_name='llms.txt', content_type='text/markdown; charset=utf-8'), name='llms-txt'),
 
     path('', views.home, name='home'),
 

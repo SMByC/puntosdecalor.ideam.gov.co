@@ -9,6 +9,7 @@
 #
 # Logs:
 #   journalctl -u uwsgi -f
+#   (uwsgi.ini deliberately sets no `logto`, so everything lands here)
 #
 
 [Unit]
@@ -20,7 +21,13 @@ Wants=postgresql.service
 User=activefires
 Group=nginx
 WorkingDirectory=/home/activefires/apps/Active_Fires/active_fires
-EnvironmentFile=-/home/activefires/apps/Active_Fires/.env
+# No `-` prefix: a missing or unreadable .env must fail the unit loudly. With
+# it, systemd started anyway and settings.py fell back to defaults — a publicly
+# known DJANGO_SECRET_KEY signing real sessions and CSRF tokens. Keep the file
+# as plain KEY=value lines (no `export`, no shell expansion, no command
+# substitution) so systemd and the crontabs' `set -a; source` read it alike;
+# systemd skips lines it cannot parse, and settings.py then refuses to start.
+EnvironmentFile=/home/activefires/apps/Active_Fires/.env
 
 ExecStart=/home/activefires/.local/bin/uwsgi --ini uwsgi.ini
 ExecReload=/bin/kill -HUP $MAINPID

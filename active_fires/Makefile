@@ -36,6 +36,17 @@ NGINX_MAIN_CONF := /etc/nginx/nginx.conf
 SITE_URL        ?= https://puntosdecalor.ideam.gov.co
 WWW_URL         := $(subst https://,https://www.,$(SITE_URL))
 
+# Run ON the server the public name often does not route back to it (no hairpin
+# NAT, or an upstream proxy owns that address), and every curl below reports
+# http 000. RESOLVE=1 points the name at the local listener while keeping the
+# Host header and the SNI intact, which both the vhost and the certificate need:
+#   sudo make -C active_fires verify RESOLVE=1
+SITE_HOST       := $(patsubst http://%,%,$(patsubst https://%,%,$(SITE_URL)))
+CURL_RESOLVE     = $(if $(RESOLVE),--resolve $(SITE_HOST):443:127.0.0.1 \
+                     --resolve $(SITE_HOST):80:127.0.0.1 \
+                     --resolve www.$(SITE_HOST):443:127.0.0.1 \
+                     --resolve www.$(SITE_HOST):80:127.0.0.1)
+
 # Shell test reused by check and require-nginx-main: true when this is not a
 # production host, or when nginx workers already run as activefires. The tmpfiles
 # override chowns /var/lib/nginx to activefires, so applying it while workers
@@ -323,7 +334,7 @@ verify-tmpfiles: ## ownership + large-response spill check
 	@echo "== spill test (large query, should not log 13:) =="
 	@echo "   $(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-12-31&region=colombia"
 	@if command -v curl >/dev/null 2>&1; then \
-		curl -s --connect-timeout 10 -m 60 "$(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-12-31&region=colombia" -o /dev/null -w "   http %{http_code} (%{size_download} bytes)\n" \
+		curl -s $(CURL_RESOLVE) --connect-timeout 10 -m 60 "$(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-12-31&region=colombia" -o /dev/null -w "   http %{http_code} (%{size_download} bytes)\n" \
 			|| echo "   (curl failed — check SITE_URL or network)"; \
 	else \
 		echo "   (curl not found — skipping the spill request)"; fi
@@ -340,10 +351,10 @@ verify-tmpfiles: ## ownership + large-response spill check
 
 verify-nginx: ## nginx -t, then the HTTP checks (see verify-http)
 	@echo "== nginx -t =="
-	@if command -v nginx >/dev/null 2>&1 || [ -x /usr/sbin/nginx ]; then \
 # The redirection runs as the invoking user, before sudo: writing into the
 # checkout fails for any operator without write access there and would report a
 # perfectly good config as "FAIL nginx -t". mktemp keeps it in the caller's tmp.
+	@if command -v nginx >/dev/null 2>&1 || [ -x /usr/sbin/nginx ]; then \
 		log=$$(mktemp); \
 		sudo nginx -t > $$log 2>&1; rc=$$?; \
 		sed 's/^/  /' $$log; rm -f $$log; \
@@ -364,20 +375,20 @@ verify-http: ## rate-limit 429 + Retry-After, scanner 404, bad UA 403, www redir
 	@echo "   (reliable when run ON the server; sequential curls over a WAN may"
 	@echo "    stay under the burst bucket and report only 200s)"
 	@for i in $$(seq 1 30); do \
-		curl -s --connect-timeout 10 -m 20 -o /dev/null -D - "$(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-01-02&region=colombia" \
+		curl -s $(CURL_RESOLVE) --connect-timeout 10 -m 20 -o /dev/null -D - "$(SITE_URL)/active_fires.json/?from_date=2025-01-01&to_date=2025-01-02&region=colombia" \
 		| tr -d '\r' | grep -iE "^HTTP/|^Retry-After:" | paste - - | head -n 1; \
 	done | sort | uniq -c | sed 's/^/  /'
 	@echo "   expected: mix of HTTP/1.1 200 and HTTP/1.1 429 with Retry-After: 10"
 	@echo
 	@echo "== scanner paths (expect 404, not proxied) =="
-	@curl -s --connect-timeout 10 -m 15 -o /dev/null -w "  /.env          -> %{http_code}\n" $(SITE_URL)/.env || true
-	@curl -s --connect-timeout 10 -m 15 -o /dev/null -w "  /wp-login.php  -> %{http_code}\n" $(SITE_URL)/wp-login.php || true
+	@curl -s $(CURL_RESOLVE) --connect-timeout 10 -m 15 -o /dev/null -w "  /.env          -> %{http_code}\n" $(SITE_URL)/.env || true
+	@curl -s $(CURL_RESOLVE) --connect-timeout 10 -m 15 -o /dev/null -w "  /wp-login.php  -> %{http_code}\n" $(SITE_URL)/wp-login.php || true
 	@echo
 	@echo "== bad UA (expect 403) =="
-	@curl -s -A "sqlmap/1.5" -o /dev/null -w "  sqlmap UA -> %{http_code}\n" $(SITE_URL)/ || true
+	@curl -s $(CURL_RESOLVE) -A "sqlmap/1.5" -o /dev/null -w "  sqlmap UA -> %{http_code}\n" $(SITE_URL)/ || true
 	@echo
 	@echo "== www -> apex (expect 301) =="
-	@curl -s --connect-timeout 10 -m 15 -o /dev/null -w "  $(WWW_URL) -> %{http_code} -> %{redirect_url}\n" $(WWW_URL)/ || true
+	@curl -s $(CURL_RESOLVE) --connect-timeout 10 -m 15 -o /dev/null -w "  $(WWW_URL) -> %{http_code} -> %{redirect_url}\n" $(WWW_URL)/ || true
 
 verify-uwsgi: ## uwsgi status, socket, recent logs
 	@echo "== uwsgi =="

@@ -167,12 +167,11 @@ LEAFLET_CONFIG = {
 
     # http://leaflet-extras.github.io/leaflet-providers/preview/
     'TILES': [
-        ('CartoDB', 'https://cartodb-basemaps-{s}.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="http://cartodb.com/attributions">CartoDB</a>'),
+        ('CARTO', f'https://{{s}}.basemaps.cartocdn.com/light_all/{{z}}/{{x}}/{{y}}.png?key={os.environ.get("CARTO_API_KEY", "")}', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'),
+        ('CARTO sin etiquetas', f'https://{{s}}.basemaps.cartocdn.com/light_nolabels/{{z}}/{{x}}/{{y}}.png?key={os.environ.get("CARTO_API_KEY", "")}', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'),
+        ('CARTO Dark Matter', f'https://{{s}}.basemaps.cartocdn.com/dark_all/{{z}}/{{x}}/{{y}}.png?key={os.environ.get("CARTO_API_KEY", "")}', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'),
+        ('OpenTopoMap', 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | <a href="https://opentopomap.org">OpenTopoMap</a> (CC-BY-SA)'),
+        ('Esri World Imagery', 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),
         ('OpenStreetMap', 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'),
-        ('Mapbox Outdoors', f'http://api.tiles.mapbox.com/v4/mapbox.outdoors/{{z}}/{{x}}/{{y}}.png?access_token={os.environ.get("MAPBOX_ACCESS_TOKEN", "")}', '&copy; OpenStreetMap Contributors'),
-        ('Landscape', f'https://{{s}}.tile.thunderforest.com/landscape/{{z}}/{{x}}/{{y}}.png?apikey={os.environ.get("THUNDERFOREST_API_KEY", "")}', '&copy; OpenStreetMap Contributors'),
-        ('Esri World Image', 'http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', '&copy; Esri'),
-        ('OpenCycleMap', f'https://{{s}}.tile.thunderforest.com/cycle/{{z}}/{{x}}/{{y}}.png?apikey={os.environ.get("THUNDERFOREST_API_KEY", "")}', '&copy; OpenStreetMap Contributors'),
-        ('NatGeo', 'http://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}', '&copy; NatGeo'),
     ],
 }
